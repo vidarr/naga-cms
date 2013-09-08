@@ -63,5 +63,6 @@ if 'heading' not in form or 'summary' not in form or 'content' not in form:
     print "Error: Called without enough parameters"
 else:
     print "Content-Type: text/html\n\n"
-    print post_news(form['heading'], form['summary'], form['content'])
+    print post_news(form['heading'].value, form['summary'].value,
+            form['content'].value)
 

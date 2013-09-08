@@ -3,6 +3,7 @@ import StringIO
 import os.path
 import sys
 
+
 PAGE_ROOT     = os.path.join(os.path.dirname(os.path.abspath(__file__)))
 MODULE_DIR  = 'python'
 sys.path.append(PAGE_ROOT + '/../' + MODULE_DIR);
@@ -12,7 +13,7 @@ import nagaUtils
 
 class XmlTag:
 
-    def __init__(self, tag_name, attributes = {} content = ""):
+    def __init__(self, tag_name, attributes = {}, content = ""):
         self.tag_name = tag_name
         self.attributes = attributes
         self.content = content
@@ -20,7 +21,7 @@ class XmlTag:
     def open_tag(self):
         xml = StringIO.StringIO()
         xml.write('<' + self.tag_name)
-        for attribute in attributes.items():
+        for attribute in self.attributes.items():
             xml.write(attribute[0])
             xml.write('=')
             xml.write(attribute[1])
@@ -31,7 +32,7 @@ class XmlTag:
         return xml_string
 
     def close_tag(self):
-        return '</' + self.tag-name + '>'
+        return '</' + self.tag_name + '>'
 
     def __str__(self):
         xml = StringIO.StringIO()
@@ -83,7 +84,7 @@ class Rss:
 class Item(XmlTag):
 
     def __init__(self):
-        XmlTag.__init__('item')
+        XmlTag.__init__(self, 'item')
         self.title         = ""
         self.description   = ""
         self.link          = ""
@@ -138,7 +139,7 @@ class Item(XmlTag):
 
     def to_xml(self):
         xml = StringIO.StringIO()
-        xml.write(self.open_tag)
+        xml.write(self.open_tag())
         xml.write(self.get_common_data_as_xml())
         xml.write(self.get_specific_data_as_xml())
         xml.write(self.close_tag())
@@ -150,6 +151,7 @@ class Item(XmlTag):
 class Channel(Item):
 
     def __init__(self):
+        Item.__init__(self)
         self.tag_name = 'channel'
         self.ttl = 1800
         self.items = []
