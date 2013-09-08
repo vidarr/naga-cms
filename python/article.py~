@@ -1,0 +1,90 @@
+import datetime
+
+class Article:
+
+    def __init__(self):
+        self.timestamp  = datetime.datetime.utcnow().__str__()
+        self.heading    = ''
+        self.summary    = ''
+        self.content    = ''
+        self.categories = []
+
+    def timestamp(self):
+        return self.timestamp
+
+    def timestamp(self, timestamp):
+        old_timestamp = self.timestamp
+        self.timestamp = timestamp
+        return old_timestamp
+
+    def heading(self):
+        return self.heading
+
+    def heading(self, heading):
+        old_heading = self.heading
+        self.heading = heading
+        return old_heading
+
+    def summary(self):
+        return self.summary
+
+    def summary(self, summary):
+        old_summary = self.summary
+        self.summary = summary
+        return old_summary
+
+    
+    def content(self):
+        return self.content
+
+    def content(self, content):
+        old_content = self.content
+        self.content = content
+        return old_content
+
+    def categories(self):
+        return self.categories
+
+    def categories(self, categories):
+        old_categories = self.categories
+        self.categories = categories
+        return old_categories
+
+    def to_xml(self):
+        xml = StringIO.StringIO()
+        xml.write("""
+        <?xml version="1.0" encoding="utf-8"?>
+        <?xml-stylesheet href="../formatting/michael_josef_beer.xslt" type="application/xml"?>
+        <michael.josef.beer.entry>
+        <timestamp>""")
+        xml.write(self.imestamp)
+        xml.write("""
+        </timestamp>
+        <heading>
+        """)
+        xml.write(self.heading)
+        xml.write("""
+        </heading>
+        <summary>
+        """)
+        xml.write(self.summary)
+        xml.write("""
+        </summary>
+        <content>
+        """)
+        xml.write(self.content)
+        xml.write("""
+        </content>
+        <categories>
+        """)
+        for category in self.categories:
+            xml.write("<category>")
+            xml.write(category)
+            xml.write("</category>")
+        xml.write("""
+        </categories>
+        </michael.josef.beer.entry>
+        """)
+        xml.close()
+        return xml.getvalue()
+
