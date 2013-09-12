@@ -1,0 +1,24 @@
+ <!DOCTYPE HTML>
+<html>
+    <head>
+        <title>Michael J. Beer</title>
+        <link rel="stylesheet" href="formatting/post.css"/> 
+    </head>
+<body>
+
+    <h1>Make your post!</h1>
+
+    <form action="./cgi-bin/upload.py">
+        Heading: 
+        <input type="text"     id=input_heading"  name="heading"
+        formmethod="post"/> <br/>
+        Summary: <br/>
+        <input type="text"     id="input_summary" name="summary" formmethod="post"/> <br/>
+        <input type="checkbox" name="contentexists"
+        value="contentexists"/>Content</input> <br/>
+        Content: <br/>
+        <input type="text"     id="input_content" name="content" formmethod="post"/> <br/>
+        <input type="submit" value="Submit">
+    </form>
+</body>
+</html> 

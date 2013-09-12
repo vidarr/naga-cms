@@ -6,43 +6,44 @@ import io
 import os
 import sys
 
-PAGE_ROOT   = os.path.join(os.path.dirname(os.path.abspath(__file__))) + '/..'
+ABS_PAGE_ROOT   = os.path.join(os.path.dirname(os.path.abspath(__file__))) + '/..'
 MODULE_DIR  = 'python'
-sys.path.append(PAGE_ROOT + '/' + MODULE_DIR);
-import naga_config
+sys.path.append(ABS_PAGE_ROOT + '/' + MODULE_DIR);
+from naga_config import *
 import article
 import rss
+import logger
 
-def post_news(heading, summary, content):
-    write_content(heading, summary, content, [])
+def get_new_channel():
     rss_channel = rss.Channel()
     rss_channel.set_title("Michael J. Beer")
     rss_channel.set_description("My Test")
     rss_channel.set_link("localhost/seite")
-    rss_object = rss.Rss(PAGE_ROOT + '/../' + naga_config.RSS_FEED_PATH)
-    rss_object.add_channel(rss_channel)
+    return rss_channel
+
+def write_rss(heading, summary, content, categories):
     rss_item = rss.Item()
     rss_item.set_title(heading)
     rss_item.set_description(summary)
     rss_item.set_link("localhost/seite")
-    rss_channel.add_item(rss_item)
+    rss_object = rss.Rss(ABS_PAGE_ROOT + '/..' + RSS_FEED_PATH)
+    channel = rss_object.get_channels()
+    if len(channel) < 1:
+        channel = get_new_channel()
+        rss_object.add_channel(channel)
+    else:
+        channel = channel[0]
+    channel.add_item(rss_item)
     rss_object.to_file()
-    page=StringIO.StringIO()
-    page.write("""
-    <!DOCTYPE html>
-    <html>
-    <head>
-    </head>
-    <body>""")
-    page.write(rss_object.to_xml())
-    page.write("""
-    </body>
-    </html>
-    """)
-    ret_page = page.getvalue()
-    page.close()
-    return ret_page
-
+    rss_object = rss.Rss(ABS_PAGE_ROOT + PATH_SEPARATOR + '..' + RSS_ROLLING_FEED_PATH)
+    channel = rss_object.get_channels()
+    if len(channel) < 1:
+        channel = get_new_channel()
+    else:
+        channel = channel[0]
+    channel.set_max_items(RSS_ROLLING_ENTRIES)
+    channel.add_item(rss_item)
+    rss_object.to_file()
 
 def write_content(heading, summary, content,categories):
     xml = article.Article()
@@ -51,13 +52,35 @@ def write_content(heading, summary, content,categories):
     xml.set_content(content)
     xml.set_categories(categories)
     timestamp = xml.get_timestamp()
-    file_name = '/' + PAGE_ROOT + '/' + naga_config.CONTENT_DIR + '/' + timestamp + ".xml"
+    file_name = '/' + ABS_PAGE_ROOT + PATH_SEPARATOR +  \
+         CONTENT_DIR + PATH_SEPARATOR + timestamp + ".xml"
     xml_file=open(file_name, 'w+')
     xml_file.write(xml.to_xml())
     xml_file.close()
+    return xml
 
+def post_news(heading, summary, content):
+    article = write_content(heading, summary, content, [])
+    write_rss(heading, summary, content, [])
+    page=StringIO.StringIO()
+    page.write("""
+    <!DOCTYPE html>
+    <html>
+    <head>
+    </head>
+    <body>""")
+    page.write("Neuer Post hochgeladen:\n")
+    page.write(article.to_xml())
+    page.write("""
+    </body>
+    </html>
+    """)
+    ret_page = page.getvalue()
+    page.close()
+    return ret_page
 
 cgitb.enable()
+logger.Logger.get_logger().log(LOG_INFO, "Request")
 form = cgi.FieldStorage()
 if 'heading' not in form or 'summary' not in form or 'content' not in form:
     print "Error: Called without enough parameters"
