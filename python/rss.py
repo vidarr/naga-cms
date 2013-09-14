@@ -13,52 +13,10 @@ import page
 import nagaUtils
 from logger import log
 
-class XmlTag:
 
-    def __init__(self, tag_name, attributes = {}, content = ""):
-        self.tag_name = tag_name
-        self.attributes = attributes
-        self.content = content
-
-    def open_tag(self):
-        xml = StringIO.StringIO()
-        xml.write('<' + self.tag_name)
-        for attribute in self.attributes.items():
-            xml.write(' ')
-            xml.write(attribute[0])
-            xml.write("='")
-            xml.write(attribute[1])
-            xml.write("'")
-        xml.write('>')
-        xml_string = xml.getvalue()
-        xml.close()
-        return xml_string
-
-    def close_tag(self):
-        return '</' + self.tag_name + '>' + LINEBREAK
-
-    def __str__(self):
-        xml = StringIO.StringIO()
-        xml.write(self.open_tag())
-        xml.write(self.content)
-        xml.write(self.close_tag())
-        xml_string = xml.getvalue()
-        xml.close()
-        return xml_string
-
-    @classmethod
-    def get_node_text(cls, node):
-        for child in node.childNodes:
-            if child.nodeType == child.TEXT_NODE:
-                return child.nodeValue
-        return ""
-
-
-
-class Rss(XmlTag):
+class Rss:
 
     def __init__(self, file_name = ""):
-        XmlTag.__init__(self, 'rss', {'version' : '2.0'}, '')
         self.file_name = file_name
         self.channels  = []
         if file_name != "":
@@ -81,11 +39,12 @@ class Rss(XmlTag):
         log(LOG_DEBUG, "Rss.from_file: Read " + self.file_name)
     
     def from_xml(self, rss_content):
-        if rss_content.documentElement.nodeName != 'rss' or not rss_content.documentElement.hasChildNodes():
+        xml_tree = ET.fromstring(rss_content)
+        if xml_tree.tag != 'rss':
             return None
-        for node in rss_content.documentElement.childNodes:
-            if node.nodeType == node.ELEMENT_NODE:
-                channel = Channel.from_xml(node)
+        for node in xml_tree:
+            if node.tag == 'channel':
+                channel = Channel.from_xml_tree(node)
                 self.add_channel(channel)
 
     def add_channel(self, chan):
@@ -98,16 +57,8 @@ class Rss(XmlTag):
         return self.channels
 
     def to_xml(self):
-        xml = StringIO.StringIO()
-        xml.write('<?xml version="1.0" encoding="UTF-8" ?>')
-        xml.write(LINEBREAK)
-        xml.write(self.open_tag())
-        for chan in self.channels:
-            xml.write(chan.to_xml())
-        xml.write(self.close_tag())
-        xml_string = xml.getvalue()
-        xml.close()
-        return xml_string
+        xml_tree = self.to_xml_tree()
+        return ET.tostring(xml_tree)
 
     def to_file(self):
         if self.file_name == "":
@@ -117,11 +68,15 @@ class Rss(XmlTag):
         rss_file.close()
         log(LOG_DEBUG, "Rss.to_file: Wrote " + self.file_name)
 
+    def to_xml_tree(self):
+        xml_tree = ET.element('rss', {'version' : '2.0'})
+        for chan in self.channels:
+            xml_tree.append(chan.to_xml_tree())
+        
 
-class Item(XmlTag):
+class Item:
 
     def __init__(self):
-        XmlTag.__init__(self, 'item')
         self.title         = ""
         self.description   = ""
         self.link          = ""
@@ -162,66 +117,43 @@ class Item(XmlTag):
             return self.pub_date
         return nagaUtils.get_timestamp_now()
 
-    def get_common_data_as_xml(self):
-        xml = StringIO.StringIO()
-        tag = XmlTag('title', {}, self.title)
-        xml.write(tag)
-        tag = XmlTag('description', {}, self.description)
-        xml.write(tag)
-        tag = XmlTag('link', {}, self.link)
-        xml.write(tag)
-        xml_string = xml.getvalue()
-        xml.close()
-        return xml_string
-
-    def get_specific_data_as_xml(self):
-        xml = StringIO.StringIO()
-        tag = XmlTag('guid', {}, self.get_guid())
-        xml.write(tag)
-        tag = XmlTag('pubDate', {}, self.get_pub_date())
-        xml.write(tag)
-        xml_string = xml.getvalue()
-        xml.close()
-        return xml_string
+    def to_xml_tree(self):
+        xml_tree = ET.Element('item')
+        title    = ET.SubElement(xml_tree, 'title')
+        title.text = self.get_title()
+        desc       = ET.SubElement(xml_tree, 'description')
+        desc.text  = self.get_description()
+        link       = ET.SubElement(xml_tree, 'link')
+        link.text  = self.get_link()
+        guid       = ET.SubElement(xml_tree, 'guid')
+        guid.text  = self.get_guid()
+        pub_date   = ET.SubElement(xml_tree, 'pubDate')
+        pub_date   = self.get_pub_date()
+        return xml_tree
 
     def to_xml(self):
-        xml = StringIO.StringIO()
-        xml.write(self.open_tag())
-        xml.write(self.get_common_data_as_xml())
-        xml.write(self.get_specific_data_as_xml())
-        xml.write(self.close_tag())
-        xml_string = xml.getvalue()
-        xml.close()
-        return xml_string
+        return ET.tostring(self.to_xml_tree())
 
     @classmethod
-    def from_xml(cls, dom):
-        if not dom.nodeName == 'item' or not dom.hasChildNodes():
+    def from_xml_tree(cls, xml_tree):
+        if xml_tree.tag != 'item':
             return None
-        children = dom.childNodes
         item = Item()
-        for child in children:
-            node_value = child.nodeValue if child.nodeValue else "None";
-            log(LOG_DEBUG, "Item.from_xml: " + child.nodeName + " " +
-                    child.nodeType.__str__() + " nodeValue = " + node_value)
-            for c in child.childNodes:
-                node_value = c.nodeValue if c.nodeValue else "None";
-                log(LOG_DEBUG, "Item.from_xml: Sub Node " + c.nodeName + " " +
-                    c.nodeType.__str__() + " nodeValue = " + node_value)
-            if child.nodeType == child.ELEMENT_NODE:
-                if child.nodeName == 'title':
-                    item.set_title(XmlTag.get_node_text(child))
-                elif child.nodeName == 'description':
-                    item.set_description(XmlTag.get_node_text(child))
-                elif child.nodeName == 'link':
-                    item.set_link(XmlTag.get_node_text(child))
-                elif child.nodeName == 'guid':
-                    item.set_guid(XmlTag.get_node_text(child))
-                elif child.nodeName == 'pubDate':
-                    item.set_pub_date(XmlTag.get_node_text(child))
-                else:
-                    log(LOG_WARNING, "Parsing RSS/Item: Unknown tag: " +
-                            child.nodeName)
+        for node in xml_tree:
+            log(LOG_DEBUG, "Item.from_xml_tree: " + ET.tostring(node))
+            if node.tag == 'title':
+                item.set_title(node.text)
+            elif node.tag == 'description':
+                item.set_description(node.text)
+            elif node.tag == 'link':
+                item.set_link(node.text)
+            elif node.tag == 'guid':
+                item.set_guid(node.text)
+            elif node.tag == 'pubDate':
+                item.set_pub_date(node.text)
+            else:
+                log(LOG_WARNING, "Parsing RSS/Item: Unknown tag: " +
+                        node.tag)
         log(LOG_DEBUG, "Got " + item.__str__())
         return item
 
@@ -232,8 +164,6 @@ class Channel(Item):
         self.tag_name        = 'channel'
         self.ttl             = 1800
         self.items           = []
-        log(LOG_DEBUG, "Channel.__init__: Items are " + [" * " + item.__str__() for item
-            in self.items].__str__())
         self.pub_date        = ""
         self.last_build_date = ""
         self.max_items       = max_items
@@ -272,56 +202,46 @@ class Channel(Item):
             while len(self.items) > max_items:
                 self.remove_last_item()
 
-    def get_specific_data_as_xml(self):
-        timestamp = nagaUtils.get_timestamp_now()
-        xml = StringIO.StringIO()
-        tag = XmlTag('lastBuildDate', {}, timestamp)
-        xml.write(tag)
-        tag = XmlTag('pubDate', {}, timestamp)
-        xml.write(tag)
-        tag = XmlTag('ttl', {}, self.ttl)
-        xml.write(tag)
+    def to_xml_tree(self):
+        xml_tree             = ET.Element('channel')
+        title                = ET.SubElement(xml_tree, 'title')
+        title.text           = self.get_title()
+        description          = ET.SubElement(xml_tree, 'description')
+        description.text     = self.get_description()
+        link                 = ET.SubElement(xml_tree, 'link')
+        link.text            = self.get_link()
+        last_build_date      = ET.SubElement(xml_tree, 'lastBuildDate')
+        last_build_date.text = nagaUtils.get_timestamp_now()
+        pub_date             = ET.SubElement(xml_tree, 'pubDate')
+        pub_date.text        = self.get_pub_date()
+        ttl                  = ET.SubElement(xml_tree, 'ttl')
+        ttl.text             = self.get_ttl()
         for item in self.items:
-            log(LOG_DEBUG, "Channel.get_specific_data_as_xml: item " +
-                    item.__str__())
-            xml.write(item.to_xml())
-        xml_string = xml.getvalue()
-        xml.close()
-        return xml_string
+            xml_tree.append(item.to_xml_tree())
+        return xml_tree
 
     @classmethod
-    def from_xml(cls, dom):
-        if not dom.nodeName == 'channel' or not dom.hasChildNodes():
+    def from_xml(cls, xml_tree):
+        if not xml_tree.tag == 'channel':
             return None
-        children = dom.childNodes
         channel = Channel()
-        node_name = None
-        for item in children:
-            node_value = item.nodeValue if item.nodeValue else "None"
-            log(LOG_DEBUG, "Channel.from_xml: " + item.nodeName + " " +
-                    item.nodeType.__str__() + " nodeValue = " + node_value)
-            for c in item.childNodes:
-                node_value = c.nodeValue if c.nodeValue else "None";
-                log(LOG_DEBUG, "Channel.from_xml: Sub Node " + c.nodeName + " " +
-                    c.nodeType.__str__() + " nodeValue = " + node_value)
-            if item.nodeType == item.ELEMENT_NODE:
-                if node_name == 'title':
-                    channel.set_title(XmlTag.get_node_text(item))
-                elif node_name == 'description':
-                    channel.set_description(XmlTag.get_node_text(item))
-                elif node_name == 'link':
-                    channel.set_link(XmlTag.get_node_text(item))
-                elif node_name == 'lastBuildDate':
-                    channel.set_last_build_date(XmlTag.get_node_text(item))
-                elif node_name == 'pubDate':
-                    channel.set_pub_date(XmlTag.get_node_text(item))
-                elif item.nodeName == 'item':
-                    try:
-                        channel.add_item(Item.from_xml(item))
-                    except Exception as ex:
-                        log(LOG_DEBUG, "Channel.from_xml: Exception occured" + ex.__str__())
-                    log(LOG_DEBUG, "Read channel " + channel.__str__()) 
-                else:
-                    node_name = item.nodeName
+        for item in xml_tree:
+            log(LOG_DEBUG, "Channel.from_xml: " + ET.tostring(item))
+            if item.tag == 'title':
+                channel.set_title(item.text)
+            elif item.tag == 'description':
+                channel.set_description(item.text)
+            elif item.tag == 'link':
+                channel.set_link(item.text)
+            elif item.tag == 'lastBuildDate':
+                channel.set_last_build_date(item.text)
+            elif item.tag == 'pubDate':
+                channel.set_pub_date(item.text)
+            elif item.nodeName == 'item':
+                try:
+                    channel.add_item(Item.from_xml_tree(item))
+                except Exception as ex:
+                    log(LOG_DEBUG, "Channel.from_xml: Exception occured" + ex.__str__())
+                log(LOG_DEBUG, "Read channel " + channel.__str__()) 
         return channel
     
