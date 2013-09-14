@@ -35,6 +35,7 @@ class Logger:
 
     @classmethod
     def get_logger(cls):
+        global default_logger
         if default_logger == None:
             default_logger = cls(ABS_PAGE_ROOT + PATH_SEPARATOR + '..' + 
                     PATH_SEPARATOR + '..' + LOG_FILE_PATH, LOG_LEVEL)

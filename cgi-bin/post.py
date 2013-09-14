@@ -15,12 +15,13 @@ import categories
 
 if __name__ == '__main__':
     print "Content-Type: text/html\n\n"
-    print """
- <!DOCTYPE HTML>
+    print '''<!DOCTYPE HTML>
 <html>
     <head>
         <title>Michael J. Beer</title>
-        <link rel="stylesheet" href="formatting/post.css"/> 
+        <link rel="stylesheet" href="'''
+    print CSS_POST_PATH
+    print '''"/> 
     </head>
 <body>
 
@@ -35,13 +36,14 @@ if __name__ == '__main__':
         <input type="checkbox" name="contentexists" value="yes" formmethod="post"/>Content</input> <br/>
         Content: <br/>
         <input type="text"     id="input_content" name="content" formmethod="post"/> <br/>
-        <input type="submit" value="Submit">
-        """
+        <h2>Categories</h2>
+        '''
     for cat in categories.get_categories().get_categories():
         print  '<input type="checkbox" name="' + cat + '" value="yes" formmethod="post"/>' + \
                 cat + '</input> <br/>'
-    print """
+    print '''
+        <input type="submit" value="Submit"><br/>
     </form>
 </body>
-    """
+    '''
 

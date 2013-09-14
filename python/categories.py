@@ -2,21 +2,24 @@
 import StringIO
 import os.path
 import sys
+import string
 
 
-PAGE_ROOT     = os.path.join(os.path.dirname(os.path.abspath(__file__)))
+ABS_PAGE_ROOT     = os.path.join(os.path.dirname(os.path.abspath(__file__)))
 MODULE_DIR  = 'python'
-sys.path.append(PAGE_ROOT + '/../' + MODULE_DIR);
+sys.path.append(ABS_PAGE_ROOT + '/../' + MODULE_DIR);
 from naga_config import *
 from logger import log
 
-categories = None
+global_categories = None
 
 def get_categories():
-    if categories == None:
-        categories = Categories(CATEGORIES_FILE_PATH)
-        categories.from_file()
-    return categories
+    global global_categories
+    if global_categories == None:
+        global_categories = Categories(ABS_PAGE_ROOT + PATH_SEPARATOR + '..'+ \
+                PATH_SEPARATOR + '..' + CATEGORIES_FILE_PATH)
+        global_categories.from_file()
+    return global_categories
 
 class Categories:
 
