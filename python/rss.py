@@ -2,7 +2,7 @@
 import StringIO
 import os.path
 import sys
-import xml.dom.minidom
+import xml.etree.ElementTree as ET
 
 
 PAGE_ROOT     = os.path.join(os.path.dirname(os.path.abspath(__file__)))
@@ -47,11 +47,13 @@ class XmlTag:
         return xml_string
 
     @classmethod
-    def get_text(cls, node):
+    def get_node_text(cls, node):
         for child in node.childNodes:
-            if node.nodeType == node.TEXT_NODE:
-                return node.nodeValue
+            if child.nodeType == child.TEXT_NODE:
+                return child.nodeValue
         return ""
+
+
 
 class Rss(XmlTag):
 
@@ -62,8 +64,8 @@ class Rss(XmlTag):
         if file_name != "":
             try:
                 self.from_file()
-            except:
-                pass
+            except Exception as ex:
+                log(LOG_WARNING, "Rss.__init__: " + ex.__str__())
 
     def from_file(self):
         if self.file_name == "":
@@ -74,6 +76,8 @@ class Rss(XmlTag):
         if rss_content:
             dom = xml.dom.minidom.parseString(rss_content)
             self.from_xml(dom)
+        else:
+            log(LOG_DEBUG, "Rss.from_file: File empty")
         log(LOG_DEBUG, "Rss.from_file: Read " + self.file_name)
     
     def from_xml(self, rss_content):
@@ -197,19 +201,24 @@ class Item(XmlTag):
         children = dom.childNodes
         item = Item()
         for child in children:
+            node_value = child.nodeValue if child.nodeValue else "None";
             log(LOG_DEBUG, "Item.from_xml: " + child.nodeName + " " +
-                    child.nodeType.__str__())
+                    child.nodeType.__str__() + " nodeValue = " + node_value)
+            for c in child.childNodes:
+                node_value = c.nodeValue if c.nodeValue else "None";
+                log(LOG_DEBUG, "Item.from_xml: Sub Node " + c.nodeName + " " +
+                    c.nodeType.__str__() + " nodeValue = " + node_value)
             if child.nodeType == child.ELEMENT_NODE:
                 if child.nodeName == 'title':
-                    item.set_title(XmlTag.get_text(child))
+                    item.set_title(XmlTag.get_node_text(child))
                 elif child.nodeName == 'description':
-                    item.set_description(XmlTag.get_text(child))
+                    item.set_description(XmlTag.get_node_text(child))
                 elif child.nodeName == 'link':
-                    item.set_link(XmlTag.get_text(child))
+                    item.set_link(XmlTag.get_node_text(child))
                 elif child.nodeName == 'guid':
-                    item.set_guid(XmlTag.get_text(child))
+                    item.set_guid(XmlTag.get_node_text(child))
                 elif child.nodeName == 'pubDate':
-                    item.set_pub_date(XmlTag.get_text(child))
+                    item.set_pub_date(XmlTag.get_node_text(child))
                 else:
                     log(LOG_WARNING, "Parsing RSS/Item: Unknown tag: " +
                             child.nodeName)
@@ -234,6 +243,9 @@ class Channel(Item):
     
     def get_ttl(self):
         return self.ttl
+
+    def set_last_build_date(self, last_build_date):
+        self.last_build_date = last_build_date
 
     def add_item(self, item):
         """ Inserts a new RSS item to this channel """
@@ -283,25 +295,33 @@ class Channel(Item):
             return None
         children = dom.childNodes
         channel = Channel()
+        node_name = None
         for item in children:
+            node_value = item.nodeValue if item.nodeValue else "None"
             log(LOG_DEBUG, "Channel.from_xml: " + item.nodeName + " " +
-                    item.nodeType.__str__())
+                    item.nodeType.__str__() + " nodeValue = " + node_value)
+            for c in item.childNodes:
+                node_value = c.nodeValue if c.nodeValue else "None";
+                log(LOG_DEBUG, "Channel.from_xml: Sub Node " + c.nodeName + " " +
+                    c.nodeType.__str__() + " nodeValue = " + node_value)
             if item.nodeType == item.ELEMENT_NODE:
-                if item.nodeName == 'title':
-                    channel.set_title(XmlTag.get_text(item))
-                elif item.nodeName == 'description':
-                    channel.set_description(XmlTag.get_text(item))
-                elif item.nodeName == 'link':
-                    channel.set_link(XmlTag.get_text(item))
-                elif item.nodeName == 'lastBuildDate':
-                    channel.last_build_date = XmlTag.get_text(item)
-                elif item.nodeName == 'pubDate':
-                    channel.pub_date = XmlTag.get_text(item)
+                if node_name == 'title':
+                    channel.set_title(XmlTag.get_node_text(item))
+                elif node_name == 'description':
+                    channel.set_description(XmlTag.get_node_text(item))
+                elif node_name == 'link':
+                    channel.set_link(XmlTag.get_node_text(item))
+                elif node_name == 'lastBuildDate':
+                    channel.set_last_build_date(XmlTag.get_node_text(item))
+                elif node_name == 'pubDate':
+                    channel.set_pub_date(XmlTag.get_node_text(item))
                 elif item.nodeName == 'item':
                     try:
                         channel.add_item(Item.from_xml(item))
                     except Exception as ex:
                         log(LOG_DEBUG, "Channel.from_xml: Exception occured" + ex.__str__())
                     log(LOG_DEBUG, "Read channel " + channel.__str__()) 
+                else:
+                    node_name = item.nodeName
         return channel
     

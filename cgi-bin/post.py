@@ -27,7 +27,9 @@ if __name__ == '__main__':
 
     <h1>Make your post!</h1>
 
-    <form action="./cgi-bin/upload.py">
+    <form action="'''
+    print  UPLOAD_PATH
+    print '''">
         Heading: 
         <input type="text"     id=input_heading"  name="heading"
         formmethod="post"/> <br/>

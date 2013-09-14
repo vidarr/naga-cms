@@ -4,7 +4,6 @@ import os.path
 import sys
 import string
 
-
 ABS_PAGE_ROOT     = os.path.join(os.path.dirname(os.path.abspath(__file__)))
 MODULE_DIR  = 'python'
 sys.path.append(ABS_PAGE_ROOT + '/../' + MODULE_DIR);
