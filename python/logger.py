@@ -17,6 +17,8 @@ def log(log_level, message):
 
 class Logger:
 
+    '''Very basic logger class - writes log entries to a file'''
+
     def __init__(self, file_name, log_level = LOG_INFO):
         self.file_handle = open(file_name, 'a+')
         self.log_level   = log_level
@@ -34,7 +36,7 @@ class Logger:
     @classmethod
     def get_logger(cls):
         if default_logger == None:
-            return cls(ABS_PAGE_ROOT + PATH_SEPARATOR + '..' + 
+            default_logger = cls(ABS_PAGE_ROOT + PATH_SEPARATOR + '..' + 
                     PATH_SEPARATOR + '..' + LOG_FILE_PATH, LOG_LEVEL)
         return default_logger
 

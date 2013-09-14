@@ -1,3 +1,21 @@
+#!/usr/bin/python
+import cgi
+import cgitb
+import StringIO
+import io
+import os
+import sys
+
+ABS_PAGE_ROOT   = os.path.join(os.path.dirname(os.path.abspath(__file__))) + '/..'
+MODULE_DIR  = 'python'
+sys.path.append(ABS_PAGE_ROOT + '/' + MODULE_DIR);
+from naga_config import *
+from logger import log
+import categories
+
+if __name__ == '__main__':
+    print "Content-Type: text/html\n\n"
+    print """
  <!DOCTYPE HTML>
 <html>
     <head>
@@ -18,6 +36,12 @@
         Content: <br/>
         <input type="text"     id="input_content" name="content" formmethod="post"/> <br/>
         <input type="submit" value="Submit">
+        """
+    for cat in categories.get_categories().get_categories():
+        print  '<input type="checkbox" name="' + cat + '" value="yes" formmethod="post"/>' + \
+                cat + '</input> <br/>'
+    print """
     </form>
 </body>
-</html> 
+    """
+

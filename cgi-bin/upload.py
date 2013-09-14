@@ -12,7 +12,7 @@ sys.path.append(ABS_PAGE_ROOT + '/' + MODULE_DIR);
 from naga_config import *
 import article
 import rss
-import logger
+from logger import log
 
 def get_new_channel():
     rss_channel = rss.Channel()
@@ -26,7 +26,7 @@ def write_rss(heading, summary, content, categories):
     rss_item.set_title(heading)
     rss_item.set_description(summary)
     rss_item.set_link("localhost/seite")
-    rss_object = rss.Rss(ABS_PAGE_ROOT + '/..' + RSS_FEED_PATH)
+    rss_object = rss.Rss(ABS_PAGE_ROOT + PATH_SEPARATOR + '..' + RSS_FEED_PATH)
     channel = rss_object.get_channels()
     if len(channel) < 1:
         channel = get_new_channel()
@@ -39,6 +39,7 @@ def write_rss(heading, summary, content, categories):
     channel = rss_object.get_channels()
     if len(channel) < 1:
         channel = get_new_channel()
+        rss_object.add_channel(channel)
     else:
         channel = channel[0]
     channel.set_max_items(RSS_ROLLING_ENTRIES)
@@ -59,8 +60,11 @@ def write_content(heading, summary, content,categories):
     xml_file.close()
     return xml
 
-def post_news(heading, summary, content):
-    article = write_content(heading, summary, content, [])
+def post_news(heading, summary, content_exists, content):
+    log(LOG_INFO, "New post")
+    if content_exists:
+        log(LOG_INFO, "Posting article")
+        article = write_content(heading, summary, content, [])
     write_rss(heading, summary, content, [])
     page=StringIO.StringIO()
     page.write("""
@@ -70,7 +74,6 @@ def post_news(heading, summary, content):
     </head>
     <body>""")
     page.write("Neuer Post hochgeladen:\n")
-    page.write(article.to_xml())
     page.write("""
     </body>
     </html>
@@ -79,13 +82,15 @@ def post_news(heading, summary, content):
     page.close()
     return ret_page
 
-cgitb.enable()
-logger.Logger.get_logger().log(LOG_INFO, "Request")
-form = cgi.FieldStorage()
-if 'heading' not in form or 'summary' not in form or 'content' not in form:
-    print "Error: Called without enough parameters"
-else:
-    print "Content-Type: text/html\n\n"
-    print post_news(form['heading'].value, form['summary'].value,
-            form['content'].value)
+
+if __name__ == '__main__':
+    cgitb.enable()
+    log(LOG_INFO, "Request")
+    form = cgi.FieldStorage()
+    if 'heading' not in form or 'summary' not in form or 'content' not in form:
+        print "Error: Called without enough parameters"
+    else:
+        print "Content-Type: text/html\n\n"
+        print post_news(form['heading'].value, form['summary'].value,
+        form.getvalue('contentexists'), form['content'].value)
 
