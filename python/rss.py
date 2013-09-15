@@ -69,9 +69,10 @@ class Rss:
         log(LOG_DEBUG, "Rss.to_file: Wrote " + self.file_name)
 
     def to_xml_tree(self):
-        xml_tree = ET.element('rss', {'version' : '2.0'})
+        xml_tree = ET.Element('rss', {'version' : '2.0'})
         for chan in self.channels:
             xml_tree.append(chan.to_xml_tree())
+        return xml_tree
         
 
 class Item:
@@ -133,6 +134,10 @@ class Item:
 
     def to_xml(self):
         return ET.tostring(self.to_xml_tree())
+
+    def __str__(self):
+        return self.to_xml()
+
 
     @classmethod
     def from_xml_tree(cls, xml_tree):
