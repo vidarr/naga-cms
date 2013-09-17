@@ -1,8 +1,10 @@
 #!/usr/bin/python
+import traceback
 import StringIO
 import os.path
 import sys
 import xml.etree.ElementTree as ET
+from collections import deque
 
 
 PAGE_ROOT     = os.path.join(os.path.dirname(os.path.abspath(__file__)))
@@ -14,6 +16,54 @@ import nagaUtils
 from logger import log
 
 
+def item_from_xml_tree(xml_tree):
+   if xml_tree.tag != 'item':
+       raise Exception(xml_tree.__str__())
+   item = Item()
+   for node in xml_tree:
+       log(LOG_DEBUG, "Item.from_xml_tree: " + ET.tostring(node))
+       if node.tag == 'title':
+           item.set_title(node.text)
+       elif node.tag == 'description':
+           item.set_description(node.text)
+       elif node.tag == 'link':
+           item.set_link(node.text)
+       elif node.tag == 'guid':
+           item.set_guid(node.text)
+       elif node.tag == 'pubDate':
+           item.set_pub_date(node.text)
+       else:
+           log(LOG_WARNING, "Parsing RSS/Item: Unknown tag: " +
+                   node.tag)
+   log(LOG_DEBUG, "Got " + item.__str__())
+   return item
+
+
+def channel_from_xml_tree(xml_tree):
+    if not xml_tree.tag == 'channel':
+        raise Exception(xml_tree.__str__())
+    channel = Channel()
+    for item in xml_tree:
+        log(LOG_DEBUG, "Channel.from_xml: " + ET.tostring(item))
+        if item.tag == 'title':
+            channel.set_title(item.text)
+        elif item.tag == 'description':
+            channel.set_description(item.text)
+        elif item.tag == 'link':
+            channel.set_link(item.text)
+        elif item.tag == 'lastBuildDate':
+            channel.set_last_build_date(item.text)
+        elif item.tag == 'pubDate':
+            channel.set_pub_date(item.text)
+        elif item.tag == 'item':
+            try:
+                channel.add_item(item_from_xml_tree(item))
+            except Exception as ex:
+                log(LOG_DEBUG, "Channel.from_xml: Exception occured" + ex.__str__())
+            log(LOG_DEBUG, "Read channel " + channel.__str__()) 
+    return channel
+
+
 class Rss:
 
     def __init__(self, file_name = ""):
@@ -23,7 +73,8 @@ class Rss:
             try:
                 self.from_file()
             except Exception as ex:
-                log(LOG_WARNING, "Rss.__init__: " + ex.__str__())
+                log(LOG_WARNING, "Rss.__init__: " + ex.__str__() + ' ' +
+                        traceback.format_exc(20))
 
     def from_file(self):
         if self.file_name == "":
@@ -32,8 +83,7 @@ class Rss:
         rss_content = rss_file.read()
         rss_file.close()
         if rss_content:
-            dom = xml.dom.minidom.parseString(rss_content)
-            self.from_xml(dom)
+            self.from_xml(rss_content)
         else:
             log(LOG_DEBUG, "Rss.from_file: File empty")
         log(LOG_DEBUG, "Rss.from_file: Read " + self.file_name)
@@ -41,10 +91,10 @@ class Rss:
     def from_xml(self, rss_content):
         xml_tree = ET.fromstring(rss_content)
         if xml_tree.tag != 'rss':
-            return None
+            raise Exception(xml_tree.__str__())
         for node in xml_tree:
             if node.tag == 'channel':
-                channel = Channel.from_xml_tree(node)
+                channel = channel_from_xml_tree(node)
                 self.add_channel(channel)
 
     def add_channel(self, chan):
@@ -119,8 +169,8 @@ class Item:
         return nagaUtils.get_timestamp_now()
 
     def to_xml_tree(self):
-        xml_tree = ET.Element('item')
-        title    = ET.SubElement(xml_tree, 'title')
+        xml_tree   = ET.Element('item')
+        title      = ET.SubElement(xml_tree, 'title')
         title.text = self.get_title()
         desc       = ET.SubElement(xml_tree, 'description')
         desc.text  = self.get_description()
@@ -139,36 +189,13 @@ class Item:
         return self.to_xml()
 
 
-    @classmethod
-    def from_xml_tree(cls, xml_tree):
-        if xml_tree.tag != 'item':
-            return None
-        item = Item()
-        for node in xml_tree:
-            log(LOG_DEBUG, "Item.from_xml_tree: " + ET.tostring(node))
-            if node.tag == 'title':
-                item.set_title(node.text)
-            elif node.tag == 'description':
-                item.set_description(node.text)
-            elif node.tag == 'link':
-                item.set_link(node.text)
-            elif node.tag == 'guid':
-                item.set_guid(node.text)
-            elif node.tag == 'pubDate':
-                item.set_pub_date(node.text)
-            else:
-                log(LOG_WARNING, "Parsing RSS/Item: Unknown tag: " +
-                        node.tag)
-        log(LOG_DEBUG, "Got " + item.__str__())
-        return item
-
 class Channel(Item):
 
     def __init__(self, max_items = 0):
         Item.__init__(self)
         self.tag_name        = 'channel'
-        self.ttl             = 1800
-        self.items           = []
+        self.ttl             = '1800'
+        self.items           = deque()
         self.pub_date        = ""
         self.last_build_date = ""
         self.max_items       = max_items
@@ -196,7 +223,7 @@ class Channel(Item):
         self.items.remove(item)
 
     def remove_last_item(self):
-        self.items.pop()
+        self.items.popleft()
 
     def get_items(self):
         return self.items
@@ -224,29 +251,4 @@ class Channel(Item):
         for item in self.items:
             xml_tree.append(item.to_xml_tree())
         return xml_tree
-
-    @classmethod
-    def from_xml(cls, xml_tree):
-        if not xml_tree.tag == 'channel':
-            return None
-        channel = Channel()
-        for item in xml_tree:
-            log(LOG_DEBUG, "Channel.from_xml: " + ET.tostring(item))
-            if item.tag == 'title':
-                channel.set_title(item.text)
-            elif item.tag == 'description':
-                channel.set_description(item.text)
-            elif item.tag == 'link':
-                channel.set_link(item.text)
-            elif item.tag == 'lastBuildDate':
-                channel.set_last_build_date(item.text)
-            elif item.tag == 'pubDate':
-                channel.set_pub_date(item.text)
-            elif item.nodeName == 'item':
-                try:
-                    channel.add_item(Item.from_xml_tree(item))
-                except Exception as ex:
-                    log(LOG_DEBUG, "Channel.from_xml: Exception occured" + ex.__str__())
-                log(LOG_DEBUG, "Read channel " + channel.__str__()) 
-        return channel
     

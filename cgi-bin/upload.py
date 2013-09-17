@@ -29,6 +29,7 @@ def write_rss(heading, summary, content, categories):
     rss_item.set_link("localhost/seite")
     rss_object = rss.Rss(ABS_PAGE_ROOT + PATH_SEPARATOR + '..' + RSS_FEED_PATH)
     channel = rss_object.get_channels()
+    log(LOG_DEBUG, "upload.write_rss: got channel " + channel.__str__())
     if len(channel) < 1:
         channel = get_new_channel()
         rss_object.add_channel(channel)
