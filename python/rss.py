@@ -4,7 +4,7 @@ import StringIO
 import os.path
 import sys
 import xml.etree.ElementTree as ET
-from collections import deque
+from   collections import deque
 
 
 PAGE_ROOT     = os.path.join(os.path.dirname(os.path.abspath(__file__)))
@@ -60,7 +60,7 @@ def channel_from_xml_tree(xml_tree):
                 channel.add_item(item_from_xml_tree(item))
             except Exception as ex:
                 log(LOG_DEBUG, "Channel.from_xml: Exception occured" + ex.__str__())
-            log(LOG_DEBUG, "Read channel " + channel.__str__()) 
+            log(LOG_DEBUG, "Read channel " + channel.get_title()) 
     return channel
 
 
@@ -217,7 +217,8 @@ class Channel(Item):
             self.remove_last_item()
         self.items.append(item)
         log(LOG_DEBUG, "Channel: Added item " + item.to_xml())
-        log(LOG_DEBUG, "Channel.add_item: Items are now " + [" * " + it.__str__() for it in self.items].__str__())
+        log(LOG_DEBUG, "Channel.add_item: Items are now " + [" * " +
+            it.get_title() for it in self.items].__str__())
 
     def remove_item(self, item):
         self.items.remove(item)

@@ -97,3 +97,14 @@ class Article:
         xml.close()
         return xml_string
 
+    def matches(self, criterion):
+        point     = criterion[0]
+        ref_value = criterion[1]
+        if point ==  'heading':
+            return self.get_heading() == ref_value
+        if point == 'timestamp':
+            return self.get_timestamp() == ref_value
+        if point == 'category':
+            return ref_value in self.get_categories()
+        return False
+
