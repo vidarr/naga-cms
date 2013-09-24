@@ -1,15 +1,14 @@
 #!/usr/bin/python
 import os.path
 import sys
+import logging
 
-PAGE_ROOT     = os.path.join(os.path.dirname(os.path.abspath(__file__)))
-MODULE_DIR  = 'python'
-sys.path.append(PAGE_ROOT + '/../' + MODULE_DIR);
+ABSOLUTE_PAGE_ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)))
+MODULE_DIR         = 'python'
+sys.path.append(ABSOLUTE_PAGE_ROOT + '/../' + MODULE_DIR);
 import article
 from naga_config import *
 import nagaUtils
-from logger import log
-
 
 class Registry:
 
@@ -19,12 +18,13 @@ class Registry:
         self.directory_path = directory_path
         self.file_name      = self.directory_path + os.sep + file_name
         self.from_file()
+        self.logger         = logging.getLogger("Registry")
     
     def from_file(self, file_name = None):
         '''Load registry file'''
         if file_name != None:
             self.file_name = file_name
-        self.articles = []
+        self.articles = {}
         file_object  = open(self.file_name, 'r')
         for line in file_object:
             file_content = line.split(self.SEPARATOR)
@@ -55,11 +55,18 @@ class Registry:
 
     def get(self, key):
         '''Get full article for a given file name'''
-        if key in self.articles:
-            article = self._load_file(key)
-            return self.articles[key]
+        if key in self.articles.keys():
+            return article.article_from_xml(self._load_file(key))
         return None
 
+    def get_xml(self, key):
+        '''
+        Get xml description of article for a given file name
+        '''
+        if key in self.articles.keys():
+            return self._load_file(key)
+        return None
+            
     def remove(self, key):
         '''Remove an article from registry and delete the article file'''
         if key in self.articles.keys():
@@ -75,7 +82,7 @@ class Registry:
         if key in self.articles.keys():
             value = self.articles[key]
         self.articles[key] = article
-        self.__write_file(key)
+        self._write_file(key)
         return value
 
     def find(self, criteria):
@@ -93,7 +100,25 @@ class Registry:
                 found_articles.append(key)
         return found_articles
 
+    def _write_file(self, key):
+        if not key in self.articles:
+            self.logger.debug("Registry._write_file: No article under key " + key)
+            return None
+        article_object = self.articles[key]
+        article_path   = self.directory_path + key
+        file_object    = open(article_path, 'w')
+        file_object.write(article_object.to_xml())
+        file_object.close()
+        self.logger.debug("Registry._write_file: Wrote " + article_path)
+
+    def _load_file(self, key):
+        article_path = self.directory_path + key
+        file_object  = open(article_path, 'r')
+        article_data = file_object.read()
+        file_object.close()
+        return article_data
 
 
 if __name__ == '__main__':
     print "Ok"
+

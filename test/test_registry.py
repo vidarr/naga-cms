@@ -13,6 +13,7 @@ PAGE_ROOT   = os.path.join(os.path.dirname(os.path.abspath(__file__)))
 MODULE_DIR  = 'python'
 sys.path.append(PAGE_ROOT + '/../' + MODULE_DIR);
 import registry
+from article import Article
 #-------------------------------------------------------------------------------
 # Constants
 #-------------------------------------------------------------------------------
@@ -75,6 +76,8 @@ def test_false_article_name(articles_data):
         article_name = random_name()
         get_another_name = False
         for article in articles_data:
+            print "Checking " 
+            print article
             if article[0] == article_name:
                 get_another_name = True
                 break
@@ -89,10 +92,38 @@ def test_all_article_names(articles_data):
     the registry
     article_data is of the form as storeAndRetrieve.article_data
     '''
-    for article in article_data:
+    for article in articles_data:
         if _registry.get(article[0]) == None:
             print 'Did not find ' + article[0]
             return False
+    return true
+
+def test_article_name(article_data):
+    '''
+    Test whether the article described within article_data is contained within
+    the registry
+    '''
+    if _registry.get(article_data[0]) == None:
+        print 'Did not find ' + article_data[0]
+        return False
+    return True
+
+def insert_article(article_data):
+    '''
+    Insert an article into the registry.
+    The article is described by a list containing 
+    [file_name, heading, timestamp, [category1, category2, ...]]
+    '''
+    print article_data
+    if type(article_data) != type([]):
+        print "insert_article: Called with a parameter that is not a list"
+        _logger.error("insert_article: Called with a parameter that is not a list")
+        return False
+    article_object = Article()
+    article_object.set_heading(article_data[1])
+    article_object.set_timestamp(article_data[2])
+    article_object.set_categories(article_data[3])
+    _registry.add(article_data[0], article_object)
     return True
 
 class storeAndRetrieve(unittest.TestCase):
@@ -116,6 +147,10 @@ class storeAndRetrieve(unittest.TestCase):
         for i in range(NO_NEGATIVE_ARTICLE_CHECKS):
             self.assertTrue(test_false_article_name(self.article_data))
         _logger.debug("Registry seems to be empty")
+        for article_info in self.article_data:
+            self.assertTrue(insert_article(article_info))
+            self.assertTrue(test_false_article_name(self.article_data))
+            self.assertTrue(test_article_name(article_info))
 
 
 if __name__ == '__main__':

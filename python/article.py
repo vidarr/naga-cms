@@ -2,12 +2,55 @@ import datetime
 import StringIO
 import os.path
 import sys
+import xml.etree.ElementTree as ET
 
 PAGE_ROOT   = os.path.join(os.path.dirname(os.path.abspath(__file__)))
 MODULE_DIR  = 'python'
 sys.path.append(PAGE_ROOT + '/../' + MODULE_DIR);
 import nagaUtils
+#------------------------------------------------------------------------------
+TAG_ARTICLE_ROOT = 'michael.josef.beer.article'
+TAG_HEADING      = 'heading'
+TAG_SUMMARY      = 'summary'
+TAG_CONTENT      = 'content'
+TAG_CATEGORIES   = 'categories'
+TAG_CATEGORY     = 'category'
+TAG_TIMESTAMP    = 'timestamp'
+#------------------------------------------------------------------------------
+def article_from_xml(article_xml):
+    '''
+    Create article from XML description
+    '''
 
+    def parse_categories(categories_node):
+        new_categories = []
+        for node in categories_node:
+            if node.tag == TAG_CATEGORY:
+                new_categories.append(node.text)
+        return new_categories
+
+    def parse_article_root(root_node):
+        new_article = Article()
+        for node in root_node:
+            if node.tag == TAG_HEADING:
+                article.set_heading(node.text)
+            if node.tag == TAG_SUMMARY:
+                article.set_summary(node.text)
+            if node.tag == TAG_CONTENT:
+                article.set_content(node.text)
+            if node.tag == TAG_TIMESTAMP:
+                article.set_timestamp(node.text)
+            if node.tag == TAG_CATEGORIES:
+                new_categories = parse_categories(node)
+                article.set_categories(new_categories)
+        return new_article
+    
+    xml_tree = ET.fromstring(article_xml)
+    for node in xml_tree:
+        if node.tag == TAG_ARTICLE_ROOT:
+            return parse_article_root(node)
+    return None
+    
 class Article:
 
     def __init__(self):
@@ -59,43 +102,20 @@ class Article:
         return old_categories
 
     def to_xml(self):
-        xml = StringIO.StringIO()
-        xml.write("""
-        <?xml version="1.0" encoding="utf-8"?>
-        <?xml-stylesheet href="../formatting/michael_josef_beer.xslt" type="application/xml"?>
-        <michael.josef.beer.entry>
-        <timestamp>""")
-        xml.write(self.timestamp)
-        xml.write("""
-        </timestamp>
-        <heading>
-        """)
-        xml.write(self.heading)
-        xml.write("""
-        </heading>
-        <summary>
-        """)
-        xml.write(self.summary)
-        xml.write("""
-        </summary>
-        <content>
-        """)
-        xml.write(self.content)
-        xml.write("""
-        </content>
-        <categories>
-        """)
+        xml_tree           = ET.Element(TAG_ARTICLE_ROOT)
+        xml_timestamp      = ET.SubElement(xml_tree, TAG_TIMESTAMP)
+        xml_timestamp.text = self.timestamp
+        xml_heading        = ET.SubElement(xml_tree, TAG_HEADING)
+        xml_heading.text   = self.heading
+        xml_summary        = ET.SubElement(xml_tree, TAG_SUMMARY)
+        xml_summary.text   = self.summary
+        xml_content        = ET.SubElement(xml_tree, TAG_CONTENT)
+        xml_content.text   = self.content
+        xml_categories     = ET.SubElement(xml_tree, TAG_CATEGORIES)
         for category in self.categories:
-            xml.write("<category>")
-            xml.write(category)
-            xml.write("</category>")
-        xml.write("""
-        </categories>
-        </michael.josef.beer.entry>
-        """)
-        xml_string = xml.getvalue()
-        xml.close()
-        return xml_string
+            xml_category   = ET.SubElement(xml_categories, TAG_CATEGORY)
+            xml_category.text = category
+        return ET.tostring(xml_tree)
 
     def matches(self, criterion):
         point     = criterion[0]

@@ -8,11 +8,11 @@ LOG_INFO               = 2
 LOG_DEBUG              = 3
 
 LINEBREAK              = "\n"
-PATH_SEPARATOR         = '/'
+PATH_SEPARATOR         = os.sep
 CFG_LIST_SEPARATOR     = ','
 
 # Actual configuration
-PAGE_ROOT              = '/seite'
+PAGE_ROOT              = PATH_SEPARATOR + 'naga'
 LOG_LEVEL              = LOG_DEBUG
 LOG_DIR                = 'log'
 LOG_FILE_PATH          = PAGE_ROOT + PATH_SEPARATOR + LOG_DIR + PATH_SEPARATOR + 'naga.log'
@@ -29,4 +29,5 @@ CATEGORIES_FILE_PATH   = PAGE_ROOT + PATH_SEPARATOR + ETC_DIR        + PATH_SEPA
 CSS_POST_PATH          = PAGE_ROOT + PATH_SEPARATOR + FORMATTING_DIR + PATH_SEPARATOR + 'post.css'
 UPLOAD_PATH            = PAGE_ROOT + PATH_SEPARATOR + CGI_DIR        + PATH_SEPARATOR + 'upload.py'
 REGISTRY_PATH          = PAGE_ROOT + PATH_SEPARATOR + CONTENT_DIR    + PATH_SEPARATOR 
+CONTENT_PATH           = PAGE_ROOT + PATH_SEPARATOR + CONTENT_DIR    + PATH_SEPARATOR
 
