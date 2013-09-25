@@ -126,6 +126,18 @@ def insert_article(article_data):
     _registry.add(article_data[0], article_object)
     return True
 
+def test_category(article_data, category):
+    articles = _registry.find([['category', category]])
+    if not type(articles) == type([]):
+        _logger.debug("test_categor: Got something that is no list")
+        return None
+    for article_id in articles:
+        article_object = _registry.get(article_id)
+        if not category in article_object.get_categories():
+            return False
+    return True
+
+
 class storeAndRetrieve(unittest.TestCase):
     '''Test simple storage of some articles within_registry as well as their recovery from th_registry'''
 
@@ -152,8 +164,12 @@ class storeAndRetrieve(unittest.TestCase):
             self.assertTrue(test_false_article_name(self.article_data))
             self.assertTrue(test_article_name(article_info))
 
+    def test_find(self):
+        for category in self.categories:
+            self.assertTrue(test_category(self.article_data, category))
 
 if __name__ == '__main__':
+    logging.basicConfig(filename='test_registry.log',level=logging.DEBUG)
     unittest.main()
     dispose_registry()
 

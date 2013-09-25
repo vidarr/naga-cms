@@ -3,6 +3,7 @@ import StringIO
 import os.path
 import sys
 import xml.etree.ElementTree as ET
+import logging
 
 PAGE_ROOT   = os.path.join(os.path.dirname(os.path.abspath(__file__)))
 MODULE_DIR  = 'python'
@@ -17,40 +18,46 @@ TAG_CATEGORIES   = 'categories'
 TAG_CATEGORY     = 'category'
 TAG_TIMESTAMP    = 'timestamp'
 #------------------------------------------------------------------------------
+_logger = logging.getLogger('article')
+#------------------------------------------------------------------------------
 def article_from_xml(article_xml):
     '''
     Create article from XML description
     '''
 
     def parse_categories(categories_node):
+        _logger.debug("parse_categories: Got node "  + categories_node.tag)
         new_categories = []
         for node in categories_node:
+            _logger.debug("parse_categories: Got node "  + node.tag)
             if node.tag == TAG_CATEGORY:
                 new_categories.append(node.text)
         return new_categories
 
     def parse_article_root(root_node):
+        _logger.debug("parse_article_root: Got node "  + root_node.tag)
         new_article = Article()
         for node in root_node:
+            _logger.debug("parse_article_root: Got node "  + node.tag)
             if node.tag == TAG_HEADING:
-                article.set_heading(node.text)
+                new_article.set_heading(node.text)
             if node.tag == TAG_SUMMARY:
-                article.set_summary(node.text)
+                new_article.set_summary(node.text)
             if node.tag == TAG_CONTENT:
-                article.set_content(node.text)
+                new_article.set_content(node.text)
             if node.tag == TAG_TIMESTAMP:
-                article.set_timestamp(node.text)
+                new_article.set_timestamp(node.text)
             if node.tag == TAG_CATEGORIES:
                 new_categories = parse_categories(node)
-                article.set_categories(new_categories)
+                new_article.set_categories(new_categories)
+        _logger.debug("Loaded ")
+        _logger.debug(new_article.to_xml())
         return new_article
     
+    _logger.debug("article_from_xml: Got " + article_xml)
     xml_tree = ET.fromstring(article_xml)
-    for node in xml_tree:
-        if node.tag == TAG_ARTICLE_ROOT:
-            return parse_article_root(node)
-    return None
-    
+    return parse_article_root(xml_tree)
+#------------------------------------------------------------------------------    
 class Article:
 
     def __init__(self):

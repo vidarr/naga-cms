@@ -55,6 +55,8 @@ class Registry:
 
     def get(self, key):
         '''Get full article for a given file name'''
+        self.logger.debug("get: About to get " + key)
+        self.logger.debug(self.articles.keys())
         if key in self.articles.keys():
             return article.article_from_xml(self._load_file(key))
         return None
@@ -79,9 +81,13 @@ class Registry:
     def add(self, key, article):
         '''Add new article to registry and save the article to file name'''
         value = None
+        self.logger.debug("add: About to add " + key)
+        self.logger.debug(self.articles.keys())
         if key in self.articles.keys():
             value = self.articles[key]
         self.articles[key] = article
+        self.logger.debug("add: Added " + key)
+        self.logger.debug(self.articles.keys())
         self._write_file(key)
         return value
 
@@ -105,17 +111,18 @@ class Registry:
             self.logger.debug("Registry._write_file: No article under key " + key)
             return None
         article_object = self.articles[key]
-        article_path   = self.directory_path + key
+        article_path   = self.directory_path + PATH_SEPARATOR + key
         file_object    = open(article_path, 'w')
         file_object.write(article_object.to_xml())
         file_object.close()
         self.logger.debug("Registry._write_file: Wrote " + article_path)
 
     def _load_file(self, key):
-        article_path = self.directory_path + key
+        article_path = self.directory_path + PATH_SEPARATOR + key
         file_object  = open(article_path, 'r')
         article_data = file_object.read()
         file_object.close()
+        self.logger.debug("Registry._load_file: Loaded " + article_path)
         return article_data
 
 
