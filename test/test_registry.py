@@ -20,6 +20,7 @@ from article import Article
 NUMBER_OF_CATEGORIES       = 10
 MAX_NO_ARTICLES            = 10
 NO_NEGATIVE_ARTICLE_CHECKS = 10
+NO_CATEGORY_CHECKS         = 10
 #-------------------------------------------------------------------------------
 # Global variables
 #-------------------------------------------------------------------------------
@@ -126,15 +127,26 @@ def insert_article(article_data):
     _registry.add(article_data[0], article_object)
     return True
 
-def test_category(article_data, category):
-    articles = _registry.find([['category', category]])
+def test_category(article_data, our_categories):
+    _logger.debug("Checking for categories:" + " ".join(our_categories))
+    criteria = []
+    for category in our_categories:
+        criteria.append(['category', category])
+    articles = _registry.find(criteria)
     if not type(articles) == type([]):
         _logger.debug("test_categor: Got something that is no list")
         return None
-    for article_id in articles:
-        article_object = _registry.get(article_id)
-        if not category in article_object.get_categories():
-            return False
+    for article_id in _registry.get_article_keys():
+        for category in our_categories:
+            article_object = _registry.get(article_id)
+            if article_id in articles:
+                if not category in article_object.get_categories():
+                    _logger.error(article_id + " has been found but has not category " + category)
+                    return False
+            else:
+                if category in article_object.get_categories():
+                    _logger.error(article_id + " has notbeen found but has category " + category)
+                    return False
     return True
 
 
@@ -145,9 +157,9 @@ class storeAndRetrieve(unittest.TestCase):
         init_registry()
         self.article_data   = []
         random.seed()
-        self.categories     = [random_string(random.randint(0, 40)) for i in range(NUMBER_OF_CATEGORIES)]
+        self.categories     = [random_string(random.randint(1, 40)) for i in range(NUMBER_OF_CATEGORIES)]
         _logger.debug('Created categories: ' + '   '.join(self.categories))
-        no_articles         = random.randint(0, MAX_NO_ARTICLES)
+        no_articles         = random.randint(1, MAX_NO_ARTICLES)
         _logger.debug('Creating ' + str(no_articles) + ' articles')
         self.article_data   = [[random_name(), random_heading(),
             random_timestamp(), 
@@ -158,15 +170,24 @@ class storeAndRetrieve(unittest.TestCase):
         _logger.debug(self.article_data)
         for i in range(NO_NEGATIVE_ARTICLE_CHECKS):
             self.assertTrue(test_false_article_name(self.article_data))
-        _logger.debug("Registry seems to be empty")
+        _logger.debug("test_insert: Registry seems to be empty")
         for article_info in self.article_data:
             self.assertTrue(insert_article(article_info))
             self.assertTrue(test_false_article_name(self.article_data))
             self.assertTrue(test_article_name(article_info))
 
     def test_find(self):
+        self.assertTrue(test_category(self.article_data, []))
+        _logger.debug("test_find: Providing no categories fine")
         for category in self.categories:
-            self.assertTrue(test_category(self.article_data, category))
+            self.assertTrue(test_category(self.article_data, [category]))
+        _logger.debug("test_find: Providing one category fine")
+        for i in range(NO_CATEGORY_CHECKS):
+            categories_to_find = random.sample(self.categories,
+                    random.randint(1, len(self.categories) - 1))
+            self.assertTrue(test_category(self.article_data, categories_to_find))
+            _logger.debug("test_find: Testing categories " + ' '.join(categories_to_find) + " fine")
+
 
 if __name__ == '__main__':
     logging.basicConfig(filename='test_registry.log',level=logging.DEBUG)

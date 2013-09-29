@@ -53,6 +53,9 @@ class Registry:
                 file_object.write(category)
         file_object.close()
 
+    def get_article_keys(self):
+        return self.articles.keys()
+
     def get(self, key):
         '''Get full article for a given file name'''
         self.logger.debug("get: About to get " + key)
