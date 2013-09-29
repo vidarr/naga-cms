@@ -3,15 +3,15 @@ import StringIO
 import os.path
 import sys
 import string
-
+import logging
+#------------------------------------------------------------------------------    
 ABS_PAGE_ROOT     = os.path.join(os.path.dirname(os.path.abspath(__file__)))
 MODULE_DIR  = 'python'
 sys.path.append(ABS_PAGE_ROOT + '/../' + MODULE_DIR);
 from naga_config import *
-from logger import log
-
+#------------------------------------------------------------------------------
 global_categories = None
-
+#------------------------------------------------------------------------------
 def get_categories():
     global global_categories
     if global_categories == None:
@@ -19,12 +19,13 @@ def get_categories():
                 PATH_SEPARATOR + '..' + CATEGORIES_FILE_PATH)
         global_categories.from_file()
     return global_categories
-
+#------------------------------------------------------------------------------
 class Categories:
 
     def __init__(self, file_name):
         self.file_name  = file_name
         self.categories = []
+        self.logger     = logging.getLogger("Categories")
 
     def from_file(self, file_name = None):
         if not file_name:
@@ -35,11 +36,11 @@ class Categories:
         if categories_string:
             self.categories = string.split(categories_string,
                     CFG_LIST_SEPARATOR)
-            log(LOG_DEBUG, "Categories.from_file: Read in " +
+            self.logger.debug("Categories.from_file: Read in " +
                     len(self.categories).__str__() + " categories")
         else:
             self.categories = []
-            log(LOG_DEBUG, "Categories.from_file: " + file_name + " empty")
+            self.logger.debug("Categories.from_file: " + file_name + " empty")
 
     def to_file(self, file_name = None):
         if not file_name:

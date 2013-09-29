@@ -4,7 +4,7 @@ import os.path
 import sys
 import xml.etree.ElementTree as ET
 import logging
-
+#------------------------------------------------------------------------------
 PAGE_ROOT   = os.path.join(os.path.dirname(os.path.abspath(__file__)))
 MODULE_DIR  = 'python'
 sys.path.append(PAGE_ROOT + '/../' + MODULE_DIR);
@@ -59,56 +59,59 @@ def article_from_xml(article_xml):
     return parse_article_root(xml_tree)
 #------------------------------------------------------------------------------    
 class Article:
-
+    #---------------------------------------------------------------------------
     def __init__(self):
         self.timestamp  = nagaUtils.get_timestamp_now()
         self.heading    = ''
         self.summary    = ''
         self.content    = ''
         self.categories = []
-
+    #---------------------------------------------------------------------------
     def get_timestamp(self):
         return self.timestamp
-
+    #---------------------------------------------------------------------------
     def set_timestamp(self, timestamp):
         old_timestamp = self.timestamp
         self.timestamp = timestamp
         return old_timestamp
-
+    #---------------------------------------------------------------------------
     def get_heading(self):
         return self.heading
-
+    #---------------------------------------------------------------------------
     def set_heading(self, heading):
         old_heading = self.heading
         self.heading = heading
         return old_heading
-
+    #---------------------------------------------------------------------------
     def get_summary(self):
         return self.summary
-
+    #---------------------------------------------------------------------------
     def set_summary(self, summary):
         old_summary = self.summary
         self.summary = summary
         return old_summary
-
+    #---------------------------------------------------------------------------
     
     def get_content(self):
         return self.content
-
+    #---------------------------------------------------------------------------
     def set_content(self, content):
         old_content = self.content
         self.content = content
         return old_content
-
+    #---------------------------------------------------------------------------
     def get_categories(self):
         return self.categories
-
+    #---------------------------------------------------------------------------
     def set_categories(self, categories):
         old_categories = self.categories
         self.categories = categories
         return old_categories
-
-    def to_xml(self):
+    #---------------------------------------------------------------------------
+    def _to_xml_tree_short(self):
+        '''
+        Generate short article description as xml tree
+        '''
         xml_tree           = ET.Element(TAG_ARTICLE_ROOT)
         xml_timestamp      = ET.SubElement(xml_tree, TAG_TIMESTAMP)
         xml_timestamp.text = self.timestamp
@@ -116,6 +119,14 @@ class Article:
         xml_heading.text   = self.heading
         xml_summary        = ET.SubElement(xml_tree, TAG_SUMMARY)
         xml_summary.text   = self.summary
+        return xml_tree
+    #---------------------------------------------------------------------------
+    def to_xml(self):
+        '''
+        Generate long article description as xml (including actual content and
+        categories)
+        '''
+        xml_tree           = self._to_xml_tree_short()
         xml_content        = ET.SubElement(xml_tree, TAG_CONTENT)
         xml_content.text   = self.content
         xml_categories     = ET.SubElement(xml_tree, TAG_CATEGORIES)
@@ -123,7 +134,14 @@ class Article:
             xml_category   = ET.SubElement(xml_categories, TAG_CATEGORY)
             xml_category.text = category
         return ET.tostring(xml_tree)
-
+    #---------------------------------------------------------------------------
+    def to_xml_short(self):
+        '''
+        Return short article description as xml (excluding actual content and
+        categories)
+        '''
+        return ET.tostring(self._to_xml_tree_short())
+    #---------------------------------------------------------------------------
     def matches(self, criterion):
         point     = criterion[0]
         ref_value = criterion[1]

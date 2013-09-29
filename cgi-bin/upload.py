@@ -13,7 +13,9 @@ sys.path.append(ABS_PAGE_ROOT + '/' + MODULE_DIR);
 from naga_config import *
 import article
 import rss
-from logger import log
+import registry
+
+_logger = logging.getLogger("upload")
 
 def get_new_channel():
     rss_channel = rss.Channel()
@@ -29,7 +31,7 @@ def write_rss(heading, summary, content, categories):
     rss_item.set_link("localhost/seite")
     rss_object = rss.Rss(ABS_PAGE_ROOT + PATH_SEPARATOR + '..' + RSS_FEED_PATH)
     channel = rss_object.get_channels()
-    log(LOG_DEBUG, "upload.write_rss: got channel " + channel.__str__())
+    _logger.debug( "upload.write_rss: got channel " + channel.__str__())
     if len(channel) < 1:
         channel = get_new_channel()
         rss_object.add_channel(channel)
@@ -49,25 +51,24 @@ def write_rss(heading, summary, content, categories):
     rss_object.to_file()
 
 def write_content(heading, summary, content,categories):
-    xml = article.Article()
-    xml.set_heading(heading)
-    xml.set_summary(summary)
-    xml.set_content(content)
-    xml.set_categories(categories)
-    timestamp = xml.get_timestamp()
-    file_name = '/' + ABS_PAGE_ROOT + PATH_SEPARATOR +  \
-         CONTENT_DIR + PATH_SEPARATOR + timestamp + ".xml"
-    xml_file=open(file_name, 'w+')
-    xml_file.write(xml.to_xml())
-    xml_file.close()
-    return xml
+    article_object = article.Article()
+    article_object.set_heading(heading)
+    article_object.set_summary(summary)
+    article_object.set_content(content)
+    article_object.set_categories(categories)
+    timestamp = article_object.get_timestamp()
+    file_name = timestamp + ".xml"
+    registry_object = registry.Registry()
+    registry_object.add(file_name, article_object)
+    registry_object.save()
+    return article_object
 
-def post_news(heading, summary, content_exists, content):
-    log(LOG_INFO, "New post")
+def post_news(heading, summary, content_exists, content, categories):
+    _logger.info("New post")
     if content_exists:
-        log(LOG_INFO, "Posting article")
-        article = write_content(heading, summary, content, [])
-    write_rss(heading, summary, content, [])
+        _logger.info("Posting article")
+        article = write_content(heading, summary, content, categories)
+    write_rss(heading, summary, content, categories)
     page=StringIO.StringIO()
     page.write("""
     <!DOCTYPE html>
@@ -87,12 +88,19 @@ def post_news(heading, summary, content_exists, content):
 
 if __name__ == '__main__':
     cgitb.enable()
-    log(LOG_INFO, "Request")
+    _logger.info("Request")
     form = cgi.FieldStorage()
     if 'heading' not in form or 'summary' not in form or 'content' not in form:
-        print "Error: Called without enough parameters"
+        _logger.error("Error: Called without enough parameters")
     else:
+        categories = []
+        for key_value in form.keys():
+            _logger.debug(key_value)
+            key_parts = key_value.split('.')
+            if len(key_parts) == 2 and key_parts[0] == 'category':
+                _logger.debug(form[key_value].value)
+                categories.append(key_parts[1])
         print "Content-Type: text/html\n\n"
         print post_news(form['heading'].value, form['summary'].value,
-        form.getvalue('contentexists'), form['content'].value)
+        form.getvalue('contentexists'), form['content'].value, categories)
 

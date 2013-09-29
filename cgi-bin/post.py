@@ -5,13 +5,15 @@ import StringIO
 import io
 import os
 import sys
+import logging
 
 ABS_PAGE_ROOT   = os.path.join(os.path.dirname(os.path.abspath(__file__))) + '/..'
 MODULE_DIR  = 'python'
 sys.path.append(ABS_PAGE_ROOT + '/' + MODULE_DIR);
 from naga_config import *
-from logger import log
 import categories
+
+_logger = logging.getLogger()
 
 if __name__ == '__main__':
     print "Content-Type: text/html\n\n"
@@ -41,7 +43,7 @@ if __name__ == '__main__':
         <h2>Categories</h2>
         '''
     for cat in categories.get_categories().get_categories():
-        print  '<input type="checkbox" name="' + cat + '" value="yes" formmethod="post"/>' + \
+        print  '<input type="checkbox" name="category.' + cat + '" value="yes" formmethod="post"/>' + \
                 cat + '</input> <br/>'
     print '''
         <input type="submit" value="Submit"><br/>
