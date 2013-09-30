@@ -46,6 +46,8 @@ class Registry:
             article_object.set_timestamp(timestamp)
             if len(file_content) > 3:
                 categories = file_content[3].split(self.CATEGORIES_SEPARATOR)
+                self.logger.debug("from_file: Got categories: " +
+                        str(categories))
                 article_object.set_categories(categories)
             self.articles[key] = article_object
         file_object.close()
@@ -67,7 +69,7 @@ class Registry:
             else:
                 cat_string = self.CATEGORIES_SEPARATOR.join(categories)
             file_object.write(cat_string)
-            file_object.write("\n")
+            file_object.write('\n')
         file_object.close()
     #--------------------------------------------------------------------------
     def get_article_keys(self):
@@ -115,14 +117,16 @@ class Registry:
         '''Return all file names that match articles satisfying the given criteria'''
         found_articles = self.articles.keys()
         for criterion in criteria:
+            self.logger.debug("find: " + str(criterion))
             found_articles = self._match(found_articles, criterion)
         return found_articles
     #--------------------------------------------------------------------------
     def _match(self, articles, criterion):
         found_articles = []
+        self.logger.debug(criterion)
         for key in articles:
             article = self.articles[key]
-            if article.matches(article, criterion) == True:
+            if article.matches(criterion) == True:
                 found_articles.append(key)
         return found_articles
     #--------------------------------------------------------------------------

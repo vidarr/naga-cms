@@ -66,6 +66,7 @@ class Article:
         self.summary    = ''
         self.content    = ''
         self.categories = []
+        self.logger     = logging.getLogger('Article')
     #---------------------------------------------------------------------------
     def get_timestamp(self):
         return self.timestamp
@@ -145,11 +146,15 @@ class Article:
     def matches(self, criterion):
         point     = criterion[0]
         ref_value = criterion[1]
+        self.logger.debug("matches: point = " + point + " ref_value = " +
+                ref_value)
         if point ==  'heading':
             return self.get_heading() == ref_value
         if point == 'timestamp':
             return self.get_timestamp() == ref_value
         if point == 'category':
+            self.logger.debug("matches: " + ref_value + " in " +
+                    str(self.get_categories()))
             return ref_value in self.get_categories()
         return False
 

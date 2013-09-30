@@ -20,7 +20,8 @@ if __name__ == '__main__':
     form = cgi.FieldStorage()
     criteria = []
     if 'category' in form:
-        criteria = ['category', form['category']]
+        criteria = ['category', form['category'].value]
+    criteria = [criteria]
     article_registry = registry.Registry()
     found_articles = article_registry.find(criteria)
     if len(found_articles) < 1:
