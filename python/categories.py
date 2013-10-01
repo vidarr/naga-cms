@@ -34,7 +34,7 @@ class Categories:
         categories_string = file_object.read()
         file_object.close()
         if categories_string:
-            self.categories = string.split(categories_string,
+            self.categories = string.split(categories_string.rstrip(),
                     CFG_LIST_SEPARATOR)
             self.logger.debug("Categories.from_file: Read in " +
                     len(self.categories).__str__() + " categories")

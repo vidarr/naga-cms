@@ -35,6 +35,7 @@ class Registry:
         self.articles = {}
         file_object  = open(self.file_name, 'r')
         for line in file_object:
+            line = line.rstrip()
             file_content = line.split(self.SEPARATOR)
             if len(file_content) < 3:
                 self.logger.error("Registry.from_file: " + self.file_name +
