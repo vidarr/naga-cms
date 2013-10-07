@@ -20,6 +20,15 @@ function get_from_page(value) {
     return request.responseText;
 }
 
+function show_content (key) {
+    content = get_from_page(key);
+    var elements = document.getElementsByTagName("article");
+    console.log(elements);
+    var article_element = elements[0];
+    console.log(article_element.innerHTML);
+    article_element.innerHTML = content;
+}
+
 function fill_navbar() {
     categories = get_from_page("categories");
     var elements = document.getElementsByTagName("nav");
@@ -27,14 +36,15 @@ function fill_navbar() {
     var nav_element = elements[0];
     console.log(nav_element.innerHTML);
     nav_element.innerHTML =
-        "<item>Categories" +
+        "<ul><li onclick='show_content(\"all_news\")'>All News</li>" +
+        "<li>Categories" +
         categories         +
-        "</item>";
+        "</li></ul>";
 }
 
-    
 function initialize() {
     init_config();
     fill_navbar();
+    show_content("recent_news");
 }
 

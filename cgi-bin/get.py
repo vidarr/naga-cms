@@ -28,10 +28,29 @@ def wrap_items(items):
     else:
         wrapped_items = ''
     return wrapped_items
-
-
+#------------------------------------------------------------------------------
+def get_categories():
+    return wrap_items(categories.get_categories().get_categories())
+#------------------------------------------------------------------------------
+def get_file_content(file_name):
+    _logger.debug("Trying to open " + file_name)
+    file_object = open(file_name)
+    content     = file_object.read()
+    file_object.close()
+    return content
+#------------------------------------------------------------------------------
+def get_recent_news():
+    return get_file_content(ABSOLUTE_PAGE_ROOT + PATH_SEPARATOR + '..' + \
+            PATH_SEPARATOR + '..' + RSS_ROLLING_FEED_PATH)
+#------------------------------------------------------------------------------
+def get_news():
+    return get_file_content(ABSOLUTE_PAGE_ROOT + PATH_SEPARATOR + '..' + \
+            PATH_SEPARATOR + '..' + RSS_FEED_PATH)
+#------------------------------------------------------------------------------
 item_getter = {
-        'categories' : categories.get_categories().get_categories
+        'categories'   : get_categories   ,
+        'recent_news' : get_recent_news  ,
+        'all_news'     : get_news
         }
 #------------------------------------------------------------------------------
 # MAIN
@@ -46,8 +65,8 @@ if __name__ == '__main__':
             content = 'invalid argument'
         else:
             getter_func = item_getter[form['value'].value]
-            content     = wrap_items(getter_func())
-    print "Content-Type: text/html\n\n"
+            content     = getter_func()
+    print "Content-Type: text/xml\n\n"
     print content
 
 
