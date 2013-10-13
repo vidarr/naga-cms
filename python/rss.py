@@ -1,6 +1,5 @@
 #!/usr/bin/python
 import traceback
-import StringIO
 import os.path
 import sys
 import xml.etree.ElementTree as ET

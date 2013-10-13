@@ -1,0 +1,25 @@
+nav,article,footer {
+    border: 1px solid gray;
+}
+
+nav {
+    float:left; 
+    width:30%;
+}
+
+article {
+    /* float:right; */
+    width:69%;
+}
+
+footer {
+    text-align       : justify;
+}
+
+.alignLeft {
+    float : left;
+}
+
+.alignRight {
+    float : right;
+}

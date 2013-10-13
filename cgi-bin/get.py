@@ -12,7 +12,7 @@ from naga_config import *
 import categories
 #------------------------------------------------------------------------------
 _logger         = logging.getLogger('get.py')
-ITEM_TAG        = 'item'
+ITEM_TAG        = 'li'
 _item_open_tag  = '<'  + ITEM_TAG + '>'
 _item_close_tag = '</' + ITEM_TAG + '>'
 #------------------------------------------------------------------------------
