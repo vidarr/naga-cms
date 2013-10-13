@@ -78,6 +78,7 @@ class Page:
         html.write('''"></link>
         </head>
         <body>
+            <div class="main_container">
             <nav>''')
         html.write(self._create_navbar())
         html.write('''
@@ -86,6 +87,7 @@ class Page:
         html.write(self.content)
         html.write('''
                 </article>
+                </div>
                 <footer>
                 <p class="alignLeft">Powered by 
                 <a href="https://ubeer.org">naga</a></p>
