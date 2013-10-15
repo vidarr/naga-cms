@@ -46,8 +46,11 @@ def show_news(content):
     rss = Rss(file_name)
     _logger.info(rss)
     _logger.info(_page)
-    _page.set_content(rss.to_xml())
+    _page.set_content(rss.to_html())
     finish_page()
+#------------------------------------------------------------------------------
+def show_article(content):
+    _logger.info('show_article: Requested ' + content)
 #------------------------------------------------------------------------------
 _content_types = {
         'error' : show_error,

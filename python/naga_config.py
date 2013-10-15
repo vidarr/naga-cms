@@ -10,6 +10,7 @@ CFG_LIST_SEPARATOR     = ','
 #------------------------------------------------------------------------------
 # Actual configuration
 #------------------------------------------------------------------------------
+NAGA_ROOT              = 'http://localhost/naga'
 PAGE_TITLE             = "Michael J. Beer"
 COPYRIGHT              = '&copy;2013 <a href="mailto:michael@ubeer.org">Michael J. Beer</a>'
 PAGE_ROOT              = PATH_SEPARATOR + 'naga'
@@ -30,6 +31,7 @@ CATEGORIES_FILE_PATH   = PAGE_ROOT + PATH_SEPARATOR + ETC_DIR        + PATH_SEPA
 CSS_PATH               = PAGE_ROOT + PATH_SEPARATOR + FORMATTING_DIR + PATH_SEPARATOR + 'general.css'
 CSS_POST_PATH          = PAGE_ROOT + PATH_SEPARATOR + FORMATTING_DIR + PATH_SEPARATOR + 'post.css'
 UPLOAD_PATH            = PAGE_ROOT + PATH_SEPARATOR + CGI_DIR        + PATH_SEPARATOR + 'upload.py'
+SHOW_RELATIVE_PATH     = CGI_DIR   + PATH_SEPARATOR + 'show.py'
 REGISTRY_PATH          = PAGE_ROOT + PATH_SEPARATOR + CONTENT_DIR 
 CONTENT_PATH           = PAGE_ROOT + PATH_SEPARATOR + CONTENT_DIR 
 #------------------------------------------------------------------------------

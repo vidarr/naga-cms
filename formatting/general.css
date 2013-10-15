@@ -1,21 +1,25 @@
-nav,article,footer {
-    border: 1px solid gray;
+body    { 
+    margin:auto;                   
 }
 
-nav {
-    float:left; 
-    width:30%;
+article { 
+    margin-top         : 1em;
+    border-left-style  : solid;
+    float              : left; 
+    width              : 65%; 
 }
 
-article {
-    float : right;
-    width:69%;
+nav     { 
+    float              : left; 
+    width              : 24%; 
 }
 
 footer {
-    text-align       : justify;
+    border-top-style   : solid; 
+    clear              : both;
+    text-align         : justify;
 }
-
+ 
 .alignLeft {
     float : left;
 }
@@ -23,4 +27,15 @@ footer {
 .alignRight {
     float : right;
 }
+
+p.rss_timestamp {
+    float       : right;
+    font-size   : 0.8em;
+    font-family : Monospace;
+}
+
+.description {
+    clear : both;
+}
+
 

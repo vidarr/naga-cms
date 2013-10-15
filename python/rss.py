@@ -5,6 +5,7 @@ import sys
 import xml.etree.ElementTree as ET
 from   collections import deque
 import logging
+import StringIO
 #------------------------------------------------------------------------------    
 PAGE_ROOT     = os.path.join(os.path.dirname(os.path.abspath(__file__)))
 MODULE_DIR  = 'python'
@@ -108,6 +109,14 @@ class Rss:
         xml_tree = self.to_xml_tree()
         return ET.tostring(xml_tree)
     #-------------------------------------------------------------------------- 
+    def to_html(self):
+        html = StringIO.StringIO()
+        for channel in self.channels:
+            html.write(channel.to_html())
+        html_string = html.getvalue()
+        html.close()
+        return html_string
+    #-------------------------------------------------------------------------- 
     def to_file(self):
         if self.file_name == "":
             raise IOError("File name not set")
@@ -180,6 +189,24 @@ class Item:
         pub_date   = self.get_pub_date()
         return xml_tree
     #-------------------------------------------------------------------------- 
+    def to_html(self):
+        html = StringIO.StringIO()
+        html.write('<div class="rss_item"><p class="alignLeft">')
+        html.write('<a href="')
+        html.write(self.get_link())
+        html.write('">')
+        html.write(self.get_title())
+        html.write('</a></p>')
+        html.write('<p class="rss_timestamp">')
+        html.write(self.get_pub_date())
+        html.write('</p>')
+        html.write('<p class="description">')
+        html.write(self.get_description())
+        html.write('</p></div>')
+        html_string = html.getvalue()
+        html.close()
+        return html_string
+    #-------------------------------------------------------------------------- 
     def to_xml(self):
         return ET.tostring(self.to_xml_tree())
     #-------------------------------------------------------------------------- 
@@ -232,6 +259,14 @@ class Channel(Item):
         if max_items > 0:
             while len(self.items) > max_items:
                 self.remove_last_item()
+    #-------------------------------------------------------------------------- 
+    def to_html(self):
+        html = StringIO.StringIO()
+        for item in self.items:
+            html.write(item.to_html())
+        html_string = html.getvalue()
+        html.close()
+        return html_string
     #-------------------------------------------------------------------------- 
     def to_xml_tree(self):
         xml_tree             = ET.Element('channel')

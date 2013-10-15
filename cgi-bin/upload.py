@@ -6,7 +6,9 @@ import io
 import os
 import sys
 import string
-
+import hashlib
+import base64
+#------------------------------------------------------------------------------
 ABS_PAGE_ROOT   = os.path.join(os.path.dirname(os.path.abspath(__file__))) + '/..'
 MODULE_DIR  = 'python'
 sys.path.append(ABS_PAGE_ROOT + '/' + MODULE_DIR);
@@ -14,21 +16,27 @@ from naga_config import *
 import article
 import rss
 import registry
-
-_logger = logging.getLogger("upload")
-
+#------------------------------------------------------------------------------
+_logger    = logging.getLogger("upload")
+_hash_func = hashlib.sha256()
+#------------------------------------------------------------------------------
 def get_new_channel():
     rss_channel = rss.Channel()
     rss_channel.set_title("Michael J. Beer")
     rss_channel.set_description("My Test")
     rss_channel.set_link("localhost/seite")
     return rss_channel
-
-def write_rss(heading, summary, content, categories):
+#------------------------------------------------------------------------------
+def write_rss(heading, summary, content, categories, file_name):
     rss_item = rss.Item()
     rss_item.set_title(heading)
     rss_item.set_description(summary)
-    rss_item.set_link("localhost/seite")
+    link = NAGA_ROOT + PATH_SEPARATOR + SHOW_RELATIVE_PATH + '?' + \
+            'type=article&content=' + file_name
+    rss_item.set_link(link)
+    _logger.debug("Set link to " + rss_item.get_link())
+    _logger.debug("NAGA_ROOT " + NAGA_ROOT)
+    _logger.debug("SHOW_RELATIVE_PATH " + SHOW_RELATIVE_PATH)
     rss_object = rss.Rss(ABS_PAGE_ROOT + PATH_SEPARATOR + '..' + RSS_FEED_PATH)
     channel = rss_object.get_channels()
     _logger.debug( "upload.write_rss: got channel " + channel.__str__())
@@ -49,26 +57,32 @@ def write_rss(heading, summary, content, categories):
     channel.set_max_items(RSS_ROLLING_ENTRIES)
     channel.add_item(rss_item)
     rss_object.to_file()
-
-def write_content(heading, summary, content,categories):
+#------------------------------------------------------------------------------
+def write_content(heading, summary, content,categories, file_name):
     article_object = article.Article()
     article_object.set_heading(heading)
     article_object.set_summary(summary)
     article_object.set_content(content)
     article_object.set_categories(categories)
-    timestamp = article_object.get_timestamp()
-    file_name = timestamp + ".xml"
     registry_object = registry.Registry()
     registry_object.add(file_name, article_object)
     registry_object.save()
     return article_object
-
+#------------------------------------------------------------------------------
 def post_news(heading, summary, content_exists, content, categories):
     _logger.info("New post")
+    if content:
+        _hash_func.update(content)
+    if summary:
+        _hash_func.update(summary)
+    file_name = _hash_func.digest()
+    file_name = base64.b32encode(file_name)
+    file_name = file_name + ".xml"
     if content_exists:
         _logger.info("Posting article")
-        article = write_content(heading, summary, content, categories)
-    write_rss(heading, summary, content, categories)
+        article = write_content(heading   , summary, content, 
+                                categories, file_name)
+    write_rss(heading, summary, content, categories, file_name)
     page=StringIO.StringIO()
     page.write("""
     <!DOCTYPE html>
@@ -84,8 +98,7 @@ def post_news(heading, summary, content_exists, content, categories):
     ret_page = page.getvalue()
     page.close()
     return ret_page
-
-
+#------------------------------------------------------------------------------
 if __name__ == '__main__':
     cgitb.enable()
     _logger.info("Request")
