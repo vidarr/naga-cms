@@ -9,7 +9,7 @@ sys.path.append(ABSOLUTE_PAGE_ROOT + '/../' + MODULE_DIR);
 import article
 from naga_config import *
 import nagaUtils
-
+#------------------------------------------------------------------------------
 class Registry:
     #--------------------------------------------------------------------------
     def __init__(self, directory_path = ABSOLUTE_PAGE_ROOT + 

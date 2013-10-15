@@ -38,4 +38,18 @@ p.rss_timestamp {
     clear : both;
 }
 
+p.article_timestamp {
+    font-size   : 0.8em;
+    font-family : Monospace;
+    text-align  : justify;
+}
 
+p.article_heading {
+    font-weight : bold;
+    font-size   : 1.2em;
+    text_align  : justify;
+}
+
+p.article_summary {
+    font-style  : italic;
+}

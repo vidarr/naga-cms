@@ -143,6 +143,24 @@ class Article:
         '''
         return ET.tostring(self._to_xml_tree_short())
     #---------------------------------------------------------------------------
+    def to_html(self):
+        '''
+        Return article description as html
+        '''
+        html = StringIO.StringIO()
+        html.write('<p class="article_heading">')
+        html.write(self.get_heading())
+        html.write('</p><p class="article_timestamp">')
+        html.write(self.get_timestamp())
+        html.write('</p><p class="article_summary">')
+        html.write(self.get_summary())
+        html.write('</p><p class="article_content">')
+        html.write(self.get_content())
+        html.write('</p>')
+        html_string = html.getvalue()
+        html.close()
+        return html_string
+    #---------------------------------------------------------------------------
     def matches(self, criterion):
         point     = criterion[0]
         ref_value = criterion[1]

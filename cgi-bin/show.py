@@ -13,6 +13,7 @@ from naga_config import *
 from security    import sanitize_string
 from page        import Page
 from rss         import Rss
+import registry
 #------------------------------------------------------------------------------
 _logger            = logging.getLogger('show.py')
 _page              = Page()
@@ -51,10 +52,19 @@ def show_news(content):
 #------------------------------------------------------------------------------
 def show_article(content):
     _logger.info('show_article: Requested ' + content)
+    file_name = ABSOLUTE_PAGE_ROOT + PATH_SEPARATOR + '..' + CONTENT_DIR + \
+            PATH_SEPARATOR + content
+    article_registry = registry.Registry()
+    if not content in article_registry.get_article_keys():
+        show_error(content + " not found")
+    article_object = article_registry.get(content)
+    _page.set_content(article_object.to_html())
+    finish_page()
 #------------------------------------------------------------------------------
 _content_types = {
-        'error' : show_error,
-        'news'   : show_news
+        'error'   : show_error,
+        'news'    : show_news,
+        'article' : show_article
         }
 #------------------------------------------------------------------------------
 # MAIN
@@ -71,6 +81,6 @@ if __name__ == '__main__':
     if not 'content' in form:
         show_error('Invalid argument given to show.py')
     content = form['content'].value
-    content = sanitize_string(content)
+    #    content = sanitize_string(content)
     content_handler(content)
 
