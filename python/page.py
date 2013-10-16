@@ -37,7 +37,9 @@ class Page:
         html.write('''
             <ul>
             <li>
-            <a href="http://localhost/naga/cgi-bin/show.py?type=news&content=latest">Home</a></li>
+            <a href="''')
+        html.write(CGI_SHOW_PATH)
+        html.write('''?type=news&content=latest">Home</a></li>
             <li>Projekte</li>
             <li>Blog</li>
             <ul>''')
