@@ -4,6 +4,7 @@ body    {
 
 article { 
     margin-top         : 1em;
+    padding-left       : 1em;
     border-left-style  : solid;
     float              : left; 
     width              : 65%; 
