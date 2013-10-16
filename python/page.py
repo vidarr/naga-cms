@@ -7,6 +7,7 @@ MODULE_DIR  = 'python'
 sys.path.append(PAGE_ROOT + '/../' + MODULE_DIR);
 from naga_config import *
 import categories
+import statics
 #------------------------------------------------------------------------------
 class Page:
     def __init__(self, config = {}):
@@ -40,8 +41,7 @@ class Page:
             <a href="''')
         html.write(CGI_SHOW_PATH)
         html.write('''?type=news&content=latest">Home</a></li>
-            <li>Projekte</li>
-            <li>Blog</li>
+            <li>Articles</li>
             <ul>''')
         for category in self._categories:
             html.write('<li><a href="')
@@ -51,9 +51,14 @@ class Page:
             html.write('">')
             html.write(category)
             html.write('</a></li>')
-        html.write('''</ul>
-        <li>Kontakt</li>
-        <li><a href="''')
+        html.write('''</ul>''')
+        statics_object = statics.Statics()
+        for static_entry in statics_object.get_statics():
+            html.write(''.join(['<li><a href="', CGI_SHOW_PATH,
+                               '?type=static&content=',
+                               static_entry, '">',
+                               static_entry, '</a></li>']))
+        html.write('<li><a href="')
         html.write(RSS_FEED_PATH)
         html.write('''">
                 <img src="''')

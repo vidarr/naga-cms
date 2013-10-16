@@ -200,7 +200,7 @@ class Item:
         html.write('<p class="rss_timestamp">')
         html.write(self.get_pub_date())
         html.write('</p>')
-        html.write('<p class="description">')
+        html.write('<p class="rss_description">')
         html.write(self.get_description())
         html.write('</p></div>')
         html_string = html.getvalue()

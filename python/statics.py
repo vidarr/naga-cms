@@ -38,4 +38,7 @@ class Statics:
             self._logger.warn("No content found for " + static_key)
             return None
         return self._content[static_key]
+    #--------------------------------------------------------------------------
+    def get_statics(self):
+        return self._content.keys()
 

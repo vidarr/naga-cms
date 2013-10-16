@@ -34,7 +34,8 @@ p.rss_timestamp {
     font-family : Monospace;
 }
 
-.description {
+p.rss_description {
+    font-style  : italic;
     clear : both;
 }
 
