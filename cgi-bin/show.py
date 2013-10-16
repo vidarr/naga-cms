@@ -5,6 +5,7 @@ import logging
 import cgi
 import cgitb
 import StringIO
+import urllib
 #------------------------------------------------------------------------------
 ABSOLUTE_PAGE_ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)))
 ABSOLUTE_PAGE_ROOT = ABSOLUTE_PAGE_ROOT + '/..'
@@ -15,6 +16,7 @@ from security    import sanitize_string
 from page        import Page
 from rss         import Rss
 import registry
+import statics
 #------------------------------------------------------------------------------
 _logger            = logging.getLogger('show.py')
 _page              = Page()
@@ -85,14 +87,29 @@ def show_category(content):
         _page.set_content(html_string)
     finish_page()
 #------------------------------------------------------------------------------
+def show_url(content):
+    if not content:
+        show_error("No content given")
+    remote_file = urllib.urlopen(content)
+    remote_data = remote_file.readlines()
+    remote_file.close()
+    _page.set_content(''.join(remote_data))
+    finish_page()
+#------------------------------------------------------------------------------
 def show_static(content):
-    pass
+    if not content:
+        show_error("show_static: No static key given")
+    static_object = statics.Statics()
+    url           = static_object.get(content)
+    show_url(url)
 #------------------------------------------------------------------------------
 _content_types = {
         'error'    : show_error,
         'news'     : show_news,
         'article'  : show_article,
-        'category' : show_category
+        'category' : show_category,
+        'static'   : show_static,
+        'url'      : show_url
         }
 #------------------------------------------------------------------------------
 # MAIN

@@ -20,6 +20,7 @@ FORMATTING_DIR         = 'formatting'
 IMAGE_DIR              = 'images'
 ETC_DIR                = 'etc'
 CGI_DIR                = 'cgi-bin'
+STATIC_DIR             = 'static'
 CGI_PATH               = PAGE_ROOT + PATH_SEPARATOR + CGI_DIR
 CGI_SHOW_PATH          = CGI_PATH  + PATH_SEPARATOR + 'show.py'
 LOG_FILE_PATH          = PAGE_ROOT + PATH_SEPARATOR + LOG_DIR        + PATH_SEPARATOR + 'naga.log'
@@ -34,6 +35,8 @@ UPLOAD_PATH            = PAGE_ROOT + PATH_SEPARATOR + CGI_DIR        + PATH_SEPA
 SHOW_RELATIVE_PATH     = CGI_DIR   + PATH_SEPARATOR + 'show.py'
 REGISTRY_PATH          = PAGE_ROOT + PATH_SEPARATOR + CONTENT_DIR 
 CONTENT_PATH           = PAGE_ROOT + PATH_SEPARATOR + CONTENT_DIR 
+STATIC_PATH            = PAGE_ROOT + PATH_SEPARATOR + STATIC_DIR
+STATIC_FILE_PATH       = PAGE_ROOT + PATH_SEPARATOR + ETC_DIR        + PATH_SEPARATOR + 'static'
 #------------------------------------------------------------------------------
 # Logger configuration
 #------------------------------------------------------------------------------
