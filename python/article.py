@@ -161,6 +161,20 @@ class Article:
         html.close()
         return html_string
     #---------------------------------------------------------------------------
+    def to_html_short(self):
+        '''
+        Return article short description as html
+        '''
+        html = StringIO.StringIO()
+        html.write('<p class="article_short_heading">')
+        html.write(self.get_heading())
+        html.write('</p><p class="article_short_timestamp">')
+        html.write(self.get_timestamp())
+        html.write('</p>')
+        html_string = html.getvalue()
+        html.close()
+        return html_string
+    #---------------------------------------------------------------------------
     def matches(self, criterion):
         point     = criterion[0]
         ref_value = criterion[1]

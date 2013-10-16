@@ -4,6 +4,7 @@ import sys
 import logging
 import cgi
 import cgitb
+import StringIO
 #------------------------------------------------------------------------------
 ABSOLUTE_PAGE_ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)))
 ABSOLUTE_PAGE_ROOT = ABSOLUTE_PAGE_ROOT + '/..'
@@ -52,8 +53,6 @@ def show_news(content):
 #------------------------------------------------------------------------------
 def show_article(content):
     _logger.info('show_article: Requested ' + content)
-    file_name = ABSOLUTE_PAGE_ROOT + PATH_SEPARATOR + '..' + CONTENT_DIR + \
-            PATH_SEPARATOR + content
     article_registry = registry.Registry()
     if not content in article_registry.get_article_keys():
         show_error(content + " not found")
@@ -61,10 +60,39 @@ def show_article(content):
     _page.set_content(article_object.to_html())
     finish_page()
 #------------------------------------------------------------------------------
+def show_category(content):
+    if not content:
+        show_error("No category to show given")
+    _logger.info('show_category: Requested ' + content)
+    criteria = [['category', content]]
+    article_registry = registry.Registry()
+    articles = article_registry.find(criteria)
+    if len(articles) < 1:
+        _page.set_content("<p>No articles found</p>")
+    else:
+        html = StringIO.StringIO()
+        for article_key in articles:
+            article = article_registry.get(article_key)
+            html.write('<a href=')
+            html.write(NAGA_ROOT + PATH_SEPARATOR + SHOW_RELATIVE_PATH)
+            html.write('?type=article&content=')
+            html.write(article_key)
+            html.write('">')
+            html.write(article.to_html_short())
+            html.write('</a>')
+        html_string = html.getvalue()
+        html.close()
+        _page.set_content(html_string)
+    finish_page()
+#------------------------------------------------------------------------------
+def show_static(content):
+    pass
+#------------------------------------------------------------------------------
 _content_types = {
-        'error'   : show_error,
-        'news'    : show_news,
-        'article' : show_article
+        'error'    : show_error,
+        'news'     : show_news,
+        'article'  : show_article,
+        'category' : show_category
         }
 #------------------------------------------------------------------------------
 # MAIN
