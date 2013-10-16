@@ -73,7 +73,7 @@ def show_category(content):
         html = StringIO.StringIO()
         for article_key in articles:
             article = article_registry.get(article_key)
-            html.write('<a href=')
+            html.write('<a href="')
             html.write(NAGA_ROOT + PATH_SEPARATOR + SHOW_RELATIVE_PATH)
             html.write('?type=article&content=')
             html.write(article_key)
