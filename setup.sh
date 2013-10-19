@@ -9,7 +9,7 @@ NON_OPERATIONAL="test TODO"
 FILES_TO_SET_WRITABLE="log content"
 
 function ensure_cfg_params_set () {
-    if [ -z $APACHE_USER || -z $APACHE_GROUP ]; then
+    if [ -z $APACHE_USER -o -z $APACHE_GROUP ]; then
         echo "Please open ./setup.cfg and activate APACHE_USER and APACHE_CONFIG
         with appropriate values"
         exit
