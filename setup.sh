@@ -1,9 +1,20 @@
 #!/bin/bash 
 
+source ./setup.cfg
+
 ETC_DIR=etc
 DIRECTORIES_TO_CREATE="log content"
 DUMMY_CFG_FILES="categories static"
 NON_OPERATIONAL="test TODO"
+FILES_TO_SET_WRITABLE="log content"
+
+function ensure_cfg_params_set () {
+    if [ -z $APACHE_USER || -z $APACHE_GROUP ]; then
+        echo "Please open ./setup.cfg and activate APACHE_USER and APACHE_CONFIG
+        with appropriate values"
+        exit
+    fi
+}
 
 function remove_non_operational () {
     for NON_OPS in $NON_OPERATIONAL_ITEMS; do
@@ -25,11 +36,21 @@ function create_directories () {
     done
 }
 
+function set_permissions () {
+    chown $APACHE_USER:$APACHE_GROUP * -R
+    chmod 500 * -R
+    for FILE in $FILES_TO_SET_WRITABLE; do
+        chmod 700  $FILE
+    done
+}
 
 
+
+ensure_cfg_params_set
 remove_non_operational
 create_dummy_cfg_files
 create_directories
+set_permissions
 
 echo "Remember to set in python/naga_config.py:"
 echo "   NAGA_ROOT"

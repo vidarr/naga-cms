@@ -78,7 +78,11 @@ class Rss:
     def from_file(self):
         if self.file_name == "":
             raise IOError("File name not set")
-        rss_file = open(self.file_name, "r")
+        try:
+            rss_file = open(self.file_name, "r")
+        except IOError:
+            self.logger.info("Rss.from_file: File does not exist")
+            return 
         rss_content = rss_file.read()
         rss_file.close()
         if rss_content:
