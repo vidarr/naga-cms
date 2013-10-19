@@ -37,7 +37,7 @@ def write_rss(heading, summary, content, categories, file_name):
     _logger.debug("Set link to " + rss_item.get_link())
     _logger.debug("NAGA_ROOT " + NAGA_ROOT)
     _logger.debug("SHOW_RELATIVE_PATH " + SHOW_RELATIVE_PATH)
-    rss_object = rss.Rss(ABS_PAGE_ROOT + PATH_SEPARATOR + '..' + RSS_FEED_PATH)
+    rss_object = rss.Rss(NAGA_ABS_ROOT + PATH_SEPARATOR + RSS_FEED_PATH)
     channel = rss_object.get_channels()
     _logger.debug( "upload.write_rss: got channel " + channel.__str__())
     if len(channel) < 1:
@@ -47,7 +47,7 @@ def write_rss(heading, summary, content, categories, file_name):
         channel = channel[0]
     channel.add_item(rss_item)
     rss_object.to_file()
-    rss_object = rss.Rss(ABS_PAGE_ROOT + PATH_SEPARATOR + '..' + RSS_ROLLING_FEED_PATH)
+    rss_object = rss.Rss(NAGA_ABS_ROOT + PATH_SEPARATOR + RSS_ROLLING_FEED_PATH)
     channel = rss_object.get_channels()
     if len(channel) < 1:
         channel = get_new_channel()

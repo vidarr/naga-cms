@@ -11,7 +11,7 @@ CFG_LIST_SEPARATOR     = ','
 # Actual configuration
 #------------------------------------------------------------------------------
 NAGA_ROOT              = 'http://localhost/naga'
-NAGA_ABS_ROOT          = '/var/www/'
+NAGA_ABS_ROOT          = '/var/www'
 PAGE_TITLE             = "Michael J. Beer"
 COPYRIGHT              = '&copy;2013 <a href="mailto:michael@ubeer.org">Michael J. Beer</a>'
 PAGE_ROOT              = PATH_SEPARATOR + 'naga'

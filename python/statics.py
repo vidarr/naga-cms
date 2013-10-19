@@ -10,8 +10,8 @@ from naga_config import *
 class Statics:
 
     def __init__(self, root_path = NAGA_ROOT, 
-                       cfg_file_name = ABS_PAGE_ROOT + PATH_SEPARATOR + '..'+ \
-                       PATH_SEPARATOR + '..' +  STATIC_FILE_PATH):
+                       cfg_file_name = NAGA_ABS_ROOT + PATH_SEPARATOR  +  \
+                               STATIC_FILE_PATH):
         self._logger  = logging.getLogger('Statics')
         self._content = {}
         try:

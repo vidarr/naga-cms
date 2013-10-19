@@ -1,9 +1,9 @@
 #!/bin/bash 
 
 ETC_DIR=etc
-LOG_DIR=log
+DIRECTORIES_TO_CREATE="log content"
 DUMMY_CFG_FILES="categories static"
-NO_OPERATIONAL="test TODO"
+NON_OPERATIONAL="test TODO"
 
 function remove_non_operational () {
     for NON_OPS in $NON_OPERATIONAL_ITEMS; do
@@ -19,18 +19,21 @@ function create_dummy_cfg_files () {
     done
 }
 
-function create_log_directory () {
-    mkdir $LOG_DIR
+function create_directories () {
+    for DIRECTORY in $DIRECTORIES_TO_CREATE; do
+        mkdir $DIRECTORY;
+    done
 }
 
 
 
 remove_non_operational
 create_dummy_cfg_files
-create_log_directory
+create_directories
 
 echo "Remember to set in python/naga_config.py:"
 echo "   NAGA_ROOT"
+echo "   NAGA_ABS_ROOT"
 echo "   COPYRIGHT"
 
 

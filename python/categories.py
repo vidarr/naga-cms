@@ -15,8 +15,8 @@ global_categories = None
 def get_categories():
     global global_categories
     if global_categories == None:
-        global_categories = Categories(ABS_PAGE_ROOT + PATH_SEPARATOR + '..'+ \
-                PATH_SEPARATOR + '..' + CATEGORIES_FILE_PATH)
+        global_categories = Categories(NAGA_ABS_ROOT + PATH_SEPARATOR + \
+                CATEGORIES_FILE_PATH)
         global_categories.from_file()
     return global_categories
 #------------------------------------------------------------------------------

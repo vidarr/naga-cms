@@ -12,9 +12,8 @@ import nagaUtils
 #------------------------------------------------------------------------------
 class Registry:
     #--------------------------------------------------------------------------
-    def __init__(self, directory_path = ABSOLUTE_PAGE_ROOT + 
-            PATH_SEPARATOR + '..' + PATH_SEPARATOR + '..' +  
-            REGISTRY_PATH, file_name = 'registry.csv' ):
+    def __init__(self, directory_path = NAGA_ABS_ROOT + \
+                 PATH_SEPARATOR + REGISTRY_PATH, file_name = 'registry.csv' ):
         self.articles       = []
         self.SEPARATOR      = ';'
         self.CATEGORIES_SEPARATOR = '|'

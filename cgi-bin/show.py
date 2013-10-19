@@ -42,9 +42,9 @@ def show_error(message):
 def show_news(content):
     _logger.info("show_rss: Requested " + content)
     if content == 'all':
-        file_name = ABSOLUTE_PAGE_ROOT + PATH_SEPARATOR + '..' + PATH_SEPARATOR +RSS_ROLLING_FEED_PATH
+        file_name = NAGA_ABS_ROOT + PATH_SEPARATOR +RSS_ROLLING_FEED_PATH
     elif content == 'latest':
-        file_name = ABSOLUTE_PAGE_ROOT + PATH_SEPARATOR + '..' + PATH_SEPARATOR + RSS_FEED_PATH
+        file_name = NAGA_ABS_ROOT + PATH_SEPARATOR + RSS_FEED_PATH
     else:
         show_error("Wrong rss info requested")
     rss = Rss(file_name)
