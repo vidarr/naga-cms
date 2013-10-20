@@ -37,6 +37,7 @@ def show_error(message):
 ''' + message + '''
 </p>''')
     finish_page()
+    sys.exit(1)
 #------------------------------------------------------------------------------
 def show_news(content):
     _logger.info("show_rss: Requested " + content)

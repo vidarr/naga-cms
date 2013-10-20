@@ -92,7 +92,7 @@ class Page:
         html_head.write('''</title>
             <link   rel="stylesheet" type="text/css" href="''')
         html_head.write(self.css_link)
-        html_head.write('''"></link>''')
+        html_head.write('''">''')
         html_head_string = html_head.getvalue()
         html_head.close()
         html_body = StringIO.StringIO()
@@ -111,9 +111,7 @@ class Page:
                 <p class="alignRight">''')
         html_body.write(COPYRIGHT)
         html_body.write('''</p> 
-            </footer>
-            </body>
-            </html>''')
+            </footer>''')
         html_body_string = html_body.getvalue()
         html_body.close()
         return wrap(html_body_string, html_head_string)

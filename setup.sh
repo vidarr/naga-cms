@@ -41,7 +41,7 @@ function set_permissions () {
     chown $APACHE_USER:$APACHE_GROUP * -R
     chmod 500 * -R
     for FILE in $FILES_TO_SET_WRITABLE; do
-        chmod 700  $FILE
+        chmod 700  $FILE -R
     done
     for FILE in $FILES_TO_SET_ROOT_ONLY; do
         chown root $FILE
