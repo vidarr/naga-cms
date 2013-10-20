@@ -40,6 +40,11 @@ CONTENT_PATH           = PAGE_ROOT + PATH_SEPARATOR + CONTENT_DIR
 STATIC_PATH            = PAGE_ROOT + PATH_SEPARATOR + STATIC_DIR
 STATIC_FILE_PATH       = PAGE_ROOT + PATH_SEPARATOR + ETC_DIR        + PATH_SEPARATOR + 'static'
 #------------------------------------------------------------------------------
+# CGI authentication names
+#------------------------------------------------------------------------------
+CREDENTIALS_USER       = 'user'
+CREDENTIALS_PASSPHRASE = 'passphrase'
+#------------------------------------------------------------------------------
 # Logger configuration
 #------------------------------------------------------------------------------
 logging.basicConfig(filename= NAGA_ABS_ROOT + PATH_SEPARATOR +

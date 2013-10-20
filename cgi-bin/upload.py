@@ -16,6 +16,7 @@ from naga_config import *
 import article
 import rss
 import registry
+import security
 #------------------------------------------------------------------------------
 _logger    = logging.getLogger("upload")
 _hash_func = hashlib.sha256()
@@ -101,8 +102,12 @@ def post_news(heading, summary, content_exists, content, categories):
 #------------------------------------------------------------------------------
 if __name__ == '__main__':
     cgitb.enable()
-    _logger.info("Request")
+    _logger.info("upload.py: Upload request received")
     form = cgi.FieldStorage()
+    if not security.authenticate_cgi(form):
+        print "Content-Type: text/html\n\n"
+        print '<html><body><p class="error">Authentication failure</p></body></html>'
+        sys.exit(1)
     if 'heading' not in form or 'summary' not in form or 'content' not in form:
         _logger.error("Error: Called without enough parameters")
     else:

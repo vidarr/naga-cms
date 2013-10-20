@@ -27,6 +27,51 @@ def authenticate(user, passphrase):
     '''
     return Authenticator().authenticate(user, passphrase)
 #------------------------------------------------------------------------------    
+def get_user(cgi_variables):
+    '''
+    Take the HTTP GET variables as cgi.FieldStorage, look for user and 
+    return the associated value
+    '''
+    if not CREDENTIALS_USER in cgi_variables:
+        _logger.error("No user found")
+        return None
+    return cgi_variables[CREDENTIALS_USER].value
+#------------------------------------------------------------------------------    
+def get_passphrase(cgi_variables):
+    '''
+    Take the HTTP GET variables as cgi.FieldStorage, look for passphrase and 
+    return the associated value
+    '''
+    if not CREDENTIALS_PASSPHRASE in cgi_variables:
+        _logger.error("No passphrase found")
+        return None
+    return cgi_variables[CREDENTIALS_PASSPHRASE].value
+#------------------------------------------------------------------------------    
+def authenticate_cgi(cgi_variables):
+    '''
+    Take the HTTP GET variables as a cgi.FieldStorage, look for one 'USER' and 
+    one 'PASSPHRASE' and check whether their values are valid.
+    '''
+    user       = get_user(cgi_variables)
+    passphrase = get_passphrase(cgi_variables)
+    if not user or not passphrase:
+        return None
+    return authenticate(user, passphrase)
+#------------------------------------------------------------------------------    
+def forward_credentials(cgi_variables):
+    '''
+    Take the HTTP GET variables as cgi.FieldStorage, look for user and 
+    passphrase and create HTTP GET string to forward credentials to another CGI
+    script
+    '''
+    user_value       = get_user(cgi_variables)
+    passphrase_value = get_passphrase(cgi_variables)
+    if not user_value or passphrase_value:
+        _logger.error("No credentials found")
+        return None
+    return ''.join([CREDENTIALS_USER, "=", user_value,
+        "&", CREDENTIALS_PASSPHRASE, "=", passphrase_value])
+#------------------------------------------------------------------------------    
 class Authenticator(ConfigurationObject):
 
     def __init__(self, file_name = NAGA_ABS_ROOT + USERS_FILE_PATH):
@@ -37,9 +82,13 @@ class Authenticator(ConfigurationObject):
     def authenticate(self, user, passphrase):
         [salt, hashed_passphrase] = self.get(user)
         if not salt or not hashed_passphrase:
+            self._logger.error("Could not authenticate user " + user)
             return False
         if self.hash_passphrase(salt, passphrase) == hashed_passphrase:
             return True
+            self._logger.info("Authenticated user " + user)
+        self._logger.error("Could not authenticate user " + user + 
+                " - wrong passphrase")
         return False
     #--------------------------------------------------------------------------    
     def add_user(self, user, passphrase):
