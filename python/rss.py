@@ -180,17 +180,17 @@ class Item:
         return nagaUtils.get_timestamp_now()
     #-------------------------------------------------------------------------- 
     def to_xml_tree(self):
-        xml_tree   = ET.Element('item')
-        title      = ET.SubElement(xml_tree, 'title')
-        title.text = self.get_title()
-        desc       = ET.SubElement(xml_tree, 'description')
-        desc.text  = self.get_description()
-        link       = ET.SubElement(xml_tree, 'link')
-        link.text  = self.get_link()
-        guid       = ET.SubElement(xml_tree, 'guid')
-        guid.text  = self.get_guid()
-        pub_date   = ET.SubElement(xml_tree, 'pubDate')
-        pub_date   = self.get_pub_date()
+        xml_tree        = ET.Element('item')
+        title           = ET.SubElement(xml_tree, 'title')
+        title.text      = self.get_title()
+        desc            = ET.SubElement(xml_tree, 'description')
+        desc.text       = self.get_description()
+        link            = ET.SubElement(xml_tree, 'link')
+        link.text       = self.get_link()
+        guid            = ET.SubElement(xml_tree, 'guid')
+        guid.text       = self.get_guid()
+        pub_date        = ET.SubElement(xml_tree, 'pubDate')
+        pub_date.text   = self.get_pub_date()
         return xml_tree
     #-------------------------------------------------------------------------- 
     def to_html(self):
