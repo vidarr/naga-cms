@@ -3,11 +3,15 @@ import os.path
 import sys
 import logging
 import re
+import string
+import random
+import hashlib
 #------------------------------------------------------------------------------    
 PAGE_ROOT     = os.path.join(os.path.dirname(os.path.abspath(__file__)))
 MODULE_DIR  = 'python'
 sys.path.append(PAGE_ROOT + '/../' + MODULE_DIR);
 from naga_config import *
+from configuration import ConfigurationObject
 #------------------------------------------------------------------------------    
 _logger = logging.getLogger("security")
 #------------------------------------------------------------------------------    
@@ -25,15 +29,28 @@ def authenticate(user, passphrase):
 #------------------------------------------------------------------------------    
 class Authenticator(ConfigurationObject):
 
-    def __init__(self, file_name = USERS_ABS_PATH):
-        ConfigurationObject.__init__(file_name)
+    def __init__(self, file_name = NAGA_ABS_ROOT + USERS_FILE_PATH):
+        ConfigurationObject.__init__(self, file_name)
         self._logger = logging.getLogger("Authenticator")
+        self._hash_algorithm = 'sha512'
     #--------------------------------------------------------------------------    
     def authenticate(self, user, passphrase):
-        hashed_ref_passphrase = self.get(user)
-        if not hashed_ref_passphrase:
+        [salt, hashed_passphrase] = self.get(user)
+        if not salt or not hashed_passphrase:
             return False
-
-
-    
+        if self.hash_passphrase(salt, passphrase) == hashed_passphrase:
+            return True
+        return False
+    #--------------------------------------------------------------------------    
+    def add_user(self, user, passphrase):
+        salt = random.choice(string.ascii_uppercase + string.ascii_lowercase
+                            + string.digits)
+        hashed_passphrase = self.hash_passphrase(salt, passphrase)
+        self.set(user, [salt, hashed_passphrase])
+    #--------------------------------------------------------------------------    
+    def hash_passphrase(self, salt, passphrase):
+        digester = hashlib.new(self._hash_algorithm)
+        to_hash = salt + passphrase
+        digester.update(to_hash.encode("utf-8"))
+        return digester.hexdigest()
 

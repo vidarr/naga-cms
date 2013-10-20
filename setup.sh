@@ -7,6 +7,7 @@ DIRECTORIES_TO_CREATE="log content"
 DUMMY_CFG_FILES="categories static"
 NON_OPERATIONAL="test TODO"
 FILES_TO_SET_WRITABLE="log content"
+FILES_TO_SET_ROOT_ONLY="tools"
 
 function ensure_cfg_params_set () {
     if [ -z $APACHE_USER -o -z $APACHE_GROUP ]; then
@@ -40,6 +41,10 @@ function set_permissions () {
     chown $APACHE_USER:$APACHE_GROUP * -R
     chmod 500 * -R
     for FILE in $FILES_TO_SET_WRITABLE; do
+        chmod 700  $FILE
+    done
+    for FILE in $FILES_TO_SET_ROOT_ONLY; do
+        chown root $FILE
         chmod 700  $FILE
     done
 }

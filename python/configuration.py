@@ -14,6 +14,7 @@ class ConfigurationObject:
     def __init__(self, file_name):
         self._logger = logging.getLogger("ConfigurationObject")
         self._configuration = {}
+        self._file_name = file_name
         try:
             self.from_file(file_name)
         except IOError as io_exception:
@@ -23,7 +24,6 @@ class ConfigurationObject:
         file_object = open(file_name, 'r')
         for line in file_object:
             line = line.rstrip()
-            print "line = " + line + "|"
             entry = line.split(CFG_LIST_SEPARATOR)
             if len(entry) < 2:
                 self._logger.error("Malformed line in " + str(file_name) + 
@@ -32,7 +32,9 @@ class ConfigurationObject:
             self._configuration[entry[0]] = entry[1:]
             self._logger.info('Found ' + entry[0])
     #--------------------------------------------------------------------------    
-    def to_file(self, file_name):
+    def to_file(self, file_name = None):
+        if not file_name:
+            file_name = self._file_name
         file_object = open(file_name, 'w')
         for key in self._configuration:
             value = self.get(key)
