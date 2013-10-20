@@ -24,7 +24,7 @@ function remove_non_operational () {
 }
 
 function create_dummy_cfg_files () {
-    mkdir $ETC_DIR
+    [ ! -d $ETC_DIR ] && mkdir $ETC_DIR
     for CFG_FILE in $DUMMY_CFG_FILES; do
         touch $ETC_DIR/$CFG_FILE
         echo "Created $CFG_FILE - remember to fill it !"
@@ -33,7 +33,7 @@ function create_dummy_cfg_files () {
 
 function create_directories () {
     for DIRECTORY in $DIRECTORIES_TO_CREATE; do
-        mkdir $DIRECTORY;
+        [ ! -d $DIRECTOY ] && mkdir $DIRECTORY;
     done
 }
 
@@ -61,6 +61,4 @@ echo "Remember to set in python/naga_config.py:"
 echo "   NAGA_ROOT"
 echo "   NAGA_ABS_ROOT"
 echo "   COPYRIGHT"
-
-
 

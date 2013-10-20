@@ -9,6 +9,21 @@ from naga_config import *
 import categories
 import statics
 #------------------------------------------------------------------------------
+def wrap(content, head = "<title>naga</title>"):
+    result = StringIO.StringIO()
+    result.write("Content-Type: text/html\n\n")
+    result.write('''<!DOCTYPE HTML>
+<html>
+    <head>
+        <meta   charset="utf8">''')
+    result.write(head)
+    result.write('</head><body>')
+    result.write(content)
+    result.write('</body></html>')
+    result_string = result.getvalue()
+    result.close()
+    return result_string
+#------------------------------------------------------------------------------
 class Page:
     def __init__(self, config = {}):
         self._logger     = logging.getLogger("page.py")
@@ -71,38 +86,36 @@ class Page:
         return html_string
     #--------------------------------------------------------------------------
     def get_html(self):
-        html = StringIO.StringIO()
-        html.write("""
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <meta   charset="utf8"></meta>
-            <title>""" )
-        html.write(self.title)
-        html.write('''</title>
+        html_head = StringIO.StringIO()
+        html_head.write('<title>')
+        html_head.write(self.title)
+        html_head.write('''</title>
             <link   rel="stylesheet" type="text/css" href="''')
-        html.write(self.css_link)
-        html.write('''"></link>
-        </head>
-        <body>
+        html_head.write(self.css_link)
+        html_head.write('''"></link>''')
+        html_head_string = html_head.getvalue()
+        html_head.close()
+        html_body = StringIO.StringIO()
+        html_body.write('''
             <nav>''')
-        html.write(self._create_navbar())
-        html.write('''
+        html_body.write(self._create_navbar())
+        html_body.write('''
             </nav>
             <article>''')
-        html.write(self.content)
-        html.write('''
+        html_body.write(self.content)
+        html_body.write('''
                 </article>
                 <footer>
                 <p class="alignLeft">Powered by 
                 <a href="https://code.google.com/p/naga-cms/">naga</a></p>
                 <p class="alignRight">''')
-        html.write(COPYRIGHT)
-        html.write('''</p> 
+        html_body.write(COPYRIGHT)
+        html_body.write('''</p> 
             </footer>
             </body>
             </html>''')
-        html_string = html.getvalue()
-        html.close()
-        return html_string
+        html_body_string = html_body.getvalue()
+        html_body.close()
+        return wrap(html_body_string, html_head_string)
     #--------------------------------------------------------------------------
+

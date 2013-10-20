@@ -13,6 +13,7 @@ sys.path.append(PAGE_ROOT + '/../' + MODULE_DIR);
 from naga_config import *
 import security
 import categories
+import page
 #------------------------------------------------------------------------------    
 _logger = logging.getLogger()
 #------------------------------------------------------------------------------    
@@ -20,25 +21,15 @@ if __name__ == '__main__':
     cgitb.enable()
     cgi_variables = cgi.FieldStorage()
     if not security.authenticate_cgi(cgi_variables):
-        print "Content-Type: text/html\n\n"
-        print '<html><body><p class="error">Authentication failure</p></body></html>'
+        print page.wrap('<p class="error">Authentication failure</p></body></html>')
         sys.exit(1)
-    print "Content-Type: text/html\n\n"
-    print '''<!DOCTYPE HTML>
-<html>
-    <head>
-        <title>Michael J. Beer</title>
-        <link rel="stylesheet" href="'''
-    print CSS_POST_PATH
-    print '''"/> 
-    </head>
-<body>
-
-    <h1>Make your post!</h1>
-
-    <form action="'''
-    print  UPLOAD_PATH
-    print '''">
+    head_string = ''.join(['''<title>Michael J. Beer</title>
+    <link rel="stylesheet" href="''', CSS_POST_PATH, '"/>']) 
+    html_body = StringIO.StringIO()
+    html_body.write('''<h1>Make your post!</h1>
+    <form action="''')
+    html_body.write(UPLOAD_PATH)
+    html_body.write('''">
         Heading: 
         <input type="text"     id=input_heading"  name="heading"
         formmethod="post"/> <br/>
@@ -48,16 +39,20 @@ if __name__ == '__main__':
         Content: <br/>
         <input type="text"     id="input_content" name="content" formmethod="post"/> <br/>
         <h2>Categories</h2>
-        '''
+        ''')
     for cat in categories.get_categories().get_categories():
-        print  '<input type="checkbox" name="category.' + cat + '" value="yes" formmethod="post"/>' + \
-                cat + '</input> <br/>'
-    print ''.join(['<input type="hidden" name="', CREDENTIALS_USER, '" value="',
-        security.get_user(cgi_variables), '">'])
-    print ''.join(['<input type="hidden" name="', CREDENTIALS_PASSPHRASE, '" value="',
-        security.get_passphrase(cgi_variables), '">'])
-    print '''<input type="submit" value="Submit"><br/>
+        html_body.write(''.join(['<input type="checkbox" name="category.', cat, 
+            '" value="yes" formmethod="post"/>', cat, '</input> <br/>']))
+    html_body.write(''.join(['<input type="hidden" name="', CREDENTIALS_USER, '" value="',
+        security.get_user(cgi_variables), '">']))
+    html_body.write(''.join(['<input type="hidden" name="', CREDENTIALS_PASSPHRASE, '" value="',
+        security.get_passphrase(cgi_variables)])) 
+    html_body.write('''"><input type="submit" value="Submit"><br/>
     </form>
-</body>
-    '''
+    ''')
+    html_body_string = html_body.getvalue()
+    html_body.close()
+    html = page.wrap(html_body_string, head_string)
+    _logger.info(html)
+    print html
 

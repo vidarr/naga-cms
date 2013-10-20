@@ -17,6 +17,7 @@ import article
 import rss
 import registry
 import security
+import page
 #------------------------------------------------------------------------------
 _logger    = logging.getLogger("upload")
 _hash_func = hashlib.sha256()
@@ -84,29 +85,14 @@ def post_news(heading, summary, content_exists, content, categories):
         article = write_content(heading   , summary, content, 
                                 categories, file_name)
     write_rss(heading, summary, content, categories, file_name)
-    page=StringIO.StringIO()
-    page.write("""
-    <!DOCTYPE html>
-    <html>
-    <head>
-    </head>
-    <body>""")
-    page.write("Neuer Post hochgeladen:\n")
-    page.write("""
-    </body>
-    </html>
-    """)
-    ret_page = page.getvalue()
-    page.close()
-    return ret_page
+    return page.wrap("New post accepted")
 #------------------------------------------------------------------------------
 if __name__ == '__main__':
     cgitb.enable()
     _logger.info("upload.py: Upload request received")
     form = cgi.FieldStorage()
     if not security.authenticate_cgi(form):
-        print "Content-Type: text/html\n\n"
-        print '<html><body><p class="error">Authentication failure</p></body></html>'
+        print page.wrap('<body><p class="error">Authentication failure</p></body></html>')
         sys.exit(1)
     if 'heading' not in form or 'summary' not in form or 'content' not in form:
         _logger.error("Error: Called without enough parameters")
@@ -118,7 +104,6 @@ if __name__ == '__main__':
             if len(key_parts) == 2 and key_parts[0] == 'category':
                 _logger.debug(form[key_value].value)
                 categories.append(key_parts[1])
-        print "Content-Type: text/html\n\n"
         print post_news(form['heading'].value, form['summary'].value,
         form.getvalue('contentexists'), form['content'].value, categories)
 
