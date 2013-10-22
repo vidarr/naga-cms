@@ -80,7 +80,11 @@ class Authenticator(ConfigurationObject):
         self._hash_algorithm = 'sha512'
     #--------------------------------------------------------------------------    
     def authenticate(self, user, passphrase):
-        [salt, hashed_passphrase] = self.get(user)
+        pass_infos = self.get(user)
+        if not pass_infos:
+            self._logger.error("User " + user + " not registered")
+            return False
+        [salt, hashed_passphrase] = pass_infos
         if not salt or not hashed_passphrase:
             self._logger.error("Could not authenticate user " + user)
             return False

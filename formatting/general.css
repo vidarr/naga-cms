@@ -3,22 +3,37 @@ body    {
 }
 
 article { 
-    margin-top         : 1em;
+    position           : fixed;
+    top                : 0;
+    bottom             : 2.5em;
+    left               : 20%;
     padding-left       : 1em;
-    border-left-style  : solid;
-    float              : left; 
-    width              : 65%; 
+    padding-right      : 0em;
+    padding-top        : 0em;
+    border-left-style  : solid; 
+    border-bottom-style: solid;
+    width              : 79%; 
+    overflow           : auto;
 }
 
 nav     { 
-    float              : left; 
-    width              : 24%; 
+    position           : fixed;
+    top                : 0;
+    bottom             : 2.5em;
+    width              : 20%; 
+    background-color   : rgb(192,192,192);
 }
 
 footer {
-    border-top-style   : solid; 
+    position           : fixed;
+    bottom             : 0;
+    left               : 0;
+    right              : 0;
+    height             : 2.5em;
+    /* border-top-style   : solid; */
     clear              : both;
     text-align         : justify;
+    background-color   : rgb(192,192,192);
 }
  
 .alignLeft {
