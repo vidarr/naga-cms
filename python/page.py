@@ -1,4 +1,3 @@
-import StringIO
 import os
 import sys
 #------------------------------------------------------------------------------
@@ -10,18 +9,13 @@ import categories
 import statics
 #------------------------------------------------------------------------------
 def wrap(content, head = "<title>naga</title>"):
-    result = StringIO.StringIO()
-    result.write("Content-Type: text/html\n\n")
-    result.write('''<!DOCTYPE HTML>
+    result = ["Content-Type: text/html\n\n",
+        '''<!DOCTYPE HTML>
 <html>
     <head>
-        <meta   charset="utf8">''')
-    result.write(head)
-    result.write('</head><body>')
-    result.write(content)
-    result.write('</body></html>')
-    result_string = result.getvalue()
-    result.close()
+        <meta   charset="utf8">''', head, '</head><body>', 
+    content, '</body></html>'] 
+    result_string = ''.join(result)
     return result_string
 #------------------------------------------------------------------------------
 class Page:
@@ -49,71 +43,51 @@ class Page:
         self.title = title
     #--------------------------------------------------------------------------
     def _create_navbar(self):
-        html = StringIO.StringIO()
-        html.write('''
+        html = ['''
             <ul>
             <li>
-            <a href="''')
-        html.write(CGI_SHOW_PATH)
-        html.write('''?type=news&content=latest">Home</a></li>
+            <a href="''', CGI_SHOW_PATH,'''?type=news&content=latest">Home</a></li>
             <li>Articles</li>
-            <ul>''')
+            <ul>'''] 
         for category in self._categories:
-            html.write('<li><a href="')
-            html.write(CGI_SHOW_PATH)
-            html.write('?type=category&content=')
-            html.write(category)
-            html.write('">')
-            html.write(category)
-            html.write('</a></li>')
-        html.write('''</ul>''')
+            html.append('<li><a href="') 
+            html.append(CGI_SHOW_PATH)
+            html.append('?type=category&content=')
+            html.append(category)
+            html.append('">')
+            html.append(category)
+            html.append('</a></li>')
+        html.append('</ul>')
         statics_object = statics.Statics()
         for static_entry in statics_object.get_statics():
-            html.write(''.join(['<li><a href="', CGI_SHOW_PATH,
+            html.append(''.join(['<li><a href="', CGI_SHOW_PATH,
                                '?type=static&content=',
                                static_entry, '">',
                                static_entry, '</a></li>']))
-        html.write('<li><a href="')
-        html.write(RSS_FEED_PATH)
-        html.write('''">
+        html.append('<li><a href="')
+        html.append(RSS_FEED_PATH)
+        html.append('''">
                 <img src="''')
-        html.write(RSS_ICON_PATH)
-        html.write('''"  height="18" width="18"/>Subscribe</a>
+        html.append(RSS_ICON_PATH)
+        html.append('''"  height="18" width="18"/>Subscribe</a>
             </li>
             </ul>''')
-        html_string = html.getvalue()
-        html.close()
+        html_string = ''.join(html)
         return html_string
     #--------------------------------------------------------------------------
     def get_html(self):
-        html_head = StringIO.StringIO()
-        html_head.write('<title>')
-        html_head.write(self.title)
-        html_head.write('''</title>
-            <link   rel="stylesheet" type="text/css" href="''')
-        html_head.write(self.css_link)
-        html_head.write('''">''')
-        html_head_string = html_head.getvalue()
-        html_head.close()
-        html_body = StringIO.StringIO()
-        html_body.write('''
-            <nav>''')
-        html_body.write(self._create_navbar())
-        html_body.write('''
+        html_head_string = u''.join(['<title>', self.title, '''</title>
+                <link   rel="stylesheet" type="text/css" href="''', 
+                self.css_link, '">'])
+        html_body_string = u''.join(['<nav>', self._create_navbar(), '''
             </nav>
-            <article>''')
-        html_body.write(self.content)
-        html_body.write('''
+            <article>''', 
+            self.content, '''
                 </article>
                 <footer>
                 <p class="alignLeft">Powered by 
                 <a href="https://code.google.com/p/naga-cms/">naga</a></p>
-                <p class="alignRight">''')
-        html_body.write(COPYRIGHT)
-        html_body.write('''</p> 
-            </footer>''')
-        html_body_string = html_body.getvalue()
-        html_body.close()
+                <p class="alignRight">''', COPYRIGHT,'</p></footer>'])
         return wrap(html_body_string, html_head_string)
     #--------------------------------------------------------------------------
 

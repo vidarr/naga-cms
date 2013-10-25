@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 import os.path
 import sys
 import logging
@@ -66,7 +66,7 @@ if __name__ == '__main__':
         else:
             getter_func = item_getter[form['value'].value]
             content     = getter_func()
-    print "Content-Type: text/xml\n\n"
-    print content
+    print("Content-Type:) text/xml\n\n"
+    print(content)
 
 

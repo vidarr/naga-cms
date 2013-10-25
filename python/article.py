@@ -1,5 +1,5 @@
+#!/usr/bin/python3
 import datetime
-import StringIO
 import os.path
 import sys
 import xml.etree.ElementTree as ET
@@ -8,6 +8,7 @@ import logging
 PAGE_ROOT   = os.path.join(os.path.dirname(os.path.abspath(__file__)))
 MODULE_DIR  = 'python'
 sys.path.append(PAGE_ROOT + '/../' + MODULE_DIR);
+from naga_config import *
 import nagaUtils
 #------------------------------------------------------------------------------
 TAG_ARTICLE_ROOT = 'michael.josef.beer.article'
@@ -24,7 +25,6 @@ def article_from_xml(article_xml):
     '''
     Create article from XML description
     '''
-
     def parse_categories(categories_node):
         _logger.debug("parse_categories: Got node "  + categories_node.tag)
         new_categories = []
@@ -134,45 +134,39 @@ class Article:
         for category in self.categories:
             xml_category   = ET.SubElement(xml_categories, TAG_CATEGORY)
             xml_category.text = category
-        return ET.tostring(xml_tree)
+        return ET.tostring(xml_tree, encoding = 'unicode')
     #---------------------------------------------------------------------------
     def to_xml_short(self):
         '''
         Return short article description as xml (excluding actual content and
         categories)
         '''
-        return ET.tostring(self._to_xml_tree_short())
+        return ET.tostring(self._to_xml_tree_short(), encoding = 'unicode')
     #---------------------------------------------------------------------------
     def to_html(self):
         '''
         Return article description as html
         '''
-        html = StringIO.StringIO()
-        html.write('<p class="article_heading">')
-        html.write(self.get_heading())
-        html.write('</p><p class="article_timestamp">')
-        html.write(self.get_timestamp())
-        html.write('</p><p class="article_summary">')
-        html.write(self.get_summary())
-        html.write('</p><p class="article_content">')
-        html.write(self.get_content())
-        html.write('</p>')
-        html_string = html.getvalue()
-        html.close()
+        html = ['<p class="article_heading">',
+                self.get_heading(),
+                '</p><p class="article_timestamp">',
+                self.get_timestamp(),
+                '</p><p class="article_summary">',
+                self.get_summary(),
+                '</p><p class="article_content">',
+                self.get_content(),'</p>']
+        html_string = u''.join(html)
         return html_string
     #---------------------------------------------------------------------------
     def to_html_short(self):
         '''
         Return article short description as html
         '''
-        html = StringIO.StringIO()
-        html.write('<p class="article_short_heading">')
-        html.write(self.get_heading())
-        html.write('</p><p class="article_short_timestamp">')
-        html.write(self.get_timestamp())
-        html.write('</p>')
-        html_string = html.getvalue()
-        html.close()
+        html = ['<p class="article_short_heading">', 
+                self.get_heading() ,
+                '</p><p class="article_short_timestamp">', 
+                self.get_timestamp(), '</p>'] 
+        html_string = u''.join(html)
         return html_string
     #---------------------------------------------------------------------------
     def matches(self, criterion):

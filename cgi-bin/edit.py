@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 import cgi
 import cgitb
 import logging
@@ -40,4 +40,4 @@ if __name__ == '__main__':
         <input type="submit" value="Submit"><br/>
     </form>
     '''])
-    print page.wrap(html_body, html_head)
+    print(page.wrap(html_body, html_head))

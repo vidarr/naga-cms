@@ -5,7 +5,7 @@ import sys
 import xml.etree.ElementTree as ET
 from   collections import deque
 import logging
-import StringIO
+from io import BytesIO
 #------------------------------------------------------------------------------    
 PAGE_ROOT     = os.path.join(os.path.dirname(os.path.abspath(__file__)))
 MODULE_DIR  = 'python'
@@ -21,7 +21,8 @@ def item_from_xml_tree(xml_tree):
        raise Exception(xml_tree.__str__())
    item = Item()
    for node in xml_tree:
-       _logger.debug( "Item.from_xml_tree: " + ET.tostring(node))
+       _logger.debug( "Item.from_xml_tree: " + ET.tostring(node,
+            encoding='unicode'))
        if node.tag == 'title':
            item.set_title(node.text)
        elif node.tag == 'description':
@@ -43,7 +44,7 @@ def channel_from_xml_tree(xml_tree):
         raise Exception(xml_tree.__str__())
     channel = Channel()
     for item in xml_tree:
-        _logger.debug( "Channel.from_xml: " + ET.tostring(item))
+        _logger.debug( "Channel.from_xml: " + ET.tostring(item).decode(ENCODING))
         if item.tag == 'title':
             channel.set_title(item.text)
         elif item.tag == 'description':
@@ -55,10 +56,10 @@ def channel_from_xml_tree(xml_tree):
         elif item.tag == 'pubDate':
             channel.set_pub_date(item.text)
         elif item.tag == 'item':
-            try:
-                channel.add_item(item_from_xml_tree(item))
-            except Exception as ex:
-                _logger.debug( "Channel.from_xml: Exception occured" + ex.__str__())
+            #try:
+            channel.add_item(item_from_xml_tree(item))
+            # except Exception as ex:
+            #     _logger.debug( "Channel.from_xml: Exception occured" + ex.__str__())
             _logger.debug( "Read channel " + channel.get_title()) 
     return channel
 #==============================================================================    
@@ -111,14 +112,13 @@ class Rss:
     #-------------------------------------------------------------------------- 
     def to_xml(self):
         xml_tree = self.to_xml_tree()
-        return ET.tostring(xml_tree)
+        return ET.tostring(xml_tree, encoding='unicode')
     #-------------------------------------------------------------------------- 
     def to_html(self):
-        html = StringIO.StringIO()
+        html = []
         for channel in self.channels:
-            html.write(channel.to_html())
-        html_string = html.getvalue()
-        html.close()
+            html.append(channel.to_html())
+        html_string = u''.join(html)
         return html_string
     #-------------------------------------------------------------------------- 
     def to_file(self):
@@ -194,25 +194,17 @@ class Item:
         return xml_tree
     #-------------------------------------------------------------------------- 
     def to_html(self):
-        html = StringIO.StringIO()
-        html.write('<div class="rss_item"><p class="alignLeft">')
-        html.write('<a href="')
-        html.write(self.get_link())
-        html.write('">')
-        html.write(self.get_title())
-        html.write('</a></p>')
-        html.write('<p class="rss_timestamp">')
-        html.write(self.get_pub_date())
-        html.write('</p>')
-        html.write('<p class="rss_description">')
-        html.write(self.get_description())
-        html.write('</p></div>')
-        html_string = html.getvalue()
-        html.close()
+        html = ['<div class="rss_item"><p class="alignLeft"><a href="', 
+        self.get_link(), '">', 
+        self.get_title(), 
+        '</a></p><p class="rss_timestamp">', 
+        self.get_pub_date(), '</p><p class="rss_description">', 
+        self.get_description(), '</p></div>'] 
+        html_string = u''.join(html)
         return html_string
     #-------------------------------------------------------------------------- 
     def to_xml(self):
-        return ET.tostring(self.to_xml_tree())
+        return ET.tostring(self.to_xml_tree(), encoding='unicode')
     #-------------------------------------------------------------------------- 
     def __str__(self):
         return self.to_xml()
@@ -265,11 +257,10 @@ class Channel(Item):
                 self.remove_last_item()
     #-------------------------------------------------------------------------- 
     def to_html(self):
-        html = StringIO.StringIO()
+        html = []
         for item in self.items:
-            html.write(item.to_html())
-        html_string = html.getvalue()
-        html.close()
+            html.append(item.to_html())
+        html_string = u''.join(html)
         return html_string
     #-------------------------------------------------------------------------- 
     def to_xml_tree(self):

@@ -14,6 +14,7 @@ NAGA_ROOT              = 'http://localhost/naga'
 NAGA_ABS_ROOT          = '/var/www'
 PAGE_TITLE             = "Michael J. Beer"
 COPYRIGHT              = '&copy;2013 <a href="mailto:michael@ubeer.org">Michael J. Beer</a>'
+ENCODING               = "UTF-8"
 PAGE_ROOT              = PATH_SEPARATOR + 'naga'
 LOG_DIR                = 'log'
 CONTENT_DIR            = 'content'

@@ -1,7 +1,6 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 import cgi
 import cgitb
-import StringIO
 import io
 import os
 import sys
@@ -74,11 +73,19 @@ def write_content(heading, summary, content,categories, file_name):
 def post_news(heading, summary, content_exists, content, categories):
     _logger.info("New post")
     if content:
-        _hash_func.update(content)
+        if type(content) == type (u'a'):
+            content_to_hash = content.encode(ENCODING)
+        else:
+            content_to_hash = content
+        _hash_func.update(content_to_hash)
     if summary:
-        _hash_func.update(summary)
+        if type(summary) == type (u'a'):
+            summary_to_hash = summary.encode(ENCODING)
+        else:
+            summary_to_hash = summary
+        _hash_func.update(summary_to_hash)
     file_name = _hash_func.digest()
-    file_name = base64.b32encode(file_name)
+    file_name = base64.b32encode(file_name).decode(ENCODING)
     file_name = file_name + ".xml"
     if content_exists:
         _logger.info("Posting article")
@@ -92,7 +99,7 @@ if __name__ == '__main__':
     _logger.info("upload.py: Upload request received")
     form = cgi.FieldStorage()
     if not security.authenticate_cgi(form):
-        print page.wrap('<body><p class="error">Authentication failure</p></body></html>')
+        print(page.wrap('<body><p) class="error">Authentication failure</p></body></html>'))
         sys.exit(1)
     if 'heading' not in form or 'summary' not in form or 'content' not in form:
         _logger.error("Error: Called without enough parameters")
@@ -104,6 +111,6 @@ if __name__ == '__main__':
             if len(key_parts) == 2 and key_parts[0] == 'category':
                 _logger.debug(form[key_value].value)
                 categories.append(key_parts[1])
-        print post_news(form['heading'].value, form['summary'].value,
-        form.getvalue('contentexists'), form['content'].value, categories)
+        print(post_news(form['heading'].value, form['summary'].value,
+        form.getvalue('contentexists'), form['content'].value, categories))
 

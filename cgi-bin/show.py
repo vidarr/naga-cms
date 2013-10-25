@@ -1,11 +1,10 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 import os.path
 import sys
 import logging
 import cgi
 import cgitb
-import StringIO
-import urllib
+import urllib.request
 #------------------------------------------------------------------------------
 ABSOLUTE_PAGE_ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)))
 ABSOLUTE_PAGE_ROOT = ABSOLUTE_PAGE_ROOT + '/..'
@@ -24,7 +23,7 @@ _page              = Page()
 # Helper functions
 #------------------------------------------------------------------------------
 def finish_page():
-    print _page.get_html()
+    print(_page.get_html())
     sys.exit(0)
 #------------------------------------------------------------------------------
 # Content Handlers
@@ -72,28 +71,31 @@ def show_category(content):
     if len(articles) < 1:
         _page.set_content("<p>No articles found</p>")
     else:
-        html = StringIO.StringIO()
+        html = []
         for article_key in articles:
             article = article_registry.get(article_key)
-            html.write('<a href="')
-            html.write(NAGA_ROOT + PATH_SEPARATOR + SHOW_RELATIVE_PATH)
-            html.write('?type=article&content=')
-            html.write(article_key)
-            html.write('">')
-            html.write(article.to_html_short())
-            html.write('</a>')
-        html_string = html.getvalue()
-        html.close()
+            html.append('<a href="') 
+            html.append(NAGA_ROOT + PATH_SEPARATOR + SHOW_RELATIVE_PATH)
+            html.append('?type=article&content=') 
+            html.append(article_key)
+            html.append('">') 
+            html.append(article.to_html_short())
+            html.append('</a>')
+        html_string = u''.join(html)
         _page.set_content(html_string)
     finish_page()
 #------------------------------------------------------------------------------
 def show_url(content):
     if not content:
         show_error("No content given")
-    remote_file = urllib.urlopen(content)
+    remote_file = urllib.request.urlopen(content)
+    if not remote_file:
+        show_error("Got None for url " + content)
     remote_data = remote_file.readlines()
     remote_file.close()
-    _page.set_content(''.join(remote_data))
+    _page.set_content(u''.join(map(
+        lambda item: item.decode(ENCODING),
+        remote_data)))
     finish_page()
 #------------------------------------------------------------------------------
 def show_static(content):

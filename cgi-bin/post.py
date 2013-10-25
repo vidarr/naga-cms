@@ -1,7 +1,7 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 import cgi
 import cgitb
-import StringIO
+from io import StringIO
 import io
 import os
 import sys
@@ -21,23 +21,22 @@ if __name__ == '__main__':
     cgitb.enable()
     cgi_variables = cgi.FieldStorage()
     if not security.authenticate_cgi(cgi_variables):
-        print page.wrap('<p class="error">Authentication failure</p></body></html>')
+        print(page.wrap('<p) class="error">Authentication failure</p></body></html>'))
         sys.exit(1)
     head_string = ''.join(['''<title>Michael J. Beer</title>
     <link rel="stylesheet" href="''', CSS_POST_PATH, '"/>']) 
-    html_body = StringIO.StringIO()
+    html_body = StringIO()
     html_body.write('''<h1>Make your post!</h1>
     <form action="''')
     html_body.write(UPLOAD_PATH)
-    html_body.write('''">
+    html_body.write('''" method="post">
         Heading: 
-        <input type="text"     id=input_heading"  name="heading"
-        formmethod="post"/> <br/>
+        <input type="text"     id=input_heading"  name="heading"/> <br/>
         Summary: <br/>
-        <input type="text"     id="input_summary" name="summary" formmethod="post"/> <br/>
-        <input type="checkbox" name="contentexists" value="yes" formmethod="post"/>Content</input> <br/>
+        <textarea              id="input_summary" name="summary"></textarea> <br/>
+        <input type="checkbox" name="contentexists" value="yes"/>Content</input> <br/>
         Content: <br/>
-        <input type="text"     id="input_content" name="content" formmethod="post"/> <br/>
+        <textarea              id="input_content" name="content"></textarea> <br/>
         <h2>Categories</h2>
         ''')
     for cat in categories.get_categories().get_categories():
@@ -54,5 +53,5 @@ if __name__ == '__main__':
     html_body.close()
     html = page.wrap(html_body_string, head_string)
     _logger.info(html)
-    print html
+    print(html)
 

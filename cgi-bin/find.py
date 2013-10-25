@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 import os.path
 import sys
 import logging
@@ -28,8 +28,8 @@ if __name__ == '__main__':
         content = "No articles found"
     else:
         content = report.create_short_article_report(article_registry, found_articles)
-    print "Content-Type: text/html\n\n"
-    print content
+    print("Content-Type:) text/html\n\n"
+    print(content)
 
 
 
