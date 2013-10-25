@@ -1,5 +1,11 @@
 body    { 
     margin:auto;                   
+    font-family : Sans;
+}
+
+h1 {
+    float       : center;
+    text-align  : center;
 }
 
 article { 
@@ -69,4 +75,16 @@ p.article_heading {
 
 p.article_summary {
     font-style  : italic;
+}
+
+/* Custom formattings */
+
+div.center_item {
+    margin-left : auto;
+    margin-right: auto;
+    width       : 30%;
+}
+
+table.high_row tr {
+    line-height : 2em;
 }
