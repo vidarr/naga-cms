@@ -38,8 +38,9 @@ class ConfigurationObject:
         file_object = open(file_name, 'wb')
         for key in self._configuration:
             value = self.get(key)
-            file_object.write(key +
-                    CFG_LIST_SEPARATOR + CFG_LIST_SEPARATOR.join(value) + '\n')
+            file_object.write(bytes(key +
+                    CFG_LIST_SEPARATOR + CFG_LIST_SEPARATOR.join(value) + '\n',
+                    ENCODING))
         file_object.close()
     #--------------------------------------------------------------------------    
     def get_keys(self):

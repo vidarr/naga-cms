@@ -57,19 +57,19 @@ class Registry:
         file_object = open(self.file_name, 'wb')
         for key in self.articles.keys():
             article_object = self.articles[key]
-            file_object.write(key)
-            file_object.write(self.SEPARATOR)
-            file_object.write(article_object.get_heading())
-            file_object.write(self.SEPARATOR)
-            file_object.write(article_object.get_timestamp())
-            file_object.write(self.SEPARATOR)
+            file_object.write(bytes(key, ENCODING))
+            file_object.write(bytes(self.SEPARATOR, ENCODING))
+            file_object.write(bytes(article_object.get_heading(), ENCODING))
+            file_object.write(bytes(self.SEPARATOR, ENCODING))
+            file_object.write(bytes(article_object.get_timestamp(), ENCODING))
+            file_object.write(bytes(self.SEPARATOR, ENCODING))
             categories = article_object.get_categories()
             if not categories:
                 cat_string = ''
             else:
                 cat_string = self.CATEGORIES_SEPARATOR.join(categories)
-            file_object.write(cat_string)
-            file_object.write('\n')
+            file_object.write(bytes(cat_string, ENCODING))
+            file_object.write(bytes('\n', ENCODING))
         file_object.close()
     #--------------------------------------------------------------------------
     def get_article_keys(self):
