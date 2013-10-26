@@ -35,7 +35,7 @@ class ConfigurationObject:
     def to_file(self, file_name = None):
         if not file_name:
             file_name = self._file_name
-        file_object = open(file_name, 'w')
+        file_object = open(file_name, 'wb')
         for key in self._configuration:
             value = self.get(key)
             file_object.write(key +

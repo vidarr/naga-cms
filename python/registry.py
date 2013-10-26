@@ -54,7 +54,7 @@ class Registry:
     #--------------------------------------------------------------------------
     def save(self):
         '''Save registry to registry file'''
-        file_object = open(self.file_name, 'w')
+        file_object = open(self.file_name, 'wb')
         for key in self.articles.keys():
             article_object = self.articles[key]
             file_object.write(key)
@@ -136,7 +136,7 @@ class Registry:
             return None
         article_object = self.articles[key]
         article_path   = self.directory_path + PATH_SEPARATOR + key
-        file_object    = open(article_path, 'w')
+        file_object    = open(article_path, 'wb')
         file_object.write(article_object.to_xml())
         file_object.close()
         self.logger.debug("Registry._write_file: Wrote " + article_path)

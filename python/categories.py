@@ -43,7 +43,7 @@ class Categories:
     def to_file(self, file_name = None):
         if not file_name:
             file_name = self.file_name
-        file_object = open(file_name, "w")
+        file_object = open(file_name, "wb")
         categories_string = string.join(self.categories, CFG_LIST_SEPARATOR)
         file_object.write(categories_string)
         file_object.close()

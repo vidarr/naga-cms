@@ -124,7 +124,7 @@ class Rss:
     def to_file(self):
         if self.file_name == "":
             raise IOError("File name not set")
-        rss_file = open(self.file_name, 'w')
+        rss_file = open(self.file_name, 'wb')
         rss_file.write(self.to_xml())
         rss_file.close()
         self.logger.debug( "Rss.to_file: Wrote " + self.file_name)
