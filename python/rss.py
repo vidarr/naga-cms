@@ -278,9 +278,7 @@ class Channel(Item):
         pub_date.text        = self.get_pub_date()
         ttl                  = ET.SubElement(xml_tree, 'ttl')
         ttl.text             = self.get_ttl()
-        items = self.items
-        items.reverse()
-        for item in items:
+        for item in reversed(self.items):
             xml_tree.append(item.to_xml_tree())
         return xml_tree
     
