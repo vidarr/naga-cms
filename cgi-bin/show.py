@@ -81,7 +81,7 @@ def show_category(content):
             html.append('">') 
             html.append(article.to_html_short())
             html.append('</a>')
-        html_string = u''.join(html)
+        html_string = ''.join(html)
         _page.set_content(html_string)
     finish_page()
 #------------------------------------------------------------------------------
@@ -93,7 +93,7 @@ def show_url(content):
         show_error("Got None for url " + content)
     remote_data = remote_file.readlines()
     remote_file.close()
-    _page.set_content(u''.join(map(
+    _page.set_content(''.join(map(
         lambda item: item.decode(ENCODING),
         remote_data)))
     finish_page()
@@ -117,6 +117,7 @@ _content_types = {
 # MAIN
 #------------------------------------------------------------------------------
 if __name__ == '__main__':
+    _logger.info("Python " + str(sys.version_info))
     cgitb.enable()
     form = cgi.FieldStorage()
     if not 'type' in form:

@@ -134,14 +134,14 @@ class Article:
         for category in self.categories:
             xml_category   = ET.SubElement(xml_categories, TAG_CATEGORY)
             xml_category.text = category
-        return ET.tostring(xml_tree, encoding = 'unicode')
+        return ET.tostring(xml_tree, encoding = ENCODING)
     #---------------------------------------------------------------------------
     def to_xml_short(self):
         '''
         Return short article description as xml (excluding actual content and
         categories)
         '''
-        return ET.tostring(self._to_xml_tree_short(), encoding = 'unicode')
+        return ET.tostring(self._to_xml_tree_short(), encoding = ENCODING)
     #---------------------------------------------------------------------------
     def to_html(self):
         '''
@@ -155,7 +155,7 @@ class Article:
                 self.get_summary(),
                 '</p><p class="article_content">',
                 self.get_content(),'</p>']
-        html_string = u''.join(html)
+        html_string = ''.join(html)
         return html_string
     #---------------------------------------------------------------------------
     def to_html_short(self):
@@ -166,7 +166,7 @@ class Article:
                 self.get_heading() ,
                 '</p><p class="article_short_timestamp">', 
                 self.get_timestamp(), '</p>'] 
-        html_string = u''.join(html)
+        html_string = ''.join(html)
         return html_string
     #---------------------------------------------------------------------------
     def matches(self, criterion):

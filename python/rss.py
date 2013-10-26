@@ -21,8 +21,8 @@ def item_from_xml_tree(xml_tree):
        raise Exception(xml_tree.__str__())
    item = Item()
    for node in xml_tree:
-       _logger.debug( "Item.from_xml_tree: " + ET.tostring(node,
-            encoding='unicode'))
+       _logger.debug( "Item.from_xml_tree: " + str(ET.tostring(node,
+            encoding = ENCODING)))
        if node.tag == 'title':
            item.set_title(node.text)
        elif node.tag == 'description':
@@ -44,7 +44,7 @@ def channel_from_xml_tree(xml_tree):
         raise Exception(xml_tree.__str__())
     channel = Channel()
     for item in xml_tree:
-        _logger.debug( "Channel.from_xml: " + ET.tostring(item).decode(ENCODING))
+        _logger.debug( "Channel.from_xml: " + str(ET.tostring(item)))
         if item.tag == 'title':
             channel.set_title(item.text)
         elif item.tag == 'description':
@@ -112,13 +112,13 @@ class Rss:
     #-------------------------------------------------------------------------- 
     def to_xml(self):
         xml_tree = self.to_xml_tree()
-        return ET.tostring(xml_tree, encoding='unicode')
+        return ET.tostring(xml_tree, encoding = ENCODING)
     #-------------------------------------------------------------------------- 
     def to_html(self):
         html = []
         for channel in self.channels:
             html.append(channel.to_html())
-        html_string = u''.join(html)
+        html_string = ''.join(html)
         return html_string
     #-------------------------------------------------------------------------- 
     def to_file(self):
@@ -200,14 +200,15 @@ class Item:
         '</a></p><p class="rss_timestamp">', 
         self.get_pub_date(), '</p><p class="rss_description">', 
         self.get_description(), '</p></div>'] 
-        html_string = u''.join(html)
+        html_string = ''.join(html)
         return html_string
     #-------------------------------------------------------------------------- 
     def to_xml(self):
-        return ET.tostring(self.to_xml_tree(), encoding='unicode')
+        return ET.tostring(self.to_xml_tree(), encoding =
+                ENCODING).decode(ENCODING)
     #-------------------------------------------------------------------------- 
     def __str__(self):
-        return self.to_xml()
+        return str(self.to_xml())
 #==============================================================================    
 class Channel(Item):
 
@@ -260,7 +261,7 @@ class Channel(Item):
         html = []
         for item in self.items:
             html.append(item.to_html())
-        html_string = u''.join(html)
+        html_string = ''.join(html)
         return html_string
     #-------------------------------------------------------------------------- 
     def to_xml_tree(self):

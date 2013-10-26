@@ -73,13 +73,13 @@ def write_content(heading, summary, content,categories, file_name):
 def post_news(heading, summary, content_exists, content, categories):
     _logger.info("New post")
     if content:
-        if type(content) == type (u'a'):
+        if type(content) == type ('a'):
             content_to_hash = content.encode(ENCODING)
         else:
             content_to_hash = content
         _hash_func.update(content_to_hash)
     if summary:
-        if type(summary) == type (u'a'):
+        if type(summary) == type ('a'):
             summary_to_hash = summary.encode(ENCODING)
         else:
             summary_to_hash = summary

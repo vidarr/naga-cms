@@ -76,10 +76,10 @@ class Page:
         return html_string
     #--------------------------------------------------------------------------
     def get_html(self):
-        html_head_string = u''.join(['<title>', self.title, '''</title>
+        html_head_string = ''.join(['<title>', self.title, '''</title>
                 <link   rel="stylesheet" type="text/css" href="''', 
                 self.css_link, '">'])
-        html_body_string = u''.join(['<nav>', self._create_navbar(), '''
+        html_body_string = ''.join(['<nav>', self._create_navbar(), '''
             </nav>
             <article>''', 
             self.content, '''
