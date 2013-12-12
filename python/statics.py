@@ -13,6 +13,7 @@ class Statics:
                                STATIC_FILE_PATH):
         self._logger  = logging.getLogger('Statics')
         self._content = {}
+        self._order   = []
         try:
             file_object = open(cfg_file_name, 'r') 
             for line in file_object:
@@ -24,6 +25,7 @@ class Statics:
                 self._content[content_entry[0]] = root_path + \
                         PATH_SEPARATOR + STATIC_DIR + PATH_SEPARATOR + \
                         content_entry[1]
+                self._order.append(content_entry[0])
                 self._logger.info('Found ' + self._content[content_entry[0]])
         except IOError as ex:
             self._logger.error(ex)
@@ -39,5 +41,5 @@ class Statics:
         return self._content[static_key]
     #--------------------------------------------------------------------------
     def get_statics(self):
-        return self._content.keys()
+        return self._order
 
