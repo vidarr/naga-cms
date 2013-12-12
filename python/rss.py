@@ -57,7 +57,7 @@ def channel_from_xml_tree(xml_tree):
             channel.set_pub_date(item.text)
         elif item.tag == 'item':
             #try:
-            channel.add_item(item_from_xml_tree(item))
+            channel.add_older_item(item_from_xml_tree(item))
             # except Exception as ex:
             #     _logger.debug( "Channel.from_xml: Exception occured" + ex.__str__())
             _logger.debug( "Read channel " + channel.get_title()) 
@@ -236,7 +236,18 @@ class Channel(Item):
         if len(self.items) > self.max_items > 0:
             self.logger.debug( len(self.items) + " >= " + self.max_items + 
                 " Removing last item...")
-            self.remove_last_item()
+            self.remove_oldest_item()
+        self.items.appendleft(item)
+        self.logger.debug( "Channel: Added item " + item.to_xml())
+        self.logger.debug( "Channel.add_item: Items are now " + [" * " +
+            it.get_title() for it in self.items].__str__())
+    #-------------------------------------------------------------------------- 
+    def add_older_item(self, item):
+        """ Inserts an old RSS item to this channel """
+        if len(self.items) > self.max_items > 0:
+            self.logger.debug( len(self.items) + " >= " + self.max_items + 
+                " Not adding old item")
+            return
         self.items.append(item)
         self.logger.debug( "Channel: Added item " + item.to_xml())
         self.logger.debug( "Channel.add_item: Items are now " + [" * " +
@@ -245,7 +256,10 @@ class Channel(Item):
     def remove_item(self, item):
         self.items.remove(item)
     #-------------------------------------------------------------------------- 
-    def remove_last_item(self):
+    def remove_oldest_item(self):
+        self.items.pop()
+    #-------------------------------------------------------------------------- 
+    def remove_newest_item(self):
         self.items.popleft()
     #-------------------------------------------------------------------------- 
     def get_items(self):
@@ -255,7 +269,7 @@ class Channel(Item):
         self.max_items = max_items
         if max_items > 0:
             while len(self.items) > max_items:
-                self.remove_last_item()
+                self.remove_oldest_item()
     #-------------------------------------------------------------------------- 
     def to_html(self):
         html = []
@@ -278,7 +292,7 @@ class Channel(Item):
         pub_date.text        = self.get_pub_date()
         ttl                  = ET.SubElement(xml_tree, 'ttl')
         ttl.text             = self.get_ttl()
-        for item in reversed(self.items):
+        for item in self.items:
             xml_tree.append(item.to_xml_tree())
         return xml_tree
     

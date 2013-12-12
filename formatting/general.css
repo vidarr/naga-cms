@@ -88,3 +88,7 @@ div.center_item {
 table.high_row tr {
     line-height : 2em;
 }
+
+td.center_item {
+    text-align  : center;
+}
