@@ -28,12 +28,15 @@ def get_new_channel():
     rss_channel.set_link("localhost/seite")
     return rss_channel
 #------------------------------------------------------------------------------
-def write_rss(heading, summary, content, categories, file_name):
+def write_rss(heading, summary, file_name = None):
     rss_item = rss.Item()
     rss_item.set_title(heading)
     rss_item.set_description(summary)
-    link = NAGA_ROOT + PATH_SEPARATOR + SHOW_RELATIVE_PATH + '?' + \
-            'type=article&content=' + file_name
+    if file_name:
+        link = NAGA_ROOT + PATH_SEPARATOR + SHOW_RELATIVE_PATH + '?' + \
+                'type=article&content=' + file_name
+    else:
+        link = NAGA_ROOT
     rss_item.set_link(link)
     _logger.debug("Set link to " + rss_item.get_link())
     _logger.debug("NAGA_ROOT " + NAGA_ROOT)
@@ -70,28 +73,29 @@ def write_content(heading, summary, content,categories, file_name):
     registry_object.save()
     return article_object
 #------------------------------------------------------------------------------
-def post_news(heading, summary, content_exists, content, categories):
+def post_news(heading, summary, content = None, categories = None):
     _logger.info("New post")
+    file_name = None
     if content:
         if type(content) == type ('a'):
             content_to_hash = content.encode(ENCODING)
         else:
             content_to_hash = content
         _hash_func.update(content_to_hash)
-    if summary:
-        if type(summary) == type ('a'):
-            summary_to_hash = summary.encode(ENCODING)
-        else:
-            summary_to_hash = summary
-        _hash_func.update(summary_to_hash)
-    file_name = _hash_func.digest()
-    file_name = base64.b32encode(file_name).decode(ENCODING)
-    file_name = file_name + ".xml"
-    if content_exists:
-        _logger.info("Posting article")
-        article = write_content(heading   , summary, content, 
-                                categories, file_name)
-    write_rss(heading, summary, content, categories, file_name)
+        if summary:
+            if type(summary) == type ('a'):
+                summary_to_hash = summary.encode(ENCODING)
+            else:
+                summary_to_hash = summary
+            _hash_func.update(summary_to_hash)
+        file_name = _hash_func.digest()
+        file_name = base64.b32encode(file_name).decode(ENCODING)
+        file_name = file_name + ".xml"
+        if content:
+            _logger.info("Posting article")
+            article = write_content(heading   , summary, content, 
+                                    categories, file_name)
+    write_rss(heading, summary, file_name)
     return page.wrap("New post accepted")
 #------------------------------------------------------------------------------
 if __name__ == '__main__':
@@ -100,11 +104,17 @@ if __name__ == '__main__':
     form = cgi.FieldStorage()
     # if not security.authenticate_cgi(form):
     if not security.authenticate_cookie():
-        print(page.wrap('<body><p) class="error">Authentication failure</p></body></html>'))
+        print(page.wrap('<p class="error">Authentication failure</p>'))
         sys.exit(1)
-    if 'heading' not in form or 'summary' not in form or 'content' not in form:
+    if 'heading' not in form or 'summary' not in form:
         _logger.error("Error: Called without enough parameters")
-    else:
+        print(page.wrap('''
+             <p class="error">Internal error: Called without
+            enough parameters</p>'''))
+        sys.exit(1)
+    heading = form['heading'].value
+    summary = form['summary'].value
+    if 'contentexists' in form:
         categories = []
         for key_value in form.keys():
             _logger.debug(key_value)
@@ -112,6 +122,7 @@ if __name__ == '__main__':
             if len(key_parts) == 2 and key_parts[0] == 'category':
                 _logger.debug(form[key_value].value)
                 categories.append(key_parts[1])
-        print(post_news(form['heading'].value, form['summary'].value,
-        form.getvalue('contentexists'), form['content'].value, categories))
+        print(post_news(heading, summary, form['content'].value, categories))
+    else:
+        print(post_news(heading, summary))
 

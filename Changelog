@@ -1,0 +1,3 @@
+2014-01-02
+	* Enabled posting of bare RSS entries
+	* Switched to authentication via cookies
