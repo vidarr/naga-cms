@@ -5,6 +5,7 @@ PAGE_ROOT     = os.path.join(os.path.dirname(os.path.abspath(__file__)))
 MODULE_DIR  = 'python'
 sys.path.append(PAGE_ROOT + '/../' + MODULE_DIR);
 from naga_config import *
+from security import authenticate_cookie
 import categories
 import statics
 #------------------------------------------------------------------------------
@@ -71,7 +72,15 @@ class Page:
         html.append(RSS_ICON_PATH)
         html.append('''"  height="18" width="18"/>Subscribe</a>
             </li>
-            </ul>''')
+            </ul>
+            ''')
+        if authenticate_cookie():
+            self._logger.debug("Authenticated via cookie")
+            html.append('<ul>')
+            html.append('<li>[<a href="')
+            html.append(ADD_ARTICLE_PATH)
+            html.append('">Add new entry</a>]</li>')
+            html.append('</ul>')
         html_string = ''.join(html)
         return html_string
     #--------------------------------------------------------------------------

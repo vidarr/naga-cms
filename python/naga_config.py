@@ -40,6 +40,8 @@ REGISTRY_PATH          = PAGE_ROOT + PATH_SEPARATOR + CONTENT_DIR
 CONTENT_PATH           = PAGE_ROOT + PATH_SEPARATOR + CONTENT_DIR 
 STATIC_PATH            = PAGE_ROOT + PATH_SEPARATOR + STATIC_DIR
 STATIC_FILE_PATH       = PAGE_ROOT + PATH_SEPARATOR + ETC_DIR        + PATH_SEPARATOR + 'static'
+AUTHENTICATE_LINK      = CGI_PATH  + PATH_SEPARATOR + 'authenticate.py'
+ADD_ARTICLE_PATH       = CGI_PATH  + PATH_SEPARATOR + 'post.py'
 #------------------------------------------------------------------------------
 # CGI authentication names
 #------------------------------------------------------------------------------

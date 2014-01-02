@@ -20,7 +20,8 @@ _logger = logging.getLogger()
 if __name__ == '__main__':
     cgitb.enable()
     cgi_variables = cgi.FieldStorage()
-    if not security.authenticate_cgi(cgi_variables):
+    # if not security.authenticate_cgi(cgi_variables):
+    if not security.authenticate_cookie():
         print(page.wrap('<p) class="error">Authentication failure</p></body></html>'))
         sys.exit(1)
     head_string = ''.join(['''<title>Michael J. Beer</title>
@@ -42,11 +43,12 @@ if __name__ == '__main__':
     for cat in categories.get_categories().get_categories():
         html_body.write(''.join(['<input type="checkbox" name="category.', cat, 
             '" value="yes" formmethod="post"/>', cat, '</input> <br/>']))
-    html_body.write(''.join(['<input type="hidden" name="', CREDENTIALS_USER, '" value="',
-        security.get_user(cgi_variables), '">']))
-    html_body.write(''.join(['<input type="hidden" name="', CREDENTIALS_PASSPHRASE, '" value="',
-        security.get_passphrase(cgi_variables)])) 
-    html_body.write('''"><input type="submit" value="Submit"><br/>
+    # html_body.write(''.join(['<input type="hidden" name="', CREDENTIALS_USER, '" value="',
+    #     security.get_user(cgi_variables), '">']))
+    # html_body.write(''.join(['<input type="hidden" name="', CREDENTIALS_PASSPHRASE, '" value="',
+    #     security.get_passphrase(cgi_variables)])) 
+    # html_body.write('">')
+    html_body.write('''<input type="submit" value="Submit"><br/>
     </form>
     ''')
     html_body_string = html_body.getvalue()

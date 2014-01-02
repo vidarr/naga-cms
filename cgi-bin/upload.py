@@ -98,7 +98,8 @@ if __name__ == '__main__':
     cgitb.enable()
     _logger.info("upload.py: Upload request received")
     form = cgi.FieldStorage()
-    if not security.authenticate_cgi(form):
+    # if not security.authenticate_cgi(form):
+    if not security.authenticate_cookie():
         print(page.wrap('<body><p) class="error">Authentication failure</p></body></html>'))
         sys.exit(1)
     if 'heading' not in form or 'summary' not in form or 'content' not in form:

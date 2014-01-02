@@ -11,9 +11,10 @@ ABSOLUTE_PAGE_ROOT = ABSOLUTE_PAGE_ROOT + '/..'
 MODULE_DIR         = 'python'
 sys.path.append(ABSOLUTE_PAGE_ROOT + '/' + MODULE_DIR)
 from naga_config import *
-from security    import sanitize_string
+from security    import sanitize_string, authenticate_cookie
 from page        import Page
 from rss         import Rss
+from article     import get_edit_links_html
 import registry
 import statics
 #------------------------------------------------------------------------------
@@ -58,7 +59,10 @@ def show_article(content):
     if not content in article_registry.get_article_keys():
         show_error(content + " not found")
     article_object = article_registry.get(content)
-    _page.set_content(article_object.to_html())
+    edit_links = ''
+    if authenticate_cookie():
+        edit_links = get_edit_links_html()
+    _page.set_content(edit_links + article_object.to_html())
     finish_page()
 #------------------------------------------------------------------------------
 def show_category(content):
