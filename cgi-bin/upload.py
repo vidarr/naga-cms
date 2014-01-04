@@ -71,32 +71,34 @@ def write_content(heading, summary, content,categories, file_name):
     registry_object = registry.Registry()
     registry_object.add(file_name, article_object)
     registry_object.save()
-    return article_object
 #------------------------------------------------------------------------------
-def post_news(heading, summary, content = None, categories = None):
+def post_entry(heading, summary, content = None, categories = None, file_name =
+        None):
     _logger.info("New post")
-    file_name = None
     if content:
-        if type(content) == type ('a'):
-            content_to_hash = content.encode(ENCODING)
-        else:
-            content_to_hash = content
-        _hash_func.update(content_to_hash)
-        if summary:
-            if type(summary) == type ('a'):
-                summary_to_hash = summary.encode(ENCODING)
-            else:
-                summary_to_hash = summary
-            _hash_func.update(summary_to_hash)
-        file_name = _hash_func.digest()
-        file_name = base64.b32encode(file_name).decode(ENCODING)
-        file_name = file_name + ".xml"
-        if content:
-            _logger.info("Posting article")
-            article = write_content(heading   , summary, content, 
-                                    categories, file_name)
+        if not file_name:
+            file_name = create_file_name(heading, summary, content)
+        _logger.info("Posting article")
+        write_content(heading   , summary, content, 
+            categories, file_name)
     write_rss(heading, summary, file_name)
     return page.wrap("New post accepted")
+#------------------------------------------------------------------------------
+def create_file_name(heading, summary, content):
+    if type(content) == type ('a'):
+        content_to_hash = content.encode(ENCODING)
+    else:
+        content_to_hash = content
+    _hash_func.update(content_to_hash)
+    if summary:
+        if type(summary) == type ('a'):
+            summary_to_hash = summary.encode(ENCODING)
+        else:
+            summary_to_hash = summary
+        _hash_func.update(summary_to_hash)
+    file_name = _hash_func.digest()
+    file_name = base64.b32encode(file_name).decode(ENCODING)
+    return file_name + ".xml"
 #------------------------------------------------------------------------------
 if __name__ == '__main__':
     cgitb.enable()
@@ -122,7 +124,11 @@ if __name__ == '__main__':
             if len(key_parts) == 2 and key_parts[0] == 'category':
                 _logger.debug(form[key_value].value)
                 categories.append(key_parts[1])
-        print(post_news(heading, summary, form['content'].value, categories))
+        file_name = None
+        if 'file_name' in form.keys():
+            file_name = form['file_name']
+        print(post_entry(heading, summary, form['content'].value, categories,
+            file_name))
     else:
-        print(post_news(heading, summary))
+        print(post_entry(heading, summary))
 

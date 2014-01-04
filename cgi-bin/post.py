@@ -43,11 +43,6 @@ if __name__ == '__main__':
     for cat in categories.get_categories().get_categories():
         html_body.write(''.join(['<input type="checkbox" name="category.', cat, 
             '" value="yes" formmethod="post"/>', cat, '</input> <br/>']))
-    # html_body.write(''.join(['<input type="hidden" name="', CREDENTIALS_USER, '" value="',
-    #     security.get_user(cgi_variables), '">']))
-    # html_body.write(''.join(['<input type="hidden" name="', CREDENTIALS_PASSPHRASE, '" value="',
-    #     security.get_passphrase(cgi_variables)])) 
-    # html_body.write('">')
     html_body.write('''<input type="submit" value="Submit"><br/>
     </form>
     ''')
