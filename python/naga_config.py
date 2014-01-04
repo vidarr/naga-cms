@@ -10,7 +10,7 @@ CFG_LIST_SEPARATOR     = ','
 #------------------------------------------------------------------------------
 # Actual configuration
 #------------------------------------------------------------------------------
-NAGA_ROOT              = 'http://localhost/naga'
+NAGA_ROOT              = 'https://localhost/naga'
 NAGA_ABS_ROOT          = '/var/www'
 PAGE_TITLE             = "Michael J. Beer"
 COPYRIGHT              = '&copy;2013 <a href="mailto:michael@ubeer.org">Michael J. Beer</a>'
@@ -41,6 +41,7 @@ CONTENT_PATH           = PAGE_ROOT + PATH_SEPARATOR + CONTENT_DIR
 STATIC_PATH            = PAGE_ROOT + PATH_SEPARATOR + STATIC_DIR
 STATIC_FILE_PATH       = PAGE_ROOT + PATH_SEPARATOR + ETC_DIR        + PATH_SEPARATOR + 'static'
 AUTHENTICATE_LINK      = CGI_PATH  + PATH_SEPARATOR + 'authenticate.py'
+LOGOUT_PATH            = CGI_PATH  + PATH_SEPARATOR + 'logout.py'
 ADD_ARTICLE_PATH       = CGI_PATH  + PATH_SEPARATOR + 'post.py'
 #------------------------------------------------------------------------------
 # CGI authentication names

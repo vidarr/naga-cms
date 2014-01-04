@@ -97,8 +97,21 @@ def get_credential_cookie(user, passphrase):
     authenticate with user,passphrase
     '''
     cookie  = cookies.SimpleCookie()
-    cookie[CREDENTIALS_USER] = user
+    cookie[CREDENTIALS_USER]       = user
     cookie[CREDENTIALS_PASSPHRASE] = passphrase
+    cookie[CREDENTIALS_USER]['secure']       = True
+    cookie[CREDENTIALS_PASSPHRASE]['secure'] = True
+    return cookie
+#---------------------------------------------------------------------------    
+def get_logout_cookie():
+    '''
+    Returns a cookie with invalid username and password
+    '''
+    cookie  = cookies.SimpleCookie()
+    cookie[CREDENTIALS_USER]       = ''
+    cookie[CREDENTIALS_PASSPHRASE] = ''
+    cookie[CREDENTIALS_USER]['expires']       = 0
+    cookie[CREDENTIALS_PASSPHRASE]['expires'] = 0
     return cookie
 #---------------------------------------------------------------------------    
 class Authenticator(ConfigurationObject):

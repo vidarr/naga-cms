@@ -80,9 +80,12 @@ class Page:
         if authenticate_cookie():
             self._logger.debug("Authenticated via cookie")
             html.append('<ul>')
-            html.append('<li>[<a href="')
+            html.append('<li>[ <a href="')
             html.append(ADD_ARTICLE_PATH)
-            html.append('">Add new entry</a>]</li>')
+            html.append('">Add new entry</a> ]</li>')
+            html.append('<li>[ <a href="')
+            html.append(LOGOUT_PATH)
+            html.append('">Log out</a> ]</li>')
             html.append('</ul>')
         html_string = ''.join(html)
         return html_string
