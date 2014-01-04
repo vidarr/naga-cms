@@ -133,6 +133,5 @@ if __name__ == '__main__':
     if not 'content' in form:
         show_error('Invalid argument given to show.py')
     content = form['content'].value
-    #    content = sanitize_string(content)
     content_handler(content)
 

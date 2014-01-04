@@ -22,9 +22,9 @@ def wrap(content, head = "<title>naga</title>"):
 class Page:
     def __init__(self, config = {}):
         self._logger     = logging.getLogger("page.py")
-        self.css_link = CSS_PATH
-        self.content  = ""
-        self.title    = PAGE_TITLE
+        self.css_links   = [CSS_PATH]
+        self.content     = ""
+        self.title       = PAGE_TITLE
         if 'Page.TITLE' in config:
             self.title = config['Page.TITLE']
         if 'Page.CSS_LINK' in config:
@@ -34,8 +34,11 @@ class Page:
         self._categories = categories.get_categories().get_categories()
         self._logger.debug(self._categories)
     #--------------------------------------------------------------------------
-    def set_css_link(self, css_link):
-        self.css_link = css_link
+    def set_css_links(self, css_links):
+        self.css_links = css_links
+    #--------------------------------------------------------------------------
+    def add_css_link(self, css_link):
+        self.css_links.append(css_link)
     #--------------------------------------------------------------------------
     def set_content(self, content):
         self.content = content
@@ -85,9 +88,12 @@ class Page:
         return html_string
     #--------------------------------------------------------------------------
     def get_html(self):
-        html_head_string = ''.join(['<title>', self.title, '''</title>
-                <link   rel="stylesheet" type="text/css" href="''', 
-                self.css_link, '">'])
+        html_head  = ['<title>', self.title, '</title>']
+        for css_link in self.css_links:
+            html_head.append('<link   rel="stylesheet" type="text/css" href="') 
+            html_head.append(css_link)
+            html_head.append('">')
+        html_head_string = ''.join(html_head)
         html_body_string = ''.join(['<nav>', self._create_navbar(), '''
             </nav>
             <article>''', 

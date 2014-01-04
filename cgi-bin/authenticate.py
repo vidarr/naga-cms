@@ -18,11 +18,11 @@ __logger = logging.getLogger()
 if __name__ == '__main__':
     cgitb.enable()
     cgi_variables = cgi.FieldStorage()
+    page_object = page.Page() 
     if not security.authenticate_cgi(cgi_variables):
-        print(page.wrap('<p class="error">Authentication failure</p>'))
+        page_object.set_content('<p class="error">Authentication failure</p>')
+        print(page_object.get_html())
         sys.exit(1)
-    head_string = ''.join(['''<title>Michael J. Beer</title>
-    <link rel="stylesheet" href="''', CSS_POST_PATH, '"/>']) 
     html_body_string = '<p>Authenticated</p>'
     user = security.get_user(cgi_variables)
     passphrase = security.get_passphrase(cgi_variables)
@@ -33,7 +33,7 @@ if __name__ == '__main__':
     else:
         cookie = security.get_credential_cookie(user, passphrase)
         print(cookie.output())
-    html = page.wrap(html_body_string, head_string)
-    __logger.info(html)
-    print(html)
+    __logger.info(html_body_string)
+    page_object.set_content(html_body_string)
+    print(page_object.get_html())
 

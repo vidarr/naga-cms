@@ -48,8 +48,11 @@ ADD_ARTICLE_PATH       = CGI_PATH  + PATH_SEPARATOR + 'post.py'
 CREDENTIALS_USER       = 'user'
 CREDENTIALS_PASSPHRASE = 'passphrase'
 #------------------------------------------------------------------------------
+HTTP_ARG_FILE_NAME     = 'file_name'
+#------------------------------------------------------------------------------
 # Logger configuration
 #------------------------------------------------------------------------------
 logging.basicConfig(filename= NAGA_ABS_ROOT + PATH_SEPARATOR +
                     LOG_FILE_PATH,level=logging.DEBUG)
+
 

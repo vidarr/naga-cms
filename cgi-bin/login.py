@@ -15,7 +15,6 @@ __logger = logging.getLogger("login.py")
 #------------------------------------------------------------------------------    
 if __name__ == '__main__':
     cgitb.enable()
-    html_head = '<title>Michael J. Beer</title>'
     __logger.info("Request")
     form = cgi.FieldStorage()
     if not 'forward' in form:
@@ -38,7 +37,12 @@ if __name__ == '__main__':
         </td></tr>
         </table>
         <input type="submit" value="Submit"><br/>
-        <input type="hidden" value="''', forward_link, '''><br/>
+        <input type="hidden" value="''', forward_link, '''"><br/>
     </form>
     '''])
-    print(page.wrap(html_body, html_head))
+    page_object = page.Page()
+    page_object.set_content(html_body)
+    __logger.info(page_object.get_html())
+    print(page_object.get_html())
+    sys.exit(0)
+

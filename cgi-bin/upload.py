@@ -82,7 +82,9 @@ def post_entry(heading, summary, content = None, categories = None, file_name =
         write_content(heading   , summary, content, 
             categories, file_name)
     write_rss(heading, summary, file_name)
-    return page.wrap("New post accepted")
+    page_object = page.Page()
+    page_object.set_content("New post accepted")
+    return page_object.get_html()
 #------------------------------------------------------------------------------
 def create_file_name(heading, summary, content):
     if type(content) == type ('a'):
