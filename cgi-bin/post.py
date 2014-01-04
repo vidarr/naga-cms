@@ -14,6 +14,7 @@ from naga_config import *
 import security
 import categories
 import page
+import registry
 #------------------------------------------------------------------------------    
 _logger     = logging.getLogger()
 _file_name  = None
@@ -29,11 +30,42 @@ def initialize_data_vars(file_name):
             _logger.error(file_name + " does not exist")
             return False
         article_object = registry_object.get(file_name)
-        _heading  = article_object.get_heading()
-        _summary  = article_object.get_summary()
-        _content  = article_object.get_content()
+        global _heading    
+        global _summary    
+        global _content    
+        global _categories 
+        _heading    = article_object.get_heading()
+        _summary    = article_object.get_summary()
+        _content    = article_object.get_content()
         _categories = article_object.get_categories()
+    _logger.info("Loaded " + file_name + ' with heading = ' + _heading)
     return True
+#------------------------------------------------------------------------------    
+def get_upload_path(file_name):
+    upload_path = [UPLOAD_PATH]
+    if file_name:
+        upload_path.append('?')
+        upload_path.append(HTTP_ARG_FILE_NAME)
+        upload_path.append('=')
+        upload_path.append(file_name)
+    return ''.join(upload_path)
+#------------------------------------------------------------------------------    
+def get_content_checkbox(file_name):
+    html = ['<input type="checkbox" name="contentexists" value="yes"']
+    if file_name:
+        html.append('checked')
+    html.append('/>Content</input> <br/>')
+    return ''.join(html)
+#------------------------------------------------------------------------------    
+def get_categories_checkboxes():
+    checkbox_html = []
+    for cat in categories.get_categories().get_categories():
+        checked = ''
+        if cat in _categories:
+            checked = 'checked'
+        checkbox_html.extend(['<input type="checkbox" name="category.', cat, 
+            '" value="yes" formmethod="post"', checked, '/>', cat, '</input> <br/>'])
+    return ''.join(checkbox_html)
 #------------------------------------------------------------------------------    
 if __name__ == '__main__':
     cgitb.enable()
@@ -43,40 +75,44 @@ if __name__ == '__main__':
         page_object.set_page('<p class="error">Authentication failure</p>')
         print(page_object.get_html())
         sys.exit(1)
+    file_name = None
     if HTTP_ARG_FILE_NAME in cgi_variables.keys():
         file_name = cgi_variables[HTTP_ARG_FILE_NAME]
+        if file_name:
+            file_name = file_name.value
         if not initialize_data_vars(file_name):
             page.set_content('<p class="error">' + file_name + 
                 ' does not exist</p>')
             print(page.get_html())
             sys.exit(1)
+    _logger.info('heading is = ' + _heading)
     page_object.add_css_link(CSS_POST_PATH)
     html_body = StringIO()
     html_body.write('''<h1>Make your post!</h1>
     <form action="''')
-    html_body.write(UPLOAD_PATH)
+    html_body.write(get_upload_path(file_name))
     html_body.write('''" method="post">
         Heading: 
         <input type="text"     id=input_heading"  name="heading" value="''' + 
         _heading + '''"/> <br/>
         Summary: <br/>
-        <textarea              id="input_summary" name="summary" value="''' + 
-        _summary + '''"></textarea> <br/>
-        <input type="checkbox" name="contentexists" value="yes"/>Content</input> <br/>
+        <textarea              id="input_summary" name="summary">''' + 
+        _summary + '''</textarea> <br/>''')
+    html_body.write(get_content_checkbox(file_name))
+    html_body.write('''
         Content: <br/>
-        <textarea              id="input_content" name="content" value="''' +
+        <textarea              id="input_content" name="content">''' +
         _content +
-        '''"></textarea> <br/>
+        '''</textarea> <br/>
         <h2>Categories</h2>
         ''')
-    for cat in categories.get_categories().get_categories():
-        html_body.write(''.join(['<input type="checkbox" name="category.', cat, 
-            '" value="yes" formmethod="post"/>', cat, '</input> <br/>']))
+    html_body.write(get_categories_checkboxes())
     html_body.write('''<input type="submit" value="Submit"><br/>
     </form>
     ''')
     html_body_string = html_body.getvalue()
     html_body.close()
+    _logger.info(html_body_string)
     page_object.set_content(html_body_string)
     print(page_object.get_html())
 
