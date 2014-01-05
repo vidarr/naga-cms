@@ -43,6 +43,7 @@ STATIC_FILE_PATH       = PAGE_ROOT + PATH_SEPARATOR + ETC_DIR        + PATH_SEPA
 AUTHENTICATE_LINK      = CGI_PATH  + PATH_SEPARATOR + 'authenticate.py'
 LOGOUT_PATH            = CGI_PATH  + PATH_SEPARATOR + 'logout.py'
 ADD_ARTICLE_PATH       = CGI_PATH  + PATH_SEPARATOR + 'post.py'
+EDIT_ARTICLE_PATH      = ADD_ARTICLE_PATH
 #------------------------------------------------------------------------------
 # CGI authentication names
 #------------------------------------------------------------------------------

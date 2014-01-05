@@ -21,9 +21,10 @@ TAG_TIMESTAMP    = 'timestamp'
 #------------------------------------------------------------------------------
 _logger = logging.getLogger('article')
 #------------------------------------------------------------------------------
-def get_edit_links_html():
+def get_edit_links_html(file_name):
     '''Return HTML links to edit / delete pages '''
-    return ''
+    return ''.join(['[ <a href="', EDIT_ARTICLE_PATH, '?file_name=',
+        file_name, '">edit</a> ]'])
 #------------------------------------------------------------------------------
 def article_from_xml(article_xml):
     '''
