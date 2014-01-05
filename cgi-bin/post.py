@@ -19,7 +19,7 @@ import registry
 _logger     = logging.getLogger()
 _file_name  = None
 _content    = ''
-_summary    = ''
+_summary    = ''    # Wont be used...
 _heading    = ''
 _categories = []
 #------------------------------------------------------------------------------    
@@ -35,7 +35,7 @@ def initialize_data_vars(file_name):
         global _content    
         global _categories 
         _heading    = article_object.get_heading()
-        _summary    = article_object.get_summary()
+        # _summary    = article_object.get_summary()
         _content    = article_object.get_content()
         _categories = article_object.get_categories()
     _logger.info("Loaded " + file_name + ' with heading = ' + _heading)

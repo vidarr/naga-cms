@@ -63,12 +63,18 @@ def write_rss(heading, summary, file_name = None):
     rss_object.to_file()
 #------------------------------------------------------------------------------
 def write_content(heading, summary, content,categories, file_name):
+    registry_object = registry.Registry()
+    if file_name in registry_object.get_article_keys():
+        # If article is being updated, remove old version, modify summary
+        article_object = registry_object.get(file_name)
+        summary_old    = article_object.get_summary()
+        summary        = ''.join([summary_old, '<br>', summary])
+        registry_object.remove(file_name)
     article_object = article.Article()
     article_object.set_heading(heading)
     article_object.set_summary(summary)
     article_object.set_content(content)
     article_object.set_categories(categories)
-    registry_object = registry.Registry()
     registry_object.add(file_name, article_object)
     registry_object.save()
 #------------------------------------------------------------------------------
@@ -76,7 +82,9 @@ def post_entry(heading, summary, content = None, categories = None, file_name =
         None):
     _logger.info("New post")
     if content:
-        if not file_name:
+        if file_name:
+            summary = UPDATE_LABEL + summary
+        else:
             file_name = create_file_name(heading, summary, content)
         _logger.info("Posting article")
         write_content(heading   , summary, content, 
@@ -87,6 +95,9 @@ def post_entry(heading, summary, content = None, categories = None, file_name =
     return page_object.get_html()
 #------------------------------------------------------------------------------
 def create_file_name(heading, summary, content):
+    '''
+    Create a 'unique' file name from heading, summary and content
+    '''
     if type(content) == type ('a'):
         content_to_hash = content.encode(ENCODING)
     else:
@@ -101,6 +112,30 @@ def create_file_name(heading, summary, content):
     file_name = _hash_func.digest()
     file_name = base64.b32encode(file_name).decode(ENCODING)
     return file_name + ".xml"
+#------------------------------------------------------------------------------
+def get_chosen_categories(form):
+    '''
+    Return an array containing the names of all categories whose checkboxes 
+    have been selected
+    '''
+    categories = []
+    for key_value in form.keys():
+        _logger.debug(key_value)
+        key_parts = key_value.split('.')
+        if len(key_parts) == 2 and key_parts[0] == 'category':
+            _logger.debug(form[key_value].value)
+            categories.append(key_parts[1])
+    return categories
+#------------------------------------------------------------------------------
+def get_file_name(form):
+    '''
+    Return value of 'file_name' variable if contained within form,
+    None otherwise
+    '''
+    file_name = None
+    if 'file_name' in form.keys():
+        file_name = form['file_name'].value
+    return file_name
 #------------------------------------------------------------------------------
 if __name__ == '__main__':
     cgitb.enable()
@@ -119,18 +154,8 @@ if __name__ == '__main__':
     heading = form['heading'].value
     summary = form['summary'].value
     if 'contentexists' in form:
-        categories = []
-        for key_value in form.keys():
-            _logger.debug(key_value)
-            key_parts = key_value.split('.')
-            if len(key_parts) == 2 and key_parts[0] == 'category':
-                _logger.debug(form[key_value].value)
-                categories.append(key_parts[1])
-        file_name = None
-        if 'file_name' in form.keys():
-            file_name = form['file_name']
-        print(post_entry(heading, summary, form['content'].value, categories,
-            file_name))
+        print(post_entry(heading, summary, form['content'].value, 
+            get_chosen_categories(form), get_file_name(form)))
     else:
         print(post_entry(heading, summary))
 
