@@ -65,6 +65,16 @@ def show_article(file_name):
     _page.set_content(edit_links + article_object.to_html())
     finish_page()
 #------------------------------------------------------------------------------
+def sort_articles(articles, sort_key = SORT_KEY_HEADING):
+    if sort_key == SORT_KEY_HEADING:
+        sort_function = lambda x: x.get_heading()
+    elif sort_key == SORT_KEY_TIMESTAMP:
+        sort_function = lambda x: x.get_timestamp()
+    else:
+        _logger.error("Invalid sort key given: " + sort_key)
+        return None
+    return sorted(articles, key = sort_function)
+#------------------------------------------------------------------------------
 def show_category(content):
     if not content:
         show_error("No category to show given")
@@ -75,7 +85,7 @@ def show_category(content):
     if len(articles) < 1:
         _page.set_content("<p>No articles found</p>")
     else:
-        html = ['<table>']
+        html = []
         article_objects = []
         for article_key in articles:
             article = article_registry.get(article_key)
@@ -83,16 +93,15 @@ def show_category(content):
                 _logger.error(article_key + ' not found')
             else:
                 article_objects.append(article)
-        articles_sorted = sorted(article_objects, 
-                key = lambda x: x.get_heading())
+        articles_sorted = sort_articles(article_objects)
         for article in articles_sorted:
             html.extend([ 
-                '<tr><td><p class="alignLeft">', 
+                '<div><p class="alignLeft">', 
                 '<a href="', NAGA_ROOT, PATH_SEPARATOR, SHOW_RELATIVE_PATH, 
                 '?type=article&content=', article_key, '">', 
-                article.get_heading(), '</a>', '</p></td><td><p class="', 
+                article.get_heading(), '</a>', '</p></td><p class="', 
                 ARTICLE_HTML_SHORT_TIMESTAMP, '">', article.get_timestamp(),
-                '</p></td></tr>'])
+                '</p><p class="', ARTICLE_HTML_SHORT_DESCRIPTION, '"> </p></div>'])
         html.append('</table>')
         html_string = ''.join(html)
         _page.set_content(html_string)
