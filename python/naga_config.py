@@ -58,5 +58,8 @@ UPDATE_LABEL           = '<b>Update:</b> '
 #------------------------------------------------------------------------------
 logging.basicConfig(filename= NAGA_ABS_ROOT + PATH_SEPARATOR +
                     LOG_FILE_PATH,level=logging.DEBUG)
-
-
+#------------------------------------------------------------------------------
+# Internal Constants
+#------------------------------------------------------------------------------
+# ARTICLE_HTML_SHORT_HEADING   = 'article_short_heading'
+ARTICLE_HTML_SHORT_TIMESTAMP = 'article_short_timestamp' 

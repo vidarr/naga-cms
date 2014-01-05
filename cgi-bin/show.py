@@ -42,7 +42,7 @@ def show_error(message):
 def show_news(content):
     _logger.info("show_rss: Requested " + content)
     if content == 'all':
-        file_name = NAGA_ABS_ROOT + PATH_SEPARATOR +RSS_ROLLING_FEED_PATH
+        file_name = NAGA_ABS_ROOT + PATH_SEPARATOR + RSS_ROLLING_FEED_PATH
     elif content == 'latest':
         file_name = NAGA_ABS_ROOT + PATH_SEPARATOR + RSS_FEED_PATH
     else:
@@ -75,16 +75,25 @@ def show_category(content):
     if len(articles) < 1:
         _page.set_content("<p>No articles found</p>")
     else:
-        html = []
+        html = ['<table>']
+        article_objects = []
         for article_key in articles:
             article = article_registry.get(article_key)
-            html.append('<a href="') 
-            html.append(NAGA_ROOT + PATH_SEPARATOR + SHOW_RELATIVE_PATH)
-            html.append('?type=article&content=') 
-            html.append(article_key)
-            html.append('">') 
-            html.append(article.to_html_short())
-            html.append('</a>')
+            if not article:
+                _logger.error(article_key + ' not found')
+            else:
+                article_objects.append(article)
+        articles_sorted = sorted(article_objects, 
+                key = lambda x: x.get_heading())
+        for article in articles_sorted:
+            html.extend([ 
+                '<tr><td><p class="alignLeft">', 
+                '<a href="', NAGA_ROOT, PATH_SEPARATOR, SHOW_RELATIVE_PATH, 
+                '?type=article&content=', article_key, '">', 
+                article.get_heading(), '</a>', '</p></td><td><p class="', 
+                ARTICLE_HTML_SHORT_TIMESTAMP, '">', article.get_timestamp(),
+                '</p></td></tr>'])
+        html.append('</table>')
         html_string = ''.join(html)
         _page.set_content(html_string)
     finish_page()

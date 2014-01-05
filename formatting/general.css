@@ -61,6 +61,12 @@ p.rss_description {
     clear : both;
 }
 
+p.article_short_timestamp {
+    float       : right;
+    font-size   : 0.8em;
+    font-family : Monospace;
+}
+
 p.article_timestamp {
     font-size   : 0.8em;
     font-family : Monospace;
