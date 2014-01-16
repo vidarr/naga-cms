@@ -15,11 +15,13 @@ from security    import sanitize_string, authenticate_cookie
 from page        import Page
 from rss         import Rss
 from article     import get_edit_links_html
+import nagaUtils
 import registry
 import statics
 #------------------------------------------------------------------------------
 _logger            = logging.getLogger('show.py')
 _page              = Page()
+_sortkey           = SORT_KEY_TIMESTAMP
 #------------------------------------------------------------------------------
 # Helper functions
 #------------------------------------------------------------------------------
@@ -69,7 +71,7 @@ def sort_articles(articles, sort_key = SORT_KEY_HEADING):
     if sort_key == SORT_KEY_HEADING:
         sort_function = lambda x: x.get_heading()
     elif sort_key == SORT_KEY_TIMESTAMP:
-        sort_function = lambda x: x.get_timestamp()
+        sort_function = lambda x: nagaUtils.to_posix_timestamp(x.get_timestamp())
     else:
         _logger.error("Invalid sort key given: " + sort_key)
         return None
@@ -93,7 +95,7 @@ def show_category(content):
                 _logger.error(article_key + ' not found')
             else:
                 article_objects.append(article)
-        articles_sorted = sort_articles(article_objects)
+        articles_sorted = sort_articles(article_objects, _sortkey)
         for article in articles_sorted:
             html.extend([ 
                 '<div><p class="alignLeft">', 
@@ -150,6 +152,8 @@ if __name__ == '__main__':
     content_handler = _content_types[content_type]
     if not 'content' in form:
         show_error('Invalid argument given to show.py')
+    if 'sortkey' in form:
+        _sortkey = form['sortkey'].value
     content = form['content'].value
     content_handler(content)
 

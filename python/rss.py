@@ -6,6 +6,7 @@ import xml.etree.ElementTree as ET
 from   collections import deque
 import logging
 from io import BytesIO
+import email.utils
 #------------------------------------------------------------------------------    
 PAGE_ROOT     = os.path.join(os.path.dirname(os.path.abspath(__file__)))
 MODULE_DIR  = 'python'
@@ -56,10 +57,7 @@ def channel_from_xml_tree(xml_tree):
         elif item.tag == 'pubDate':
             channel.set_pub_date(item.text)
         elif item.tag == 'item':
-            #try:
             channel.add_older_item(item_from_xml_tree(item))
-            # except Exception as ex:
-            #     _logger.debug( "Channel.from_xml: Exception occured" + ex.__str__())
             _logger.debug( "Read channel " + channel.get_title()) 
     return channel
 #==============================================================================    
@@ -172,12 +170,15 @@ class Item:
         self.guid = guid
     #-------------------------------------------------------------------------- 
     def set_pub_date(self, pub_date):
-        self.pub_date = pub_date
+        self.pub_date = nagaUtils.to_posix_timestamp(pub_date)
     #-------------------------------------------------------------------------- 
     def get_pub_date(self):
         if self.pub_date:
-            return self.pub_date
+            return nagaUtils.to_rfc822_timestamp(self.pub_date)
         return nagaUtils.get_timestamp_now()
+    #-------------------------------------------------------------------------- 
+    def get_pub_date_as_posix(self):
+        return self.pub_date
     #-------------------------------------------------------------------------- 
     def to_xml_tree(self):
         xml_tree        = ET.Element('item')
