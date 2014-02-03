@@ -45,18 +45,23 @@ def italic(call, arg):
 def line_break(call, arg):
     return '<br>'
 #------------------------------------------------------------------------------
-def make_link(separator):
+def make_link(separator, ilink_prefix = ''):
+    'Tada'
     def link(call, arg):
         parts = arg.partition(separator)
         (target, description) = (parts[0], parts[2])
         if call == 'ilink':
             # ilink will link to internal article
-            print ("internal link has not been implemented yet")
-            return arg
+            target = ilink_prefix + target
         if description == '':
             description = target
         return '<a href="' + target + '">' + description + '</a>'
     return link
+#------------------------------------------------------------------------------
+def make_do_nothing(separator):
+    def do_nothing(call, arg):
+        return call + separator + arg
+    return do_nothing
 #------------------------------------------------------------------------------
 class Transformator:
     #---------------------------------------------------------------------------
@@ -77,7 +82,8 @@ class Transformator:
                 'br'      : line_break,
                 'b'       : bold,
                 'i'       : italic,
-                'link'    : make_link(self.separator)
+                'link'    : make_link(self.separator),
+                'DEFAULT' : make_do_nothing(self.separator)
                 }
         if 'handlers' in params:
             self.lookup = params['handlers']
@@ -95,42 +101,63 @@ class Transformator:
             for x in transformed_parts]
         return ''.join(stripped_parts)
     #---------------------------------------------------------------------------
+    def escaped(self, origin_string, i):
+        if i > len(origin_string) - 1:
+            return None
+        elif i + 1 == len(origin_string):
+            None
+        elif origin_string[i + 1] == origin_string[i]:
+            return True
+        return None
+    #---------------------------------------------------------------------------
+    def get_call_end_position(self, origin_string, position):
+        print("Called get_call_end_position : " + origin_string)
+        if len(origin_string) < 1:
+            self._logger.error(origin_string + " is empty")
+            return None
+        level = 1
+        for i in range(position, len(origin_string)):
+            print (origin_string[i])
+            if origin_string[i] == self.right_marker:
+                print("right marker")
+                if not self.escaped(origin_string, i):
+                    print("level -- ")
+                    level = level - 1
+                    print ("level = " + str(level))
+                    if level == 0:
+                        return i
+            elif origin_string[i] == self.left_marker:
+                print ("left marker")
+                if not self.escaped(origin_string, i):
+                    print("level ++")
+                    level = level + 1
+        self._logger.error("Found no end marker")
+    #---------------------------------------------------------------------------
     def treat_format_call(self, origin_string, transformed_parts):
         inner_part = None
-        rest = ''
         position = 0
-        while inner_part == None:
-            position = origin_string.find(self.right_marker, position)
-            if position < 0:
-                self._logger.error(origin_string + 
-                        " does not contain end markers ")
-                return None
-            if len(origin_string) == position + 1:
-                inner_part = origin_string[:-1]
-            else:
-                if origin_string[position + 1] == self.right_marker:
-                    if len(origin_string) < position + 2 + 1:
-                        self._logger.error(origin_string + 
-                        " does not contain end marker")
-                        return None
-                    position = position + 2
-                else:
-                    # We found the end - now cut it out
-                    inner_part = origin_string[:position]
-                    rest = origin_string[position + 1:]
-        inner_part.replace(self.quoted_left_marker,
-                self.left_marker).replace(self.quoted_right_marker,
-                        self.right_marker)
+        position = self.get_call_end_position(origin_string, position)
+        if position == None:
+            self._logger.error("Could not isolate call part from " +
+                    origin_string)
+            return None
+        inner_part = origin_string[:position]
         self._logger.info("got format call " + inner_part)
+        if position + 1 == len(origin_string):
+            rest = ''
+        else:
+            rest = origin_string[position + 1:]
         call_parts = inner_part.partition(self.separator)
         if call_parts[0] == '':
             self._logger.error("error when trying to split " + inner_part)
             return None
+        arguments = self.transform(call_parts[2])
         if call_parts[0] in self.lookup:
             transformed_parts.append(self.lookup[call_parts[0]](call_parts[0],
-                call_parts[2]))
+                arguments))
         else:
-            transformed_parts.append(inner_part)
+            transformed_parts.append(self.lookup['DEFAULT'](call_parts[0],
+                arguments))
         return rest
     #---------------------------------------------------------------------------
     def transform(self, origin_string):

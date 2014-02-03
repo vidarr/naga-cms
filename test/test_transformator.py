@@ -22,12 +22,13 @@ _logger       = logging.getLogger("test_registry")
 def handler1(call, tokens):
     return "h1:" + call + ' ' + tokens
 #==============================================================================
-class textTransformator(unittest.TestCase):
+class testTransformator(unittest.TestCase):
     '''Test transformator'''
     #--------------------------------------------------------------------------
     def setUp(self):
         self.transformator = transformator.Transformator()
         self.transformator.register_callback("heading", handler1)
+        self.transformator.register_callback("b", handler1)
     #--------------------------------------------------------------------------
     def test_no_transform(self):
         test_string = "abcdefghijklmnopqrstuvwxyz1234567890"
@@ -77,6 +78,21 @@ class textTransformator(unittest.TestCase):
         test_string = "[[ab]]cdefg[footer i[[j]]k]12345]]]]67890"
         res_string = "[ab]cdefgfooter i[j]k12345]]67890"
         self.assertEqual(res_string, self.transformator.transform(test_string))
+    #--------------------------------------------------------------------------
+    def test_nested_simple(self):
+        test_string = "a[heading [b tata] ] a"
+        res_string  = "ah1:heading h1:b tata  a"
+        self.assertEqual(res_string, self.transformator.transform(test_string))
+    #--------------------------------------------------------------------------
+    def test_nested_begin(self):
+        test_string = "[heading [b tata] ] a"
+        res_string  = "h1:heading h1:b tata  a"
+        self.assertEqual(res_string, self.transformator.transform(test_string))
+    #--------------------------------------------------------------------------
+    def test_nested_end(self):
+        test_string = "a[heading [b tata] ]"
+        res_string  = "ah1:heading h1:b tata "
+        self.assertEqual(res_string, self.transformator.transform(test_string))
 #------------------------------------------------------------------------------
 # MAIN
 #------------------------------------------------------------------------------
@@ -85,10 +101,15 @@ if __name__ == '__main__':
     unittest.main()
 #     trans = transformator.Transformator()
 #     print (trans.transform('''[heading Once upon a time] 
-#  There has been some sort of list, it was 
-#  [olist * one *two *three]
-#  or 
-#  [ulist *an item *and another]
-#  No one knew what it was about
-#  Others [link https://google.com linked] to the good old [link http://google.com]'''))
-# 
+# [ilink tepahara]
+# [link linking the link]
+# [link tik]
+# [kink ink]
+# There has been some sort of list, it was 
+# [olist * one *two *three]
+# or 
+# [link http://google.com [b google] ]
+# [ulist *an item *and another]
+# No one knew what it was about
+# Others [link https://google.com linked] to the good old [link http://google.com]'''))
+#  
