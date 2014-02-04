@@ -29,11 +29,13 @@ class Registry:
     #--------------------------------------------------------------------------
     def from_file(self, file_name = None):
         '''Load registry file'''
+        self.logger.info("Registry.from_file")
         if file_name != None:
             self.file_name = file_name
         self.articles = {}
         file_object  = open(self.file_name, 'r')
         for line in file_object:
+            self.logger.info("Registry.from_file: " + line)
             line = line.rstrip()
             file_content = line.split(self.SEPARATOR)
             if len(file_content) < 3:
@@ -44,6 +46,8 @@ class Registry:
             article_object = article.Article()
             article_object.set_heading(heading)
             article_object.set_timestamp(timestamp)
+            self.logger.error("Setting key :" + key)
+            article_object.set_key(key)
             if len(file_content) > 3:
                 categories = file_content[3].split(self.CATEGORIES_SEPARATOR)
                 self.logger.debug("from_file: Got categories: " +
@@ -80,7 +84,9 @@ class Registry:
         self.logger.debug("get: About to get " + key)
         self.logger.debug(self.articles.keys())
         if key in self.articles.keys():
-            return article.article_from_xml(self._load_file(key))
+            article_object = article.article_from_xml(self._load_file(key))
+            article_object.set_key(key)
+            return article_object
         return None
     #--------------------------------------------------------------------------
     def get_xml(self, key):
@@ -108,6 +114,7 @@ class Registry:
         if key in self.articles.keys():
             value = self.articles[key]
         self.articles[key] = article
+        article.set_key(key)
         self.logger.debug("add: Added " + key)
         self.logger.debug(self.articles.keys())
         self._write_file(key)

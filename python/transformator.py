@@ -50,8 +50,8 @@ def make_link(separator, ilink_prefix = ''):
     def link(call, arg):
         parts = arg.partition(separator)
         (target, description) = (parts[0], parts[2])
-        if call == 'ilink':
-            # ilink will link to internal article
+        if not re.match("[a-z]+:\/\/..*", target):
+            # target matches some dns name
             target = ilink_prefix + target
         if description == '':
             description = target
@@ -62,6 +62,16 @@ def make_do_nothing(separator):
     def do_nothing(call, arg):
         return call + separator + arg
     return do_nothing
+
+#------------------------------------------------------------------------------
+def make_default_transformator():
+    transformator = Transformator()
+    link_prefix = NAGA_ROOT + PATH_SEPARATOR + SHOW_RELATIVE_PATH + '?' + \
+            'type=article&content='
+
+    transformator.register_callback('link', 
+            make_link(MARKUP_LINK_SEPARATOR, link_prefix))
+    return transformator
 #------------------------------------------------------------------------------
 class Transformator:
     #---------------------------------------------------------------------------
@@ -111,25 +121,18 @@ class Transformator:
         return None
     #---------------------------------------------------------------------------
     def get_call_end_position(self, origin_string, position):
-        print("Called get_call_end_position : " + origin_string)
         if len(origin_string) < 1:
             self._logger.error(origin_string + " is empty")
             return None
         level = 1
         for i in range(position, len(origin_string)):
-            print (origin_string[i])
             if origin_string[i] == self.right_marker:
-                print("right marker")
                 if not self.escaped(origin_string, i):
-                    print("level -- ")
                     level = level - 1
-                    print ("level = " + str(level))
                     if level == 0:
                         return i
             elif origin_string[i] == self.left_marker:
-                print ("left marker")
                 if not self.escaped(origin_string, i):
-                    print("level ++")
                     level = level + 1
         self._logger.error("Found no end marker")
     #---------------------------------------------------------------------------

@@ -51,6 +51,7 @@ CREDENTIALS_USER       = 'user'
 CREDENTIALS_PASSPHRASE = 'passphrase'
 #------------------------------------------------------------------------------
 HTTP_ARG_FILE_NAME     = 'file_name'
+XML_FILE_EXTENSION     = 'xml'
 #------------------------------------------------------------------------------
 UPDATE_LABEL           = '<b>Update:</b> '
 #------------------------------------------------------------------------------
@@ -66,3 +67,7 @@ ARTICLE_HTML_SHORT_TIMESTAMP   = 'article_short_timestamp'
 ARTICLE_HTML_SHORT_DESCRIPTION = 'article_short_description' 
 SORT_KEY_HEADING               = 'heading'
 SORT_KEY_TIMESTAMP             = 'timestamp'
+#------------------------------------------------------------------------------
+# Markup constants
+#------------------------------------------------------------------------------
+MARKUP_LINK_SEPARATOR = ' ' 

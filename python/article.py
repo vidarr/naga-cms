@@ -4,12 +4,14 @@ import os.path
 import sys
 import xml.etree.ElementTree as ET
 import logging
+import re
 #------------------------------------------------------------------------------
 PAGE_ROOT   = os.path.join(os.path.dirname(os.path.abspath(__file__)))
 MODULE_DIR  = 'python'
 sys.path.append(PAGE_ROOT + '/../' + MODULE_DIR);
 from naga_config import *
 import nagaUtils
+import transformator
 #------------------------------------------------------------------------------
 TAG_ARTICLE_ROOT = 'michael.josef.beer.article'
 TAG_HEADING      = 'heading'
@@ -20,6 +22,10 @@ TAG_CATEGORY     = 'category'
 TAG_TIMESTAMP    = 'timestamp'
 #------------------------------------------------------------------------------
 _logger = logging.getLogger('article')
+#------------------------------------------------------------------------------
+def heading_2_file_name(heading):
+    file_name = re.sub('[^a-zA-Z0-9]', '', heading)
+    return file_name.lower()
 #------------------------------------------------------------------------------
 def get_edit_links_html(file_name):
     '''Return HTML links to edit / delete pages '''
@@ -65,13 +71,16 @@ def article_from_xml(article_xml):
 #------------------------------------------------------------------------------    
 class Article:
     #---------------------------------------------------------------------------
-    def __init__(self):
+    def __init__(self, html_transformator =
+            transformator.make_default_transformator()):
         self.timestamp  = nagaUtils.get_timestamp_now()
         self.heading    = ''
         self.summary    = ''
         self.content    = ''
+        self.article_key = ''
         self.categories = []
         self.logger     = logging.getLogger('Article')
+        self.html_transformator = html_transformator
     #---------------------------------------------------------------------------
     def get_timestamp(self):
         return self.timestamp
@@ -92,14 +101,19 @@ class Article:
     def get_summary(self):
         return self.summary
     #---------------------------------------------------------------------------
+    def get_html_summary(self):
+        return self.html_transformator.transform(self.summary)
+    #---------------------------------------------------------------------------
     def set_summary(self, summary):
         old_summary = self.summary
         self.summary = summary
         return old_summary
     #---------------------------------------------------------------------------
-    
     def get_content(self):
         return self.content
+    #---------------------------------------------------------------------------
+    def get_html_content(self):
+        return self.html_transformator.transform(self.content)
     #---------------------------------------------------------------------------
     def set_content(self, content):
         old_content = self.content
@@ -113,6 +127,14 @@ class Article:
         old_categories = self.categories
         self.categories = categories
         return old_categories
+    #---------------------------------------------------------------------------
+    def set_key(self, key):
+        self.logger.error("set_key: setting " + key)
+        self.article_key = key
+    #---------------------------------------------------------------------------
+    def get_key(self):
+        self.logger.error("get_key: " + self.article_key)
+        return self.article_key
     #---------------------------------------------------------------------------
     def _to_xml_tree_short(self):
         '''
@@ -157,9 +179,9 @@ class Article:
                 '</p><p class="article_timestamp">',
                 self.get_timestamp(),
                 '</p><p class="article_summary">',
-                self.get_summary(),
+                self.get_html_summary(),
                 '</p><p class="article_content">',
-                self.get_content(),'</p>']
+                self.get_html_content(),'</p>']
         html_string = ''.join(html)
         return html_string
     #---------------------------------------------------------------------------

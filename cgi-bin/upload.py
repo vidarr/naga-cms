@@ -5,8 +5,6 @@ import io
 import os
 import sys
 import string
-import hashlib
-import base64
 #------------------------------------------------------------------------------
 ABS_PAGE_ROOT   = os.path.join(os.path.dirname(os.path.abspath(__file__))) + '/..'
 MODULE_DIR  = 'python'
@@ -17,9 +15,10 @@ import rss
 import registry
 import security
 import page
+import transformator
 #------------------------------------------------------------------------------
-_logger    = logging.getLogger("upload")
-_hash_func = hashlib.sha256()
+_logger        = logging.getLogger("upload")
+_transformator = transformator.make_default_transformator()
 #------------------------------------------------------------------------------
 def get_new_channel():
     rss_channel = rss.Channel()
@@ -29,6 +28,7 @@ def get_new_channel():
     return rss_channel
 #------------------------------------------------------------------------------
 def write_rss(heading, summary, file_name = None):
+    summary = _transformator.transform(summary)
     rss_item = rss.Item()
     rss_item.set_title(heading)
     rss_item.set_description(summary)
@@ -98,20 +98,8 @@ def create_file_name(heading, summary, content):
     '''
     Create a 'unique' file name from heading, summary and content
     '''
-    if type(content) == type ('a'):
-        content_to_hash = content.encode(ENCODING)
-    else:
-        content_to_hash = content
-    _hash_func.update(content_to_hash)
-    if summary:
-        if type(summary) == type ('a'):
-            summary_to_hash = summary.encode(ENCODING)
-        else:
-            summary_to_hash = summary
-        _hash_func.update(summary_to_hash)
-    file_name = _hash_func.digest()
-    file_name = base64.b32encode(file_name).decode(ENCODING)
-    return file_name + ".xml"
+    file_name = article.heading_2_file_name(heading)
+    return ''.join([file_name, '.', XML_FILE_EXTENSION]) 
 #------------------------------------------------------------------------------
 def get_chosen_categories(form):
     '''

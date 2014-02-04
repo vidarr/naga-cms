@@ -100,7 +100,7 @@ def show_category(content):
             html.extend([ 
                 '<div><p class="alignLeft">', 
                 '<a href="', NAGA_ROOT, PATH_SEPARATOR, SHOW_RELATIVE_PATH, 
-                '?type=article&content=', article_key, '">', 
+                '?type=article&content=', article.get_key(), '">', 
                 article.get_heading(), '</a>', '</p></td><p class="', 
                 ARTICLE_HTML_SHORT_TIMESTAMP, '">', article.get_timestamp(),
                 '</p><p class="', ARTICLE_HTML_SHORT_DESCRIPTION, '"> </p></div>'])
