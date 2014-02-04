@@ -45,14 +45,16 @@ def italic(call, arg):
 def line_break(call, arg):
     return '<br>'
 #------------------------------------------------------------------------------
-def make_link(separator, ilink_prefix = ''):
+def make_link(separator, internal_link_prefix = '', internal_link_postfix = ''):
     'Tada'
     def link(call, arg):
         parts = arg.partition(separator)
         (target, description) = (parts[0], parts[2])
         if not re.match("[a-z]+:\/\/..*", target):
             # target matches some dns name
-            target = ilink_prefix + target
+            description = target
+            target = ''.join([internal_link_prefix, target, '.',
+                XML_FILE_EXTENSION, internal_link_postfix])
         if description == '':
             description = target
         return '<a href="' + target + '">' + description + '</a>'
