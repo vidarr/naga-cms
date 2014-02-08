@@ -1,4 +1,21 @@
-#!/usr/bin/python3
+#
+# Part of the CMS naga, See <https://ubeer.org>
+#
+#    Copyright (C) 2013, 2014 Michael J. Beer <michael.josef.beer@googlemail.com>
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
 import datetime
 import os.path
 import sys
@@ -14,12 +31,24 @@ import nagaUtils
 #------------------------------------------------------------------------------
 _logger = logging.getLogger('transformator')
 #------------------------------------------------------------------------------
+# 'CONSTANTS'
+#------------------------------------------------------------------------------
+_DEFAULT = 'DEFAULT'   # Key for default call back
+#------------------------------------------------------------------------------
 # Standard call backs to convert to html
 #------------------------------------------------------------------------------
 def heading(call, arg):
+    '''
+    Callback: Format heading.
+    '''
     return '<h>' + arg + '</h>'
 #------------------------------------------------------------------------------
 def listing(call, arg):
+    '''
+    Callback: Format list in two flavors:
+    If call == 'ulist', format unordered list.
+    else format ordered list
+    '''
     sur_tag = 'ol'
     if call == 'ulist':
         sur_tag = 'ul'
@@ -37,20 +66,59 @@ def listing(call, arg):
     return ''.join(result)
 #------------------------------------------------------------------------------
 def bold(call, arg):
+    '''
+    Callback: Format bold
+    '''
+    del call # Just to get rid of 'Unused arg' warning
     return '<b>' + arg + '</b>'
 #------------------------------------------------------------------------------
 def italic(call, arg):
+    '''
+    Callback: Format italcs.
+    '''
+    del call # Just to get rid of 'Unused arg' warning
     return '<i>' + arg + '</i>'
 #------------------------------------------------------------------------------
 def line_break(call, arg):
+    '''
+    Callback: Format line break.
+    '''
+    del call, arg # Just to get rid of 'Unused arg' warning
     return '<br>'
 #------------------------------------------------------------------------------
-def make_link(separator, internal_link_prefix = '', internal_link_postfix = ''):
-    'Tada'
+def code(call, arg):
+    '''
+    Callback: Format code.
+    '''
+    del call # Just to get rid of 'Unused arg' warning
+    return ''.join(['<code>', arg, '</code>'])
+#------------------------------------------------------------------------------
+def make_link(separator, internal_link_prefix='', internal_link_postfix=''):
+    '''
+    Returns a function to be used as callback to format links.
+    The callback will distinuish between internal and external links.
+    An External link will be taken 'as is'.
+    An Internal link will be surrounded with internal_link_prefix and
+    internal_link_postfix.
+    '''
     def link(call, arg):
+        '''
+        Callback to format links.
+        Expects one or several arguments.
+        The first argument is the link target.
+        If additional arguments are given, they will be used as link text to
+        appear in the formatted output, otherwise the link target will act as
+        text.
+        If the link target is of the form PROTOCOL://SOMETHING , the link
+        is interpreted as external link and taken as is.
+        Otherwise, the link target will be interpreted as internal link and
+        altered to point to internal resources. Refer to the code for details,
+        please!
+        '''
+        del call # Just to get rid of 'Unused arg' warning
         parts = arg.partition(separator)
         (target, description) = (parts[0], parts[2])
-        if not re.match("[a-z]+:\/\/..*", target):
+        if not re.match(r"[a-z]+://..*", target):
             # target matches some dns name
             description = target
             target = ''.join([internal_link_prefix, target, '.',
@@ -61,21 +129,52 @@ def make_link(separator, internal_link_prefix = '', internal_link_postfix = ''):
     return link
 #------------------------------------------------------------------------------
 def make_do_nothing(separator):
+    '''
+    Create callback to handle DEFAULT case, i.e. handle an unknown format string
+    '''
     def do_nothing(call, arg):
+        '''
+        Callback to format unknown format strings.
+        Just returns call + separator + arg
+        '''
         return call + separator + arg
     return do_nothing
-
 #------------------------------------------------------------------------------
 def make_default_transformator():
+    '''
+    Creates a Transformator to format to HTML
+    '''
     transformator = Transformator()
     link_prefix = NAGA_ROOT + PATH_SEPARATOR + SHOW_RELATIVE_PATH + '?' + \
             'type=article&content='
-
-    transformator.register_callback('link', 
+    transformator.register_callback('link',
             make_link(MARKUP_LINK_SEPARATOR, link_prefix))
     return transformator
 #------------------------------------------------------------------------------
-class Transformator:
+class Transformator(object):
+    '''
+    Transforms text from naga formatting to something different, e.g. HTML.
+    Naga formatting is done by inserting format strings into plain text.
+    For example:
+
+    [heading An example]
+
+    This is a [b simple] example. See [link https://ubeer.org [b ubeer.org] ].
+
+    Format strings are composed thus:
+         [FROMAT_STRING ARG1 ... ]
+
+    If you intend to use the chars '[' or ']' they must be
+    quoted by doubling them, i.e:
+
+    A .[ needs to be [b escaped] like .[.[.
+
+    Format strings can be nested.
+
+    [link https://ubeer.org [b ubeer] ] or [link https://ubeer.org [b ubeer]]
+
+    is correct.
+    '''
     #---------------------------------------------------------------------------
     def __init__(self, **params):
         self.left_marker = '['
@@ -88,100 +187,157 @@ class Transformator:
         if 'separator' in params:
             self.separator = params['separator']
         self.lookup = {
-                'heading' : heading, 
+                'heading' : heading,
                 'olist'   : listing,
                 'ulist'   : listing,
                 'br'      : line_break,
                 'b'       : bold,
                 'i'       : italic,
+                'c'       : code,
                 'link'    : make_link(self.separator),
-                'DEFAULT' : make_do_nothing(self.separator)
+                _DEFAULT : make_do_nothing(self.separator)
                 }
         if 'handlers' in params:
             self.lookup = params['handlers']
-        self.quoted_left_marker = self.left_marker + self.left_marker
-        self.quoted_right_marker = self.right_marker + self.right_marker
-        self._logger = logging.getLogger('Transformator')
+        self.quote_char = '.'
+        self.quoted_left_marker = self.quote_char + self.left_marker
+        self.quoted_right_marker = self.quote_char + self.right_marker
+        self.__logger = logging.getLogger('Transformator')
+    #---------------------------------------------------------------------------
+    def register_default_callback(self, callback):
+        '''
+        Register the callback to handle unknown format strings.
+        '''
+        self.lookup[_DEFAULT] = callback
     #---------------------------------------------------------------------------
     def register_callback(self, identifier, callback):
+        '''
+        Register callback with a format string.
+        '''
         self.lookup[identifier] = callback
     #---------------------------------------------------------------------------
-    def _collapse_string(self, transformed_parts):
-        stripped_parts = [x.replace(self.quoted_left_marker,
-            self.left_marker).replace(
+    def __collapse_string(self, transformed_parts):
+        '''
+        Collect strings where all format calls have been treated and
+        unite it to one return string.
+        '''
+        return ''.join(transformed_parts)
+    #---------------------------------------------------------------------------
+    def __unquote_string(self, string_to_unquote):
+        '''
+        Repaces escaped characters within string_to_unquote by the actual chars.
+        '''
+        return string_to_unquote.replace(
+                self.quoted_left_marker, self.left_marker).replace(
                 self.quoted_right_marker, self.right_marker)
-            for x in transformed_parts]
-        return ''.join(stripped_parts)
     #---------------------------------------------------------------------------
     def escaped(self, origin_string, i):
-        if i > len(origin_string) - 1:
-            return None
-        elif i + 1 == len(origin_string):
-            None
-        elif origin_string[i + 1] == origin_string[i]:
-            return True
+        '''
+        Checks whether a character at position i in string origin_string is
+        escaped. This is done in a generic way, it is only checked whether the
+        character at position i is preceded by '.'.
+        '''
+        if i > 0:
+            if origin_string[i - 1] == self.quote_char:
+                return True
         return None
     #---------------------------------------------------------------------------
     def get_call_end_position(self, origin_string, position):
+        '''
+        Finds end of format string and returns its position.
+        '''
+        self.__logger.info("looking at " + origin_string[position:])
         if len(origin_string) < 1:
-            self._logger.error(origin_string + " is empty")
+            self.__logger.error(origin_string + " is empty")
             return None
         level = 1
         for i in range(position, len(origin_string)):
+            self.__logger.info("position " + str(i) + " char " +
+                    origin_string[i])
             if origin_string[i] == self.right_marker:
                 if not self.escaped(origin_string, i):
                     level = level - 1
+                    self.__logger.info(origin_string[i] + " not escaped - decreatsing to " + str(level))
                     if level == 0:
                         return i
+                else:
+                    self.__logger.info(origin_string[i] + " escaped")
             elif origin_string[i] == self.left_marker:
                 if not self.escaped(origin_string, i):
                     level = level + 1
-        self._logger.error("Found no end marker")
+                    self.__logger.info(origin_string[i] + " not escaped - increasing to " + str(level))
+                else:
+                    self.__logger.info(origin_string[i] + " escaped")
+        self.__logger.error("Found no end marker")
+        return None
     #---------------------------------------------------------------------------
     def treat_format_call(self, origin_string, transformed_parts):
+        '''
+        Assumes that origin_string starts with a format call followed by some
+        'rest'.
+        Takes the format call, cuts it off the origin_string, treats it and
+        appends the return value of the format call to transformed_parts.
+        Returns the remainder of origin_string.
+        '''
         inner_part = None
         position = 0
         position = self.get_call_end_position(origin_string, position)
         if position == None:
-            self._logger.error("Could not isolate call part from " +
+            self.__logger.error("Could not isolate call part from " +
                     origin_string)
             return None
         inner_part = origin_string[:position]
-        self._logger.info("got format call " + inner_part)
-        if position + 1 == len(origin_string):
-            rest = ''
-        else:
-            rest = origin_string[position + 1:]
+        self.__logger.info("got format call " + inner_part)
+        rest = origin_string[position + 1:]
         call_parts = inner_part.partition(self.separator)
         if call_parts[0] == '':
-            self._logger.error("error when trying to split " + inner_part)
+            self.__logger.error("error when trying to split " + inner_part)
             return None
-        arguments = self.transform(call_parts[2])
+        arguments = self.__transform(call_parts[2])
         if call_parts[0] in self.lookup:
             transformed_parts.append(self.lookup[call_parts[0]](call_parts[0],
                 arguments))
         else:
-            transformed_parts.append(self.lookup['DEFAULT'](call_parts[0],
+            transformed_parts.append(self.lookup[_DEFAULT](call_parts[0],
                 arguments))
         return rest
     #---------------------------------------------------------------------------
-    def transform(self, origin_string):
+    def __transform(self, origin_string):
+        '''
+        Takes a string containing format strings and transforms it.
+        Does not treat escapes.
+        '''
         if not type(origin_string) == type('string'):
-            return '' 
+            return ''
         transformed_string = []
         parts = []
+        start_position = 0
         while origin_string != None:
-            parts = origin_string.partition(self.left_marker)
-            transformed_string.append(parts[0])
-            if parts[1] == '':
-                return self._collapse_string(transformed_string)
-            if parts[2].startswith(self.left_marker):
-                # We remove second marker and just push the marker once 
-                transformed_string.append(self.left_marker)
-                parts = parts[2].partition(self.left_marker)
-                origin_string = parts[2]
+            self.__logger.info("transform: Looking at " + origin_string[start_position:])
+            position = origin_string.find(self.left_marker, start_position)
+            if position < 0:
+                # Not found
+                self.__logger.info("transform: No start marker found in " + origin_string[start_position:])
+                transformed_string.append(origin_string)
+                return self.__collapse_string(transformed_string)
+            if self.escaped(origin_string, position):
+                start_position = position + 1
+                self.__logger.info("transform: Escaped " +
+                        origin_string[position] + " continuing at " +
+                        str(position))
             else:
-                # BINGO - we got a format call
-                origin_string = self.treat_format_call(parts[2], 
-                        transformed_string)
-
+                # Got format call
+                self.__logger.info("transform: Got call " + origin_string[position:])
+                transformed_string.append(origin_string[:position])
+                remainder = origin_string[position + 1:]
+                if remainder == '':
+                    return self.__collapse_string(transformed_string)
+                origin_string = self.treat_format_call(remainder, transformed_string)
+                start_position = 0
+        return self.__collapse_string(transformed_string)
+    #---------------------------------------------------------------------------
+    def transform(self, origin_string):
+        '''
+        Takes a string containing format strings and transforms it.
+        '''
+        return self.__unquote_string(self.__transform(origin_string))

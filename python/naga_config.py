@@ -1,3 +1,21 @@
+#
+# Part of the CMS naga, See <https://ubeer.org>
+#
+#    Copyright (C) 2013, 2014 Michael J. Beer <michael.josef.beer@googlemail.com>
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
 import os.path
 import sys
 import logging
@@ -36,8 +54,8 @@ CSS_PATH               = PAGE_ROOT + PATH_SEPARATOR + FORMATTING_DIR + PATH_SEPA
 CSS_POST_PATH          = PAGE_ROOT + PATH_SEPARATOR + FORMATTING_DIR + PATH_SEPARATOR + 'post.css'
 UPLOAD_PATH            = PAGE_ROOT + PATH_SEPARATOR + CGI_DIR        + PATH_SEPARATOR + 'upload.py'
 SHOW_RELATIVE_PATH     = CGI_DIR   + PATH_SEPARATOR + 'show.py'
-REGISTRY_PATH          = PAGE_ROOT + PATH_SEPARATOR + CONTENT_DIR 
-CONTENT_PATH           = PAGE_ROOT + PATH_SEPARATOR + CONTENT_DIR 
+REGISTRY_PATH          = PAGE_ROOT + PATH_SEPARATOR + CONTENT_DIR
+CONTENT_PATH           = PAGE_ROOT + PATH_SEPARATOR + CONTENT_DIR
 STATIC_PATH            = PAGE_ROOT + PATH_SEPARATOR + STATIC_DIR
 STATIC_FILE_PATH       = PAGE_ROOT + PATH_SEPARATOR + ETC_DIR        + PATH_SEPARATOR + 'static'
 AUTHENTICATE_LINK      = CGI_PATH  + PATH_SEPARATOR + 'authenticate.py'
@@ -57,17 +75,25 @@ UPDATE_LABEL           = '<b>Update:</b> '
 #------------------------------------------------------------------------------
 # Logger configuration
 #------------------------------------------------------------------------------
-logging.basicConfig(filename= NAGA_ABS_ROOT + PATH_SEPARATOR +
-                    LOG_FILE_PATH,level=logging.DEBUG)
+logging.basicConfig(filename=NAGA_ABS_ROOT + PATH_SEPARATOR +
+                 LOG_FILE_PATH,level=logging.DEBUG)
 #------------------------------------------------------------------------------
 # Internal Constants
 #------------------------------------------------------------------------------
 # ARTICLE_HTML_SHORT_HEADING   = 'article_short_heading'
-ARTICLE_HTML_SHORT_TIMESTAMP   = 'article_short_timestamp' 
-ARTICLE_HTML_SHORT_DESCRIPTION = 'article_short_description' 
+ARTICLE_HTML_SHORT_TIMESTAMP   = 'article_short_timestamp'
+ARTICLE_HTML_SHORT_DESCRIPTION = 'article_short_description'
 SORT_KEY_HEADING               = 'heading'
 SORT_KEY_TIMESTAMP             = 'timestamp'
 #------------------------------------------------------------------------------
 # Markup constants
 #------------------------------------------------------------------------------
-MARKUP_LINK_SEPARATOR = ' ' 
+MARKUP_LINK_SEPARATOR = ' '
+#------------------------------------------------------------------------------
+HTML_HEADER = '''
+<!DOCTYPE HTML>
+<html>
+'''
+HTML_FOOTER = '''
+</html>
+'''
