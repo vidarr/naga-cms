@@ -1,0 +1,55 @@
+[heading Basics]
+
+Texts inserted into the [link https://ubeer.org naga CMS] can be easily formatted using a dedicated markup language.
+Handling this markup is actually quite simple and inherits a lot from the well-known [i Wikipedia] markup language.
+
+Easy things are often understood best by looking at some example:[br]
+[c This is a .[b simple.] example on how to use the .[link https://ubeer.org .[i naga markup language.] .]. ]
+[br]
+will be rendered as 
+[br]
+This is a [b simple] example on how to use the [link https://ubeer.org [i naga markup language] ]
+[br]
+[br]
+You will notice that this example basically is plain text intermingled with some .[ and .].
+Writing naga markup is basically exactly that - writing plain text unless you want to have the text behave special.
+Special in this case means you want some words to appear [b bold], as headings etc.
+This special behaviour can be achived by intermingling markup calls.
+All markup calls are build the same way:
+they are included in between a [c .[] and [c .] ]. The fist word is tells what should be done and everything else are the arguments.
+For writing bold text, for instance just type 
+[br]
+[c .[b bold text.] ]
+[br]
+The [c b] tells that everything up until the closing [c .] ] should be printed bold, [c bold text] being the text to be printed bold.
+That is quite fine, but what if you actually want a [c .[] to appear within the text [i as is]?
+In this case, just [i escape] the braket by doubling it, thus in order to get a [c .[ ] write
+[br]
+[c ...[ ]
+[br]
+in order to get a [c .] ] type:
+[br]
+[c ..] ]
+
+[heading markup tags]
+
+Currently, there are the following markup tags supported:
+
+[ulist [code heading] Creates a heading * [code b] bold text * [code i] italic text * [code code] For code chunks * [code list] for creating ordered lists * [code ulist] for creating unordered lists * [code link] for creating links]
+
+[heading [code list] / [code ulist] ]
+
+The format of list is 
+[br]
+[code .[list ENTRY ONE * ENTRY TWO * ENTRY THREE ... .] ]
+[br]
+
+[heading link]
+
+The format of link is 
+[br]
+[code .[link LINK_TARGET LINK TEXT]
+[br]
+
+LINK TEXT can be omitted, then LINK_TARGET is used as link text.
+If LINK_TARGET matches [code PROTOCOL://SOMETHING], it is assumed to link to an external resource, otherwise the LINK_TARGET is interpreted to link to an article on the web page, and a link to an article with this key is generated. 
