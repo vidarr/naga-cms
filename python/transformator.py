@@ -41,7 +41,7 @@ def heading(call, arg):
     '''
     Callback: Format heading.
     '''
-    return '<h>' + arg + '</h>'
+    return '<h1>' + arg + '</h1>'
 #------------------------------------------------------------------------------
 def listing(call, arg):
     '''
@@ -61,7 +61,6 @@ def listing(call, arg):
         result.append('<li>')
         result.append(item)
         result.append('</li>')
-    result.append('<')
     result.extend(['</', sur_tag, '>'])
     return ''.join(result)
 #------------------------------------------------------------------------------

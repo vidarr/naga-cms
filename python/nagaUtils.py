@@ -43,6 +43,6 @@ def to_posix_timestamp(time):
        time = utils.mktime_tz(time_tuple)
     if type(time) == datetime.datetime:
        return utils.formatdate(time)
-    if type(time) == int:
-       return time
+    if type(time) == int or type(time) == float:
+       return int(time)
     return None
