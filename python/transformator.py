@@ -153,8 +153,8 @@ def make_image(separator, internal_link_prefix='', internal_link_postfix=''):
         if nagaUtils.valid_url(target):
             # target matches some dns name
             description = target
-            target = ''.join([internal_link_prefix, target, '.',
-                XML_FILE_EXTENSION, internal_link_postfix])
+            target = ''.join([internal_link_prefix, target,
+                internal_link_postfix])
         prefix = '<img src="'
         postfix = '" ' + IMAGE_OPTIONS + '/>'
         if description != '':
@@ -183,7 +183,8 @@ def make_default_transformator():
     transformator = Transformator()
     link_prefix = NAGA_ROOT + PATH_SEPARATOR + SHOW_RELATIVE_PATH + '?' + \
             'type=article&content='
-    image_prefix = NAGA_ROOT + PATH_SEPARATOR + IMAGE_DIRECTORY
+    image_prefix = ''.join([NAGA_ROOT, PATH_SEPARATOR, IMAGE_DIRECTORY, 
+        PATH_SEPARATOR])
     transformator.register_callback('link',
             make_link(MARKUP_LINK_SEPARATOR, link_prefix))
     transformator.register_callback('image',
