@@ -27,7 +27,7 @@ def get_new_channel():
     rss_channel.set_link("localhost/seite")
     return rss_channel
 #------------------------------------------------------------------------------
-def write_rss(heading, summary, file_name = None):
+def write_rss(heading, summary, rss_feed_name, file_name=None):
     summary = _transformator.transform(summary)
     rss_item = rss.Item()
     rss_item.set_title(heading)
@@ -41,7 +41,8 @@ def write_rss(heading, summary, file_name = None):
     _logger.debug("Set link to " + rss_item.get_link())
     _logger.debug("NAGA_ROOT " + NAGA_ROOT)
     _logger.debug("SHOW_RELATIVE_PATH " + SHOW_RELATIVE_PATH)
-    rss_object = rss.Rss(NAGA_ABS_ROOT + PATH_SEPARATOR + RSS_FEED_PATH)
+    rss_object = rss.Rss(NAGA_ABS_ROOT + PATH_SEPARATOR + RSS_FEED_PATH +
+            PATH_SEPARATOR + rss_feed_name + '.' + RSS_FILE_EXTENSION)
     channel = rss_object.get_channels()
     _logger.debug( "upload.write_rss: got channel " + channel.__str__())
     if len(channel) < 1:
@@ -51,18 +52,8 @@ def write_rss(heading, summary, file_name = None):
         channel = channel[0]
     channel.add_item(rss_item)
     rss_object.to_file()
-    rss_object = rss.Rss(NAGA_ABS_ROOT + PATH_SEPARATOR + RSS_ROLLING_FEED_PATH)
-    channel = rss_object.get_channels()
-    if len(channel) < 1:
-        channel = get_new_channel()
-        rss_object.add_channel(channel)
-    else:
-        channel = channel[0]
-    channel.set_max_items(RSS_ROLLING_ENTRIES)
-    channel.add_item(rss_item)
-    rss_object.to_file()
 #------------------------------------------------------------------------------
-def write_content(heading, summary, content,categories, file_name):
+def write_content(heading, summary, content, categories, file_name):
     registry_object = registry.Registry()
     if file_name in registry_object.get_article_keys():
         # If article is being updated, remove old version, modify summary
@@ -89,7 +80,11 @@ def post_entry(heading, summary, content = None, categories = None, file_name =
         _logger.info("Posting article")
         write_content(heading   , summary, content, 
             categories, file_name)
-    write_rss(heading, summary, file_name)
+    write_rss(heading, summary, RSS_ALL_FEED_NAME, file_name)
+    write_rss(heading, summary, RSS_ROLLING_FEED_NAME, file_name)
+    if categories:
+        for category in categories:
+            write_rss(heading, summary, category, file_name)
     page_object = page.Page()
     page_object.set_content("New post accepted")
     return page_object.get_html()

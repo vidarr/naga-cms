@@ -45,8 +45,9 @@ CGI_PATH               = PAGE_ROOT + PATH_SEPARATOR + CGI_DIR
 CGI_SHOW_PATH          = CGI_PATH  + PATH_SEPARATOR + 'show.py'
 LOG_FILE_PATH          = PAGE_ROOT + PATH_SEPARATOR + LOG_DIR        + PATH_SEPARATOR + 'naga.log'
 RSS_ICON_PATH          = PAGE_ROOT + PATH_SEPARATOR + IMAGE_DIR      + PATH_SEPARATOR + 'feed_icon.svg'
-RSS_FEED_PATH          = PAGE_ROOT + PATH_SEPARATOR + CONTENT_DIR    + PATH_SEPARATOR + 'all-news.xml'
-RSS_ROLLING_FEED_PATH  = PAGE_ROOT + PATH_SEPARATOR + CONTENT_DIR    + PATH_SEPARATOR + 'news.xml'
+RSS_FEED_PATH          = PAGE_ROOT + PATH_SEPARATOR + CONTENT_DIR    + PATH_SEPARATOR
+RSS_ALL_FEED_NAME      = 'all-news'
+RSS_ROLLING_FEED_NAME  = 'news'
 RSS_ROLLING_ENTRIES    = 10
 CATEGORIES_FILE_PATH   = PAGE_ROOT + PATH_SEPARATOR + ETC_DIR        + PATH_SEPARATOR + 'categories'
 USERS_FILE_PATH        = PAGE_ROOT + PATH_SEPARATOR + ETC_DIR        + PATH_SEPARATOR + 'users'
@@ -71,6 +72,7 @@ CREDENTIALS_PASSPHRASE = 'passphrase'
 #------------------------------------------------------------------------------
 HTTP_ARG_FILE_NAME     = 'file_name'
 XML_FILE_EXTENSION     = 'xml'
+RSS_FILE_EXTENSION     = 'rss'
 #------------------------------------------------------------------------------
 IMAGE_OPTIONS          = 'height="240" width="320"'
 #------------------------------------------------------------------------------
