@@ -18,14 +18,15 @@
 #
 import datetime
 import time
+import re
 from email import utils
-
+#------------------------------------------------------------------------------
 def get_timestamp_now():
     now = datetime.datetime.utcnow()
     now_tuple = now.timetuple()
     now_timestamp = time.mktime(now_tuple)
     return utils.formatdate(now_timestamp)
-
+#------------------------------------------------------------------------------
 def to_rfc822_timestamp(timeval):
     if type(timeval) == int:
         timeval = datetime.datetime.fromtimestamp(timeval) 
@@ -36,7 +37,7 @@ def to_rfc822_timestamp(timeval):
     if type(timeval) == str:
         return timeval
     return None
-
+#------------------------------------------------------------------------------
 def to_posix_timestamp(time):
     if type(time) == str:
        time_tuple = utils.parsedate_tz(time)
@@ -46,3 +47,11 @@ def to_posix_timestamp(time):
     if type(time) == int or type(time) == float:
        return int(time)
     return None
+#------------------------------------------------------------------------------
+def valid_url(target):
+    '''
+    Test whether target contains a valid URL
+    '''
+    if not type(target) == type(''):
+        return False
+    return not re.match(r"[a-z]+://..*", target)

@@ -21,7 +21,6 @@ import os.path
 import sys
 import xml.etree.ElementTree as ET
 import logging
-import re
 #------------------------------------------------------------------------------
 PAGE_ROOT   = os.path.join(os.path.dirname(os.path.abspath(__file__)))
 MODULE_DIR  = 'python'
@@ -117,14 +116,52 @@ def make_link(separator, internal_link_prefix='', internal_link_postfix=''):
         del call # Just to get rid of 'Unused arg' warning
         parts = arg.partition(separator)
         (target, description) = (parts[0], parts[2])
-        if not re.match(r"[a-z]+://..*", target):
+        if nagaUtils.valid_url(target):
             # target matches some dns name
             description = target
             target = ''.join([internal_link_prefix, target, '.',
                 XML_FILE_EXTENSION, internal_link_postfix])
         if description == '':
             description = target
-        return '<a href="' + target + '">' + description + '</a>'
+        return ''.join(['<a href="', target, '">', description,
+            '</a>'])
+    return link
+#------------------------------------------------------------------------------
+def make_image(separator, internal_link_prefix='', internal_link_postfix=''):
+    '''
+    Returns a function to be used as callback to format images.
+    The callback will distinuish between internal and external image links.
+    An External image link will be taken 'as is'.
+    An Internal image link will be surrounded with internal_link_prefix and
+    internal_link_postfix.
+    '''
+    def link(call, arg):
+        '''
+        Callback to format image links.
+        Expects one or several arguments.
+        The first argument is the link target.
+        If additional arguments are given, they will be used as image subscript.
+        If the link target is of the form PROTOCOL://SOMETHING , the link
+        is interpreted as external link and taken as is.
+        Otherwise, the link target will be interpreted as internal link and
+        altered to point to internal resources. Refer to the code for details,
+        please!
+        '''
+        del call # Just to get rid of 'Unused arg' warning
+        parts = arg.partition(separator)
+        (target, description) = (parts[0], parts[2])
+        if nagaUtils.valid_url(target):
+            # target matches some dns name
+            description = target
+            target = ''.join([internal_link_prefix, target, '.',
+                XML_FILE_EXTENSION, internal_link_postfix])
+        prefix = '<img src="'
+        postfix = '" ' + IMAGE_OPTIONS + '/>'
+        if description != '':
+            prefix = '<table><tr><td>' + prefix
+            postfix = ''.join([postfix, '</td></tr><tr><td><b>Image:</b> ',
+                description, '</td></tr></table>'])
+        return ''.join([prefix, target, postfix])
     return link
 #------------------------------------------------------------------------------
 def make_do_nothing(separator):
@@ -146,8 +183,11 @@ def make_default_transformator():
     transformator = Transformator()
     link_prefix = NAGA_ROOT + PATH_SEPARATOR + SHOW_RELATIVE_PATH + '?' + \
             'type=article&content='
+    image_prefix = NAGA_ROOT + PATH_SEPARATOR + IMAGE_DIRECTORY
     transformator.register_callback('link',
             make_link(MARKUP_LINK_SEPARATOR, link_prefix))
+    transformator.register_callback('image',
+            make_image(MARKUP_LINK_SEPARATOR, image_prefix))
     return transformator
 #------------------------------------------------------------------------------
 class Transformator(object):

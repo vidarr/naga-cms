@@ -3,10 +3,10 @@
 source ./setup.cfg
 
 ETC_DIR=etc
-DIRECTORIES_TO_CREATE="log content"
+DIRECTORIES_TO_CREATE="log content images"
 DUMMY_CFG_FILES="categories static"
 NON_OPERATIONAL="test TODO"
-FILES_TO_SET_WRITABLE="log content"
+FILES_TO_SET_WRITABLE="log content images"
 FILES_TO_SET_ROOT_ONLY="tools"
 
 function ensure_cfg_params_set () {

@@ -62,6 +62,7 @@ AUTHENTICATE_LINK      = CGI_PATH  + PATH_SEPARATOR + 'authenticate.py'
 LOGOUT_PATH            = CGI_PATH  + PATH_SEPARATOR + 'logout.py'
 ADD_ARTICLE_PATH       = CGI_PATH  + PATH_SEPARATOR + 'post.py'
 EDIT_ARTICLE_PATH      = ADD_ARTICLE_PATH
+IMAGE_DIRECTORY        = 'images'
 #------------------------------------------------------------------------------
 # CGI authentication names
 #------------------------------------------------------------------------------
@@ -70,6 +71,8 @@ CREDENTIALS_PASSPHRASE = 'passphrase'
 #------------------------------------------------------------------------------
 HTTP_ARG_FILE_NAME     = 'file_name'
 XML_FILE_EXTENSION     = 'xml'
+#------------------------------------------------------------------------------
+IMAGE_OPTIONS          = 'height="240" width="320"'
 #------------------------------------------------------------------------------
 UPDATE_LABEL           = '<b>Update:</b> '
 #------------------------------------------------------------------------------
