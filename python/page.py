@@ -87,7 +87,8 @@ class Page:
                                static_entry, '">',
                                static_entry, '</a></li>']))
         html.append('<li><a href="')
-        html.append(RSS_FEED_PATH)
+        html.append(RSS_FEED_PATH + RSS_ROLLING_FEED_NAME + '.'
+                + RSS_FILE_EXTENSION)
         html.append('''">
                 <img src="''')
         html.append(RSS_ICON_PATH)

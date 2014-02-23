@@ -89,7 +89,11 @@ def show_category(content):
     if len(articles) < 1:
         _page.set_content("<p>No articles found</p>")
     else:
-        html = []
+        html = ['<div class="alignright"><a href="', 
+                RSS_FEED_PATH, 
+                content, '.', RSS_FILE_EXTENSION, 
+                '"><img src="', RSS_ICON_PATH, 
+                '" height="18" width="18"/>Subscribe to ', content, '</a></div>']
         article_objects = []
         for article_key in articles:
             article = article_registry.get(article_key)
