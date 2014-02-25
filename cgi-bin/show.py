@@ -89,7 +89,8 @@ def show_category(content):
     if len(articles) < 1:
         _page.set_content("<p>No articles found</p>")
     else:
-        html = ['<div class="alignright"><a href="', 
+        html = ['<h1>', content, '</h1>All articles in category ', content,
+                '. <a href="', 
                 RSS_FEED_PATH, 
                 content, '.', RSS_FILE_EXTENSION, 
                 '"><img src="', RSS_ICON_PATH, 
