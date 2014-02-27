@@ -1,3 +1,8 @@
+2014-02-26 
+	* Slightly altered CSS layout
+2014-02-23
+	* Introduced image tags
+	* Introduced separate RSS feeds for each category
 2014-02-07
     * BUGFIX: Links in category listings would refer to wrong articles
 	* Introduced formatting language

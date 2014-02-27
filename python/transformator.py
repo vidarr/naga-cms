@@ -155,7 +155,7 @@ def make_image(separator, internal_link_prefix='', internal_link_postfix=''):
             description = target
             target = ''.join([internal_link_prefix, target,
                 internal_link_postfix])
-        prefix = '<img src="'
+        prefix = '<div class="center"><img src="'
         postfix = '" ' + IMAGE_OPTIONS + '/>'
         if description != '':
             prefix = '<table><tr><td>' + prefix
