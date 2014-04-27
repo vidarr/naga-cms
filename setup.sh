@@ -3,10 +3,10 @@
 source ./setup.cfg
 
 ETC_DIR=etc
-DIRECTORIES_TO_CREATE="log content images"
+DIRECTORIES_TO_CREATE="log content images files"
 DUMMY_CFG_FILES="categories static"
 NON_OPERATIONAL="test TODO"
-FILES_TO_SET_WRITABLE="log content images"
+FILES_TO_SET_WRITABLE="log content images files"
 FILES_TO_SET_ROOT_ONLY="tools"
 
 function ensure_cfg_params_set () {
@@ -33,7 +33,7 @@ function create_dummy_cfg_files () {
 
 function create_directories () {
     for DIRECTORY in $DIRECTORIES_TO_CREATE; do
-        [ ! -d $DIRECTOY ] && mkdir $DIRECTORY;
+        [ ! -d $DIRECTORY ] && mkdir $DIRECTORY;
     done
 }
 

@@ -18,6 +18,7 @@
 #
 import os
 import sys
+from os.path import join
 #------------------------------------------------------------------------------
 ABS_PAGE_ROOT  = os.path.join(os.path.dirname(os.path.abspath(__file__)))
 MODULE_DIR     = 'python'
@@ -27,8 +28,7 @@ from naga_config import *
 class Statics:
 
     def __init__(self, root_path = NAGA_ROOT, 
-                       cfg_file_name = NAGA_ABS_ROOT + PATH_SEPARATOR  +  \
-                               STATIC_FILE_PATH):
+                       cfg_file_name = join(NAGA_ABS_ROOT, STATIC_FILE_PATH)):
         self._logger  = logging.getLogger('Statics')
         self._content = {}
         self._order   = []
@@ -40,9 +40,8 @@ class Statics:
                     self._logger.error("Malformed line in " + str(cfg_file_name) + 
                     " : " + str(line))
                     break
-                self._content[content_entry[0]] = root_path + \
-                        PATH_SEPARATOR + STATIC_DIR + PATH_SEPARATOR + \
-                        content_entry[1]
+                self._content[content_entry[0]] = join(root_path, STATIC_DIR,
+                        content_entry[1])
                 self._order.append(content_entry[0])
                 self._logger.info('Found ' + self._content[content_entry[0]])
         except IOError as ex:

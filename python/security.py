@@ -38,9 +38,17 @@ from configuration import ConfigurationObject
 #---------------------------------------------------------------------------    
 __logger__ = logging.getLogger("security")
 #---------------------------------------------------------------------------    
-def sanitize_string(string_to_sanitize):
-    "Return String that does not contain any special chars except underscore"
-    return re.sub('[^0-9a-zA-Z]', '_', string_to_sanitize)
+def sanitize_string(string_to_sanitize, **options):
+    '''
+    Return String that does not contain any special chars except underscore.
+    If keep_dot=True, the string might contain dots as well.
+    '''
+    keep_dot = False
+    if 'keep_dot' in options:
+        keep_dot = options['keep_dot']
+    if not keep_dot:
+        return re.sub('[^0-9a-zA-Z]', '_', string_to_sanitize)
+    return re.sub('[^0-9a-zA-Z.]', '_', string_to_sanitize)
 #---------------------------------------------------------------------------    
 def authenticate(user, passphrase):
     '''

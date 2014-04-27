@@ -183,7 +183,7 @@ def make_default_transformator():
     transformator = Transformator()
     link_prefix = NAGA_ROOT + PATH_SEPARATOR + SHOW_RELATIVE_PATH + '?' + \
             'type=article&content='
-    image_prefix = ''.join([NAGA_ROOT, PATH_SEPARATOR, IMAGE_DIRECTORY, 
+    image_prefix = ''.join([NAGA_ROOT, PATH_SEPARATOR, IMAGE_DIR, 
         PATH_SEPARATOR])
     transformator.register_callback('link',
             make_link(MARKUP_LINK_SEPARATOR, link_prefix))

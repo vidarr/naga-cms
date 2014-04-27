@@ -16,15 +16,17 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-import os.path
+from os.path import join
 import sys
 import logging
+#------------------------------------------------------------------------------
+__logger = logging.getLogger('naga_config')
 #------------------------------------------------------------------------------
 # General constants
 #------------------------------------------------------------------------------
 LINEBREAK              = "\n"
-PATH_SEPARATOR         = os.sep
 CFG_LIST_SEPARATOR     = ','
+PATH_SEPARATOR         = '/'
 #------------------------------------------------------------------------------
 # Actual configuration
 #------------------------------------------------------------------------------
@@ -33,37 +35,38 @@ NAGA_ABS_ROOT          = '/var/www'
 PAGE_TITLE             = "Michael J. Beer"
 COPYRIGHT              = '&copy;2013 <a href="mailto:michael@ubeer.org">Michael J. Beer</a>'
 ENCODING               = "UTF-8"
-PAGE_ROOT              = PATH_SEPARATOR + 'naga'
+PAGE_ROOT              = 'naga'
 LOG_DIR                = 'log'
 CONTENT_DIR            = 'content'
 FORMATTING_DIR         = 'formatting'
 IMAGE_DIR              = 'images'
+FILE_DIR               = 'files'
 ETC_DIR                = 'etc'
 CGI_DIR                = 'cgi-bin'
 STATIC_DIR             = 'static'
-CGI_PATH               = PAGE_ROOT + PATH_SEPARATOR + CGI_DIR
-CGI_SHOW_PATH          = CGI_PATH  + PATH_SEPARATOR + 'show.py'
-LOG_FILE_PATH          = PAGE_ROOT + PATH_SEPARATOR + LOG_DIR        + PATH_SEPARATOR + 'naga.log'
-RSS_ICON_PATH          = PAGE_ROOT + PATH_SEPARATOR + IMAGE_DIR      + PATH_SEPARATOR + 'feed_icon.svg'
-RSS_FEED_PATH          = PAGE_ROOT + PATH_SEPARATOR + CONTENT_DIR    + PATH_SEPARATOR
+CGI_PATH               = join(NAGA_ROOT, CGI_DIR)
+CGI_SHOW_PATH          = join(CGI_PATH, 'show.py')
+LOG_FILE_PATH          = join(PAGE_ROOT, LOG_DIR    , 'naga.log')
+RSS_ICON_PATH          = join(NAGA_ROOT, IMAGE_DIR  , 'feed_icon.svg')
+RSS_FEED_PATH          = join(PAGE_ROOT, CONTENT_DIR)
 RSS_ALL_FEED_NAME      = 'all-news'
 RSS_ROLLING_FEED_NAME  = 'news'
 RSS_ROLLING_ENTRIES    = 10
-CATEGORIES_FILE_PATH   = PAGE_ROOT + PATH_SEPARATOR + ETC_DIR        + PATH_SEPARATOR + 'categories'
-USERS_FILE_PATH        = PAGE_ROOT + PATH_SEPARATOR + ETC_DIR        + PATH_SEPARATOR + 'users'
-CSS_PATH               = PAGE_ROOT + PATH_SEPARATOR + FORMATTING_DIR + PATH_SEPARATOR + 'general.css'
-CSS_POST_PATH          = PAGE_ROOT + PATH_SEPARATOR + FORMATTING_DIR + PATH_SEPARATOR + 'post.css'
-UPLOAD_PATH            = PAGE_ROOT + PATH_SEPARATOR + CGI_DIR        + PATH_SEPARATOR + 'upload.py'
-SHOW_RELATIVE_PATH     = CGI_DIR   + PATH_SEPARATOR + 'show.py'
-REGISTRY_PATH          = PAGE_ROOT + PATH_SEPARATOR + CONTENT_DIR
-CONTENT_PATH           = PAGE_ROOT + PATH_SEPARATOR + CONTENT_DIR
-STATIC_PATH            = PAGE_ROOT + PATH_SEPARATOR + STATIC_DIR
-STATIC_FILE_PATH       = PAGE_ROOT + PATH_SEPARATOR + ETC_DIR        + PATH_SEPARATOR + 'static'
-AUTHENTICATE_LINK      = CGI_PATH  + PATH_SEPARATOR + 'authenticate.py'
-LOGOUT_PATH            = CGI_PATH  + PATH_SEPARATOR + 'logout.py'
-ADD_ARTICLE_PATH       = CGI_PATH  + PATH_SEPARATOR + 'post.py'
+CATEGORIES_FILE_PATH   = join(PAGE_ROOT, ETC_DIR       , 'categories')
+USERS_FILE_PATH        = join(PAGE_ROOT, ETC_DIR       , 'users')
+CSS_PATH               = join(PATH_SEPARATOR, PAGE_ROOT, FORMATTING_DIR, 'general.css')
+CSS_POST_PATH          = join(PAGE_ROOT, FORMATTING_DIR, 'post.css')
+UPLOAD_PATH            = join(PAGE_ROOT, CGI_DIR       , 'upload.py')
+UPLOAD_FILE_PATH       = join(PAGE_ROOT, CGI_DIR       , 'upload_file.py') 
+SHOW_RELATIVE_PATH     = join(CGI_DIR   , 'show.py')
+REGISTRY_PATH          = join(PAGE_ROOT , CONTENT_DIR)
+CONTENT_PATH           = join(PAGE_ROOT , CONTENT_DIR)
+STATIC_PATH            = join(PAGE_ROOT , STATIC_DIR)
+STATIC_FILE_PATH       = join(PAGE_ROOT , ETC_DIR, 'static')
+AUTHENTICATE_LINK      = join(CGI_PATH  , 'authenticate.py')
+LOGOUT_PATH            = join(CGI_PATH  , 'logout.py')
+ADD_ARTICLE_PATH       = join(CGI_PATH  , 'post.py')
 EDIT_ARTICLE_PATH      = ADD_ARTICLE_PATH
-IMAGE_DIRECTORY        = 'images'
 #------------------------------------------------------------------------------
 # CGI authentication names
 #------------------------------------------------------------------------------
@@ -78,10 +81,52 @@ IMAGE_OPTIONS          = 'height="240" width="320"'
 #------------------------------------------------------------------------------
 UPDATE_LABEL           = '<b>Update:</b> '
 #------------------------------------------------------------------------------
+STORE_TYPE_FILE        = 'file'
+STORE_TYPE_IMAGE       = 'image'
+STORE_FILE_PATH        = FILE_DIR
+STORE_IMAGE_PATH       = IMAGE_DIR
+#------------------------------------------------------------------------------
 # Logger configuration
 #------------------------------------------------------------------------------
-logging.basicConfig(filename=NAGA_ABS_ROOT + PATH_SEPARATOR +
-                 LOG_FILE_PATH,level=logging.DEBUG)
+logging.basicConfig(filename=join(NAGA_ABS_ROOT, LOG_FILE_PATH),level=logging.DEBUG)
+#------------------------------------------------------------------------------
+__logger.debug("NAGA_ROOT=" + NAGA_ROOT)
+__logger.debug("NAGA_ABS_ROOT=" + NAGA_ABS_ROOT)
+__logger.debug("PAGE_TITLE=" + PAGE_TITLE)
+__logger.debug("COPYRIGHT=" + COPYRIGHT)
+__logger.debug("ENCODING=" + ENCODING)
+__logger.debug("PAGE_ROOT=" + PAGE_ROOT)
+__logger.debug("LOG_DIR=" + LOG_DIR)
+__logger.debug("CONTENT_DIR=" + CONTENT_DIR)
+__logger.debug("FORMATTING_DIR=" + FORMATTING_DIR)
+__logger.debug("IMAGE_DIR=" + IMAGE_DIR)
+__logger.debug("FILE_DIR=" + FILE_DIR)
+__logger.debug("ETC_DIR=" + ETC_DIR)
+__logger.debug("CGI_DIR=" + CGI_DIR)
+__logger.debug("STATIC_DIR=" + STATIC_DIR)
+__logger.debug("CGI_PATH=" + CGI_PATH)
+__logger.debug("CGI_SHOW_PATH=" + CGI_SHOW_PATH)
+__logger.debug("LOG_FILE_PATH=" + LOG_FILE_PATH)
+__logger.debug("RSS_ICON_PATH=" + RSS_ICON_PATH)
+__logger.debug("RSS_FEED_PATH=" + RSS_FEED_PATH)
+__logger.debug("RSS_ALL_FEED_NAME=" + RSS_ALL_FEED_NAME)
+__logger.debug("RSS_ROLLING_FEED_NAME=" + RSS_ROLLING_FEED_NAME)
+__logger.debug("RSS_ROLLING_ENTRIES=" + str(RSS_ROLLING_ENTRIES))
+__logger.debug("CATEGORIES_FILE_PATH=" + CATEGORIES_FILE_PATH)
+__logger.debug("USERS_FILE_PATH=" + USERS_FILE_PATH)
+__logger.debug("CSS_PATH=" + CSS_PATH)
+__logger.debug("CSS_POST_PATH=" + CSS_POST_PATH)
+__logger.debug("UPLOAD_PATH=" + UPLOAD_PATH)
+__logger.debug("UPLOAD_FILE_PATH=" + UPLOAD_FILE_PATH)
+__logger.debug("SHOW_RELATIVE_PATH=" + SHOW_RELATIVE_PATH)
+__logger.debug("REGISTRY_PATH=" + REGISTRY_PATH)
+__logger.debug("CONTENT_PATH=" + CONTENT_PATH)
+__logger.debug("STATIC_PATH=" + STATIC_PATH)
+__logger.debug("STATIC_FILE_PATH=" + STATIC_FILE_PATH)
+__logger.debug("AUTHENTICATE_LINK=" + AUTHENTICATE_LINK)
+__logger.debug("LOGOUT_PATH=" + LOGOUT_PATH)
+__logger.debug("ADD_ARTICLE_PATH=" + ADD_ARTICLE_PATH)
+__logger.debug("EDIT_ARTICLE_PATH=" + EDIT_ARTICLE_PATH)
 #------------------------------------------------------------------------------
 # Internal Constants
 #------------------------------------------------------------------------------

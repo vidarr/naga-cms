@@ -1,17 +1,13 @@
 #!/usr/bin/python3
 import cgi
 import cgitb
-import io
-import os
 import sys
-import string
+from os.path import join, dirname, abspath
 #------------------------------------------------------------------------------
-ABS_PAGE_ROOT   = os.path.join(os.path.dirname(os.path.abspath(__file__))) + '/..'
+PAGE_ROOT   = join(dirname(abspath(__file__)))
 MODULE_DIR  = 'python'
-sys.path.append(ABS_PAGE_ROOT + '/' + MODULE_DIR);
+sys.path.append(join(PAGE_ROOT, '..', MODULE_DIR))
 from naga_config import *
-import article
-import rss
 import registry
 import security
 import page

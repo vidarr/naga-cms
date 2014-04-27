@@ -1,6 +1,6 @@
-#!/usr/bin/python3 
+#!/usr/bin/python
 #
-# Part of the CMS naga, See <https://ubeer.org>
+# Part of the CMS naga, See <https://ubeer.org
 #
 #    Copyright (C) 2013, 2014 Michael J. Beer <michael.josef.beer@googlemail.com>
 #
@@ -17,22 +17,19 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-import os.path
+import os
 import sys
-import logging
-#------------------------------------------------------------------------------    
-PAGE_ROOT     = os.path.join(os.path.dirname(os.path.abspath(__file__)))
+#------------------------------------------------------------------------------
+PAGE_ROOT   = os.path.join(os.path.dirname(os.path.abspath(__file__)))
 MODULE_DIR  = 'python'
 sys.path.append(PAGE_ROOT + '/../' + MODULE_DIR);
-from naga_config import *
-from transformator import *
+import registry
+from article import Article
+import nagaUtils
 #------------------------------------------------------------------------------
-# MAIN
-#------------------------------------------------------------------------------
-if __name__ == "__main__":
-    logging.basicConfig(stream=sys.stdout)
-    transformator = make_default_transformator()
-    in_text = sys.stdin.read()
-    print(''.join([HTML_HEADER, '<body>']))
-    print(''.join([transformator.transform(in_text), '</body>', HTML_FOOTER]))
+_test_timestamp = "Mon, 06 Sep 2010 00:01:00 +0000"
+posix = nagaUtils.to_posix_timestamp(_test_timestamp)
+print(_test_timestamp)
+print(posix)
+print(nagaUtils.to_rfc822_timestamp(posix))
 

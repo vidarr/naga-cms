@@ -65,6 +65,7 @@ class Page:
         self.title = title
     #--------------------------------------------------------------------------
     def _create_navbar(self):
+        self._logger.debug('CGI_SHOW_PATH = ' + CGI_SHOW_PATH)
         html = ['''
             <ul>
             <li>
