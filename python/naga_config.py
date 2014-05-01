@@ -44,6 +44,7 @@ FILE_DIR               = 'files'
 ETC_DIR                = 'etc'
 CGI_DIR                = 'cgi-bin'
 STATIC_DIR             = 'static'
+JAVASCRIPT_DIR         = 'javascript'
 CGI_PATH               = join(NAGA_ROOT, CGI_DIR)
 CGI_SHOW_PATH          = join(CGI_PATH, 'show.py')
 LOG_FILE_PATH          = join(PAGE_ROOT, LOG_DIR    , 'naga.log')
@@ -67,6 +68,7 @@ AUTHENTICATE_LINK      = join(CGI_PATH  , 'authenticate.py')
 LOGOUT_PATH            = join(CGI_PATH  , 'logout.py')
 ADD_ARTICLE_PATH       = join(CGI_PATH  , 'post.py')
 EDIT_ARTICLE_PATH      = ADD_ARTICLE_PATH
+JAVASCRIPT_URL         = join(PATH_SEPARATOR, PAGE_ROOT, JAVASCRIPT_DIR)
 #------------------------------------------------------------------------------
 # CGI authentication names
 #------------------------------------------------------------------------------

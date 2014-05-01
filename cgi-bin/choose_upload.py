@@ -17,23 +17,47 @@ if __name__ == '__main__':
     cgitb.enable()
     form = cgi.FieldStorage()
     _logger.debug("UPLOAD_FILE_PATH = " + UPLOAD_FILE_PATH)
-    html_head = '<title>Michael J. Beer</title>'
+    upload_page = page.Page()
+    upload_page.set_title('Michael J. Beer')
     html_body = ''.join([
-    '''<form action="''', 'upload_file.py', '''" method="post">
+    '''
+    <form action="''', 'upload_file.py', '''" method="post" enctype="multipart/form-data" >
         <table>
-        <tr><td>
-        File to upload: 
-        <input type="file" enctype="multipart/form-data" name="file_to_upload">
-        </td></tr><tr><td>
-        <input type="radio" name="type" id="type_file" value="''', STORE_TYPE_FILE, 
-        '''"><label for="type_file">File</label>
-        </dt><dt> 
-        <input type="radio" name="type" id="type_image" value="''', STORE_TYPE_IMAGE,
-        '''">
-        <label for="typeImage">Image</label>
-        </td></tr>
+            <tr>
+                <td class="center_item" colspan="2">
+                    <label for="upload">File to upload:</label>
+                    <input type="file" 
+                    id="upload" name="file_to_upload">
+                </td>
+            </tr><tr>
+                <td class="center_item">
+                    <input type="radio" name="type" id="type_file" value="''', STORE_TYPE_FILE, 
+                    '''"><label for="type_file">File</label>
+                </td><td class="center_item"> 
+                    <input type="radio" name="type" id="type_image" value="''', STORE_TYPE_IMAGE,
+                    '''">
+                    <label for="typeImage">Image</label>
+                </td>
+            </tr><tr>
+                <td class="center_item" colspan="2">
+                    <input type="submit" value="Submit"><br/>
+                </td>
+            </tr>
         </table>
-        <input type="submit" value="Submit"><br/>
     </form>
     '''])
-    print(page.wrap(html_body, html_head))
+    #  '''
+    #  <form action="''', 'upload_file.py', '''" method="post" enctype="multipart/form-data" >
+    #      File to upload: <input type="file" id="upload" name="file_to_upload"''',
+    #      ''' onchange="uploadOnChange()">
+    #      <input type="radio" name="type" id="type_file" value="''', STORE_TYPE_FILE, 
+    #                  '''"><label for="type_file">File</label>
+    #      <input type="radio" name="type" id="type_image" value="''', STORE_TYPE_IMAGE, '''">
+    #                  <label for="typeImage">Image</label>
+    #      <input type="submit" value="Submit"><br/>
+    #      <input type="hidden" id="file_name" name="file_name">
+    #  </form>
+    #  <div id="show_file_name"></div>
+    #  '''])
+    upload_page.set_content(html_body)
+    print(upload_page.get_html())

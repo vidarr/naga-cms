@@ -27,13 +27,20 @@ from security import authenticate_cookie
 import categories
 import statics
 #------------------------------------------------------------------------------
-def wrap(content, head = "<title>naga</title>"):
+def wrap(content, head = "<title>naga</title>", onload_body_function = None):
     result = ["Content-Type: text/html\n\n",
         '''<!DOCTYPE HTML>
 <html>
     <head>
-        <meta   charset="utf8">''', head, '</head><body>', 
-    content, '</body></html>'] 
+        <meta   charset="utf8">''', head, '''
+    </head>
+    <body''']
+    if onload_body_function != None:
+        result.extend([''' onload="''', onload_body_function, '"'])
+    result.extend(['''>''', 
+    content, '''
+    </body>
+</html>''']) 
     result_string = ''.join(result)
     return result_string
 #------------------------------------------------------------------------------
@@ -43,6 +50,8 @@ class Page:
         self.css_links   = [CSS_PATH]
         self.content     = ""
         self.title       = PAGE_TITLE
+        self.javascript_files = []
+        self.onload_body = None
         if 'Page.TITLE' in config:
             self.title = config['Page.TITLE']
         if 'Page.CSS_LINK' in config:
@@ -58,6 +67,12 @@ class Page:
     def add_css_link(self, css_link):
         self.css_links.append(css_link)
     #--------------------------------------------------------------------------
+    def add_javascript_file(self, script_name):
+        self.javascript_files.append(script_name)
+    #--------------------------------------------------------------------------
+    def set_onload_body(self, onload_function):
+        self.onload_body = onload_function
+    #--------------------------------------------------------------------------
     def set_content(self, content):
         self.content = content
     #--------------------------------------------------------------------------
@@ -66,8 +81,7 @@ class Page:
     #--------------------------------------------------------------------------
     def _create_navbar(self):
         self._logger.debug('CGI_SHOW_PATH = ' + CGI_SHOW_PATH)
-        html = ['''
-            <ul>
+        html = ['''<ul>
             <li>
             <a href="''', CGI_SHOW_PATH,'''?type=news&content=latest">Home</a></li>
             <li>Articles</li>
@@ -115,17 +129,28 @@ class Page:
         for css_link in self.css_links:
             html_head.append('<link   rel="stylesheet" type="text/css" href="') 
             html_head.append(css_link)
-            html_head.append('">')
+            html_head.append('"/>')
+        for javascript_file in self.javascript_files:
+            html_head.append('<script src="')
+            html_head.append(JAVASCRIPT_URL) 
+            html_head.append('/') 
+            html_head.append(javascript_file) 
+            html_head.append('" type="text/javascript"></script>')
         html_head_string = ''.join(html_head)
-        html_body_string = ''.join(['<nav>', self._create_navbar(), '''
-            </nav>
-            <article>''', 
-            self.content, '''
-                </article>
-                <footer>
-                <p class="alignLeft">Powered by 
-                <a href="https://code.google.com/p/naga-cms/">naga</a></p>
-                <p class="alignRight">''', COPYRIGHT,'</p></footer>'])
-        return wrap(html_body_string, html_head_string)
+        html_body_string = ''.join([
+        '''
+        <nav>
+        ''', self._create_navbar(), '''
+        </nav>
+        <article>''', 
+        self.content, '''
+        </article>
+        <footer>
+            <p class="alignLeft">Powered by 
+            <a href="https://code.google.com/p/naga-cms/">naga</a></p>
+            <p class="alignRight">''', COPYRIGHT,'''
+            </p>
+        </footer>'''])
+        return wrap(html_body_string, html_head_string, self.onload_body)
     #--------------------------------------------------------------------------
 

@@ -4,7 +4,6 @@ body    {
 }
 
 h1 {
-    float       : center;
     text-align  : center;
 }
 
@@ -82,7 +81,7 @@ p.article_timestamp {
 p.article_heading {
     font-weight : bold;
     font-size   : 1.2em;
-    text_align  : justify;
+    text-align  : justify;
 }
 
 p.article_summary {
