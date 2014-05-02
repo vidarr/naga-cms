@@ -27,6 +27,7 @@ MODULE_DIR  = 'python'
 sys.path.append(PAGE_ROOT + '/../' + MODULE_DIR);
 from naga_config import *
 import nagaUtils
+import store
 #------------------------------------------------------------------------------
 _logger = logging.getLogger('transformator')
 #------------------------------------------------------------------------------
@@ -116,8 +117,8 @@ def make_link(separator, internal_link_prefix='', internal_link_postfix=''):
         del call # Just to get rid of 'Unused arg' warning
         parts = arg.partition(separator)
         (target, description) = (parts[0], parts[2])
-        if nagaUtils.valid_url(target):
-            # target matches some dns name
+        if nagaUtils.invalid_url(target):
+            # target does not match some dns name
             description = target
             target = ''.join([internal_link_prefix, target, '.',
                 XML_FILE_EXTENSION, internal_link_postfix])
@@ -127,7 +128,7 @@ def make_link(separator, internal_link_prefix='', internal_link_postfix=''):
             '</a>'])
     return link
 #------------------------------------------------------------------------------
-def make_image(separator, internal_link_prefix='', internal_link_postfix=''):
+def make_image(separator, image_store):
     '''
     Returns a function to be used as callback to format images.
     The callback will distinuish between internal and external image links.
@@ -150,16 +151,21 @@ def make_image(separator, internal_link_prefix='', internal_link_postfix=''):
         del call # Just to get rid of 'Unused arg' warning
         parts = arg.partition(separator)
         (target, description) = (parts[0], parts[2])
-        if nagaUtils.valid_url(target):
-            # target matches some dns name
+        if nagaUtils.invalid_url(target):
+            # target does not match some dns name
             description = target
-            target = ''.join([internal_link_prefix, target,
-                internal_link_postfix])
+            target_uri = image_store.get_uri(target)
+            if target_uri == None:
+                return ''.join([
+                    '<div class="center"><code>', target,
+                    '</code> not found</div>'])
+            target = target_uri
         prefix = '<div class="center"><img src="'
         postfix = '" ' + IMAGE_OPTIONS + '/>'
         if description != '':
             prefix = '<table><tr><td>' + prefix
-            postfix = ''.join([postfix, '</td></tr><tr><td><b>Image:</b> ',
+            postfix = ''.join([postfix,
+                '</div></td></tr><tr><td><b>Image:</b> ',
                 description, '</td></tr></table>'])
         return ''.join([prefix, target, postfix])
     return link
@@ -183,12 +189,11 @@ def make_default_transformator():
     transformator = Transformator()
     link_prefix = NAGA_ROOT + PATH_SEPARATOR + SHOW_RELATIVE_PATH + '?' + \
             'type=article&content='
-    image_prefix = ''.join([NAGA_ROOT, PATH_SEPARATOR, IMAGE_DIR, 
-        PATH_SEPARATOR])
     transformator.register_callback('link',
             make_link(MARKUP_LINK_SEPARATOR, link_prefix))
     transformator.register_callback('image',
-            make_image(MARKUP_LINK_SEPARATOR, image_prefix))
+            make_image(MARKUP_LINK_SEPARATOR, 
+                store.get_store(STORE_TYPE_IMAGE)))
     return transformator
 #------------------------------------------------------------------------------
 class Transformator(object):
@@ -292,22 +297,22 @@ class Transformator(object):
             return None
         level = 1
         for i in range(position, len(origin_string)):
-            self.__logger.info("position " + str(i) + " char " +
+            self.__logger.debug("position " + str(i) + " char " +
                     origin_string[i])
             if origin_string[i] == self.right_marker:
                 if not self.escaped(origin_string, i):
                     level = level - 1
-                    self.__logger.info(origin_string[i] + " not escaped - decreatsing to " + str(level))
+                    self.__logger.debug(origin_string[i] + " not escaped - decreatsing to " + str(level))
                     if level == 0:
                         return i
                 else:
-                    self.__logger.info(origin_string[i] + " escaped")
+                    self.__logger.debug(origin_string[i] + " escaped")
             elif origin_string[i] == self.left_marker:
                 if not self.escaped(origin_string, i):
                     level = level + 1
-                    self.__logger.info(origin_string[i] + " not escaped - increasing to " + str(level))
+                    self.__logger.debug(origin_string[i] + " not escaped - increasing to " + str(level))
                 else:
-                    self.__logger.info(origin_string[i] + " escaped")
+                    self.__logger.debug(origin_string[i] + " escaped")
         self.__logger.error("Found no end marker")
         return None
     #---------------------------------------------------------------------------
@@ -327,7 +332,7 @@ class Transformator(object):
                     origin_string)
             return None
         inner_part = origin_string[:position]
-        self.__logger.info("got format call " + inner_part)
+        self.__logger.debug("got format call " + inner_part)
         rest = origin_string[position + 1:]
         call_parts = inner_part.partition(self.separator)
         if call_parts[0] == '':
@@ -353,21 +358,21 @@ class Transformator(object):
         parts = []
         start_position = 0
         while origin_string != None:
-            self.__logger.info("transform: Looking at " + origin_string[start_position:])
+            self.__logger.debug("transform: Looking at " + origin_string[start_position:])
             position = origin_string.find(self.left_marker, start_position)
             if position < 0:
                 # Not found
-                self.__logger.info("transform: No start marker found in " + origin_string[start_position:])
+                self.__logger.debug("transform: No start marker found in " + origin_string[start_position:])
                 transformed_string.append(origin_string)
                 return self.__collapse_string(transformed_string)
             if self.escaped(origin_string, position):
                 start_position = position + 1
-                self.__logger.info("transform: Escaped " +
+                self.__logger.debug("transform: Escaped " +
                         origin_string[position] + " continuing at " +
                         str(position))
             else:
                 # Got format call
-                self.__logger.info("transform: Got call " + origin_string[position:])
+                self.__logger.debug("transform: Got call " + origin_string[position:])
                 transformed_string.append(origin_string[:position])
                 remainder = origin_string[position + 1:]
                 if remainder == '':

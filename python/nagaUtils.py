@@ -48,7 +48,7 @@ def to_posix_timestamp(time):
        return int(time)
     return None
 #------------------------------------------------------------------------------
-def valid_url(target):
+def invalid_url(target):
     '''
     Test whether target contains a valid URL
     '''
