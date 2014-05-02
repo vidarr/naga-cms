@@ -145,7 +145,8 @@ class Authenticator(ConfigurationObject):
     Provides several ways of checking whether a combination of 
     user/passphrase is valid or not.
     '''
-    def __init__(self, file_name = NAGA_ABS_ROOT + USERS_FILE_PATH):
+    def __init__(self, file_name=
+            os.path.join(NAGA_ABS_ROOT, USERS_FILE_PATH)):
         ConfigurationObject.__init__(self, file_name)
         self.__logger__ = logging.getLogger("Authenticator")
         self._hash_algorithm = 'sha512'

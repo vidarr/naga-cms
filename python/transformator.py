@@ -128,7 +128,31 @@ def make_link(separator, internal_link_prefix='', internal_link_postfix=''):
             '</a>'])
     return link
 #------------------------------------------------------------------------------
-def make_image(separator, image_store):
+# Formatters for treating store links
+def format_image_html(target, description):
+    '''
+    Formats HTML for an image link
+    '''
+    postfix = '" ' + IMAGE_OPTIONS + '/>'
+    prefix = ''
+    if description != None and description != '':
+        prefix = '<table><tr><td>'
+        postfix = ''.join([postfix,
+            '</td></tr><tr><td><b>Image:</b> ',
+            description, '</td></tr></table>'])
+    prefix = ''.join(['<div class="center">', prefix, '<img src="'])
+    postfix = postfix + '</div>'
+    return ''.join([prefix, target, postfix])
+#--------------------------------------------------------------------------
+def format_file_html(target, description):
+    '''
+    Formats HTML for a file link
+    '''
+    if description == None or description == '':
+        description = target
+    return ''.join(['<a href="', target, '">', description, '</a>'])
+#--------------------------------------------------------------------------
+def make_store_link(separator, store_object, formatter):
     '''
     Returns a function to be used as callback to format images.
     The callback will distinuish between internal and external image links.
@@ -153,21 +177,14 @@ def make_image(separator, image_store):
         (target, description) = (parts[0], parts[2])
         if nagaUtils.invalid_url(target):
             # target does not match some dns name
-            description = target
-            target_uri = image_store.get_uri(target)
+            # description = target
+            target_uri = store_object.get_uri(target)
             if target_uri == None:
                 return ''.join([
                     '<div class="center"><code>', target,
                     '</code> not found</div>'])
             target = target_uri
-        prefix = '<div class="center"><img src="'
-        postfix = '" ' + IMAGE_OPTIONS + '/>'
-        if description != '':
-            prefix = '<table><tr><td>' + prefix
-            postfix = ''.join([postfix,
-                '</div></td></tr><tr><td><b>Image:</b> ',
-                description, '</td></tr></table>'])
-        return ''.join([prefix, target, postfix])
+        return formatter(target, description)
     return link
 #------------------------------------------------------------------------------
 def make_do_nothing(separator):
@@ -192,8 +209,11 @@ def make_default_transformator():
     transformator.register_callback('link',
             make_link(MARKUP_LINK_SEPARATOR, link_prefix))
     transformator.register_callback('image',
-            make_image(MARKUP_LINK_SEPARATOR, 
-                store.get_store(STORE_TYPE_IMAGE)))
+            make_store_link(MARKUP_LINK_SEPARATOR,
+                store.get_store(STORE_TYPE_IMAGE), format_image_html))
+    transformator.register_callback('file',
+            make_store_link(MARKUP_LINK_SEPARATOR,
+                store.get_store(STORE_TYPE_FILE), format_file_html))
     return transformator
 #------------------------------------------------------------------------------
 class Transformator(object):

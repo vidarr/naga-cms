@@ -72,7 +72,7 @@ if __name__ == '__main__':
     cgi_variables = cgi.FieldStorage()
     page_object = page.Page()
     if not security.authenticate_cookie():
-        page_object.set_page('<p class="error">Authentication failure</p>')
+        page_object.set_set_content('<p class="error">Authentication failure</p>')
         print(page_object.get_html())
         sys.exit(1)
     file_name = None

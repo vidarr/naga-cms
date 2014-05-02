@@ -57,7 +57,7 @@ CATEGORIES_FILE_PATH   = join(PAGE_ROOT, ETC_DIR       , 'categories')
 USERS_FILE_PATH        = join(PAGE_ROOT, ETC_DIR       , 'users')
 CSS_PATH               = join(PATH_SEPARATOR, PAGE_ROOT, FORMATTING_DIR, 'general.css')
 CSS_POST_PATH          = join(PAGE_ROOT, FORMATTING_DIR, 'post.css')
-UPLOAD_PATH            = join(PAGE_ROOT, CGI_DIR       , 'upload.py')
+UPLOAD_PATH            = join(CGI_PATH, 'upload.py')
 UPLOAD_FILE_PATH       = join(PAGE_ROOT, CGI_DIR       , 'upload_file.py') 
 SHOW_RELATIVE_PATH     = join(CGI_DIR   , 'show.py')
 REGISTRY_PATH          = join(PAGE_ROOT , CONTENT_DIR)
@@ -65,9 +65,10 @@ CONTENT_PATH           = join(PAGE_ROOT , CONTENT_DIR)
 STATIC_PATH            = join(PAGE_ROOT , STATIC_DIR)
 STATIC_FILE_PATH       = join(PAGE_ROOT , ETC_DIR, 'static')
 AUTHENTICATE_LINK      = join(CGI_PATH  , 'authenticate.py')
-LOGOUT_PATH            = join(CGI_PATH  , 'logout.py')
-ADD_ARTICLE_PATH       = join(CGI_PATH  , 'post.py')
-EDIT_ARTICLE_PATH      = ADD_ARTICLE_PATH
+CHOOSE_UPLOAD_LINK     = join(CGI_PATH  , 'choose_upload.py')
+LOGOUT_LINK            = join(CGI_PATH  , 'logout.py')
+ADD_ARTICLE_LINK       = join(CGI_PATH  , 'post.py')
+EDIT_ARTICLE_LINK       = ADD_ARTICLE_LINK
 JAVASCRIPT_URL         = join(PATH_SEPARATOR, PAGE_ROOT, JAVASCRIPT_DIR)
 #------------------------------------------------------------------------------
 # CGI authentication names
@@ -125,10 +126,11 @@ __logger.debug("REGISTRY_PATH=" + REGISTRY_PATH)
 __logger.debug("CONTENT_PATH=" + CONTENT_PATH)
 __logger.debug("STATIC_PATH=" + STATIC_PATH)
 __logger.debug("STATIC_FILE_PATH=" + STATIC_FILE_PATH)
+__logger.debug("CHOOSE_UPLOAD_LINK=" + CHOOSE_UPLOAD_LINK)
 __logger.debug("AUTHENTICATE_LINK=" + AUTHENTICATE_LINK)
-__logger.debug("LOGOUT_PATH=" + LOGOUT_PATH)
-__logger.debug("ADD_ARTICLE_PATH=" + ADD_ARTICLE_PATH)
-__logger.debug("EDIT_ARTICLE_PATH=" + EDIT_ARTICLE_PATH)
+__logger.debug("LOGOUT_LINK=" + LOGOUT_LINK)
+__logger.debug("ADD_ARTICLE_LINK=" + ADD_ARTICLE_LINK)
+__logger.debug("EDIT_ARTICLE_LINK=" + EDIT_ARTICLE_LINK)
 #------------------------------------------------------------------------------
 # Internal Constants
 #------------------------------------------------------------------------------

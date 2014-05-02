@@ -38,8 +38,11 @@ if __name__ == '__main__':
     file_type = form['type'].value
     file_name = basename(file_item.filename)
     file_content = file_item.file.read()
+    page_object = page.Page()
     if upload_file(file_type, file_name, file_content):
-        print(page.wrap('''Upload successful'''))
+        page_object.set_content('''Upload successful''')
     else:
-        print(page.wrap('''Error occured'''))
+        page_object.set_content('''Error occured''')
+    print(page_object.get_html())
+    sys.exit(0)
 

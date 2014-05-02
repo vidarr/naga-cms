@@ -12,6 +12,8 @@ import registry
 import security
 import page
 import transformator
+import article
+import rss
 #------------------------------------------------------------------------------
 _logger        = logging.getLogger("upload")
 _transformator = transformator.make_default_transformator()

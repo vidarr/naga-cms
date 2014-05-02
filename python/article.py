@@ -47,7 +47,7 @@ def heading_2_file_name(heading):
 #------------------------------------------------------------------------------
 def get_edit_links_html(file_name):
     '''Return HTML links to edit / delete pages '''
-    return ''.join(['[ <a href="', EDIT_ARTICLE_PATH, '?file_name=',
+    return ''.join(['[ <a href="', EDIT_ARTICLE_LINK, '?file_name=',
         file_name, '">edit</a> ]'])
 #------------------------------------------------------------------------------
 def article_from_xml(article_xml):
