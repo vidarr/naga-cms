@@ -91,7 +91,7 @@ def show_category(content):
     else:
         html = ['<h1>', content, '</h1>All articles in category ', content,
                 '. <a href="', 
-                RSS_FEED_PATH, 
+                RSS_FEED_LINK, PATH_SEPARATOR, 
                 content, '.', RSS_FILE_EXTENSION, 
                 '"><img src="', RSS_ICON_PATH, 
                 '" height="18" width="18"/>Subscribe to ', content, '</a></div>']

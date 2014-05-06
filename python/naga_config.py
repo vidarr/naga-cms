@@ -50,6 +50,7 @@ CGI_SHOW_PATH          = join(CGI_PATH, 'show.py')
 LOG_FILE_PATH          = join(PAGE_ROOT, LOG_DIR    , 'naga.log')
 RSS_ICON_PATH          = join(NAGA_ROOT, IMAGE_DIR  , 'feed_icon.svg')
 RSS_FEED_PATH          = join(PAGE_ROOT, CONTENT_DIR)
+RSS_FEED_LINK          = join(NAGA_ROOT, CONTENT_DIR)
 RSS_ALL_FEED_NAME      = 'all-news'
 RSS_ROLLING_FEED_NAME  = 'news'
 RSS_ROLLING_ENTRIES    = 10
