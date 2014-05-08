@@ -17,7 +17,6 @@ article {
     padding-top        : 0em;
     border-left-style  : solid; 
     border-bottom-style: solid;
-    width              : 100%;
     overflow           : auto;
 }
 
