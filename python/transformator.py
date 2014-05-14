@@ -21,6 +21,7 @@ import os.path
 import sys
 import xml.etree.ElementTree as ET
 import logging
+import re
 #------------------------------------------------------------------------------
 PAGE_ROOT   = os.path.join(os.path.dirname(os.path.abspath(__file__)))
 MODULE_DIR  = 'python'
@@ -119,11 +120,11 @@ def make_link(separator, internal_link_prefix='', internal_link_postfix=''):
         (target, description) = (parts[0], parts[2])
         if nagaUtils.invalid_url(target):
             # target does not match some dns name
-            description = target
+            target_substitute = target
             target = ''.join([internal_link_prefix, target, '.',
                 XML_FILE_EXTENSION, internal_link_postfix])
-        if description == '':
-            description = target
+        if description == None or description == '':
+            description = target_substitute
         return ''.join(['<a href="', target, '">', description,
             '</a>'])
     return link
@@ -281,6 +282,9 @@ class Transformator(object):
         '''
         self.lookup[identifier] = callback
     #---------------------------------------------------------------------------
+    def __replace_chars(self, input):
+        return re.sub('[\r\n]', '', input)
+    #---------------------------------------------------------------------------
     def __collapse_string(self, transformed_parts):
         '''
         Collect strings where all format calls have been treated and
@@ -383,7 +387,8 @@ class Transformator(object):
             if position < 0:
                 # Not found
                 self.__logger.debug("transform: No start marker found in " + origin_string[start_position:])
-                transformed_string.append(origin_string)
+                modified_string = self.__replace_chars(origin_string)
+                transformed_string.append(modified_string)
                 return self.__collapse_string(transformed_string)
             if self.escaped(origin_string, position):
                 start_position = position + 1
@@ -393,7 +398,8 @@ class Transformator(object):
             else:
                 # Got format call
                 self.__logger.debug("transform: Got call " + origin_string[position:])
-                transformed_string.append(origin_string[:position])
+                modified_string = self.__replace_chars(origin_string[:position])
+                transformed_string.append(modified_string)
                 remainder = origin_string[position + 1:]
                 if remainder == '':
                     return self.__collapse_string(transformed_string)

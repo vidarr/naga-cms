@@ -18,6 +18,7 @@ article {
     border-left-style  : solid; 
     border-bottom-style: solid;
     overflow           : auto;
+    text-align         : justify;
 }
 
 nav     { 
