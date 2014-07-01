@@ -8,12 +8,17 @@ h1 {
 }
 
 article { 
+    margin-left        : auto;
+    margin-right       : auto;
+    width              : inherit;
+    right              : 0;
+    left               : 15em;
     position           : fixed;
     top                : 0;
     bottom             : 2.5em;
     left               : 15em;
     padding-left       : 1em;
-    padding-right      : 0em;
+    /* padding-right      : 0em; */
     padding-top        : 0em;
     border-left-style  : solid; 
     border-bottom-style: solid;
@@ -91,9 +96,9 @@ p.article_summary {
 /* Custom formattings */
 
 div.center_item {
+    display     : block;
     margin-left : auto;
     margin-right: auto;
-    width       : 30%;
 }
 
 table.high_row tr {
