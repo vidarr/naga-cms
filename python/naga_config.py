@@ -57,6 +57,7 @@ RSS_ROLLING_ENTRIES    = 10
 CATEGORIES_FILE_PATH   = join(PAGE_ROOT, ETC_DIR       , 'categories')
 USERS_FILE_PATH        = join(PAGE_ROOT, ETC_DIR       , 'users')
 CSS_PATH               = join(PATH_SEPARATOR, PAGE_ROOT, FORMATTING_DIR, 'general.css')
+CSS_ARTICLE_PATH       = join(PATH_SEPARATOR, PAGE_ROOT, FORMATTING_DIR, 'article.css')
 CSS_POST_PATH          = join(PAGE_ROOT, FORMATTING_DIR, 'post.css')
 UPLOAD_PATH            = join(CGI_PATH, 'upload.py')
 UPLOAD_FILE_PATH       = join(PAGE_ROOT, CGI_DIR       , 'upload_file.py') 

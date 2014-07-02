@@ -66,6 +66,7 @@ def show_article(file_name):
     edit_links = ''
     if authenticate_cookie():
         edit_links = get_edit_links_html(file_name)
+    _page.add_css_link(CSS_ARTICLE_PATH)
     _page.set_content(edit_links + article_object.to_html())
     finish_page()
 #------------------------------------------------------------------------------
@@ -89,12 +90,12 @@ def show_category(content):
     if len(articles) < 1:
         _page.set_content("<p>No articles found</p>")
     else:
-        html = ['<h1>', content, '</h1>All articles in category ', content,
+        html = ['<h1>', content, '</h1>All articles in category ', content, 
                 '. <a href="', 
                 RSS_FEED_LINK, PATH_SEPARATOR, 
                 content, '.', RSS_FILE_EXTENSION, 
                 '"><img src="', RSS_ICON_PATH, 
-                '" height="18" width="18"/>Subscribe to ', content, '</a></div>']
+                '" height="18" width="18"/>Subscribe to ', content, '</a>']
         article_objects = []
         for article_key in articles:
             article = article_registry.get(article_key)
@@ -105,13 +106,13 @@ def show_category(content):
         articles_sorted = sort_articles(article_objects, _sortkey)
         for article in articles_sorted:
             html.extend([ 
-                '<div><p class="alignLeft">', 
+                '<p><div class="alignLeft">', 
                 '<a href="', NAGA_ROOT, PATH_SEPARATOR, SHOW_RELATIVE_PATH, 
                 '?type=article&content=', article.get_key(), '">', 
-                article.get_heading(), '</a>', '</p></td><p class="', 
+                article.get_heading(), '</a>', '</div><div class="', 
                 ARTICLE_HTML_SHORT_TIMESTAMP, '">', article.get_timestamp(),
-                '</p><p class="', ARTICLE_HTML_SHORT_DESCRIPTION, '"> </p></div>'])
-        html.append('</table>')
+                '</div><div class="', ARTICLE_HTML_SHORT_DESCRIPTION, 
+                '"></div></p>'])
         html_string = ''.join(html)
         _page.set_content(html_string)
     finish_page()

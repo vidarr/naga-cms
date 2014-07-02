@@ -3,16 +3,9 @@ body    {
     font-family : Sans;
 }
 
-h1 {
-    text-align  : center;
-}
-
 article { 
-    margin-left        : auto;
-    margin-right       : auto;
     width              : inherit;
     right              : 0;
-    left               : 15em;
     position           : fixed;
     top                : 0;
     bottom             : 2.5em;
@@ -23,7 +16,6 @@ article {
     border-left-style  : solid; 
     border-bottom-style: solid;
     overflow           : auto;
-    text-align         : justify;
 }
 
 nav     { 
@@ -34,7 +26,7 @@ nav     {
     background-color   : rgb(192,192,192);
 }
 
-footer {
+footer  {
     position           : fixed;
     bottom             : 0;
     left               : 0;
@@ -65,32 +57,17 @@ p.rss_description {
     clear       : both;
 }
 
-p.article_short_timestamp {
+/* For listings ... */
+
+.article_short_timestamp {
     float       : right;
     font-size   : 0.8em;
     font-family : Monospace;
 }
 
-p.article_short_description {
+.article_short_description {
     font-style  : italic;
     clear       : both;
-}
-
-
-p.article_timestamp {
-    font-size   : 0.8em;
-    font-family : Monospace;
-    text-align  : justify;
-}
-
-p.article_heading {
-    font-weight : bold;
-    font-size   : 1.2em;
-    text-align  : justify;
-}
-
-p.article_summary {
-    font-style  : italic;
 }
 
 /* Custom formattings */
