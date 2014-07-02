@@ -1,13 +1,12 @@
 article { 
+    position           : fixed;
     margin-left        : auto;
     margin-right       : auto;
     width              : inherit;
     right              : 0;
     left               : 15em;
-    position           : fixed;
     top                : 0;
     bottom             : 2.5em;
-    left               : 15em;
     padding-left       : 1em;
     padding-right      : 1em;
     padding-top        : 0em;
@@ -28,20 +27,27 @@ article {
     clear       : both;
 }
 
-
 .article_timestamp {
     font-size   : 0.8em;
     font-family : Monospace;
-    text-align  : justify;
+    text-align  : center;
 }
 
 .article_heading {
     font-weight : bold;
     font-size   : 1.2em;
-    text-align  : justify;
+    text-align  : center;
 }
 
 .article_summary {
     font-style  : italic;
+}
+
+table            {
+    margin      : 0 auto;
+}
+
+td               {
+    text-align  : center;
 }
 
