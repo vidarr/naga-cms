@@ -1,3 +1,7 @@
+2014-07-03
+	* Introduced separate CSS for article
+	* Images are now centered within articles
+	* Cleaned up HTML generated for article listings
 2014-05-05
 	* Introduced file tags
 	* Added facility to upload images/files
@@ -7,9 +11,9 @@
 	* Introduced image tags
 	* Introduced separate RSS feeds for each category
 2014-02-07
-    * BUGFIX: Links in category listings would refer to wrong articles
+	* BUGFIX: Links in category listings would refer to wrong articles
 	* Introduced formatting language
-    * Minor CSS change: nav bar now of fixed size to perform better on mobiles
+	* Minor CSS change: nav bar now of fixed size to perform better on mobiles
 2014-01-02
 	* Enabled posting of bare RSS entries
 	* Switched to authentication via cookies
