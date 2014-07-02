@@ -118,9 +118,9 @@ def make_link(separator, internal_link_prefix='', internal_link_postfix=''):
         del call # Just to get rid of 'Unused arg' warning
         parts = arg.partition(separator)
         (target, description) = (parts[0], parts[2])
+        target_substitute = target
         if nagaUtils.invalid_url(target):
             # target does not match some dns name
-            target_substitute = target
             target = ''.join([internal_link_prefix, target, '.',
                 XML_FILE_EXTENSION, internal_link_postfix])
         if description == None or description == '':
