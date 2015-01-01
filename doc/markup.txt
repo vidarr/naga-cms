@@ -35,20 +35,20 @@ in order to get a [c .] ] type:
 
 Currently, there are the following markup tags supported:
 
-[ulist [code heading] Creates a heading * [code b] bold text * [code i] italic text * [code code] For code chunks * [code list] for creating ordered lists * [code ulist] for creating unordered lists * [code link] for creating links]
+[ulist [c heading] Creates a heading * [c b] bold text * [c i] italic text * [c code] For code chunks * [c olist] for creating ordered lists * [c ulist] for creating unordered lists * [c link] for creating links]
 
-[heading [code list] / [code ulist] ]
+[heading [c olist] / [c ulist] ]
 
 The format of list is 
 [br]
-[code .[list ENTRY ONE * ENTRY TWO * ENTRY THREE ... .] ]
+[c .[list * ENTRY ONE * ENTRY TWO * ENTRY THREE ... .] ]
 [br]
 
 [heading link]
 
 The format of link is 
 [br]
-[code .[link LINK_TARGET LINK TEXT]
+[c .[link LINK_TARGET LINK TEXT]
 [br]
 
 LINK TEXT can be omitted, then LINK_TARGET is used as link text.
