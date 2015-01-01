@@ -44,7 +44,7 @@ The format of list is
 [c .[list * ENTRY ONE * ENTRY TWO * ENTRY THREE ... .] ]
 [br]
 
-[heading link]
+[heading [c link] ]
 
 The format of link is 
 [br]

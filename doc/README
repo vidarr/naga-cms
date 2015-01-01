@@ -1,1 +1,5 @@
 Use the ../tools/format_html.py script to turn these docs into HTML files
+Beware: 
+The script currently relies upon being able to log into the directory 
+/var/www/naga/log .
+Ensure this directory exists and is accessible.
