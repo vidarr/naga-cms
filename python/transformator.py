@@ -283,7 +283,7 @@ class Transformator(object):
         self.lookup[identifier] = callback
     #---------------------------------------------------------------------------
     def __replace_chars(self, input):
-        return re.sub('[\r\n]', '', input)
+        return re.sub('[\r\n ]+', ' ', input)
     #---------------------------------------------------------------------------
     def __collapse_string(self, transformed_parts):
         '''
