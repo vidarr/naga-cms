@@ -33,6 +33,8 @@ if __name__ == '__main__':
     else:
         cookie = security.get_credential_cookie(user, passphrase)
         print(cookie.output())
+        # 'Set' cookie for this run already ...
+        security.set_cookie_for_current_request(cookie)
     __logger.info(html_body_string)
     page_object.set_content(html_body_string)
     print(page_object.get_html())

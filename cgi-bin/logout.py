@@ -22,6 +22,7 @@ if __name__ == '__main__':
     page_object = page.Page() 
     cookie = security.get_logout_cookie()
     print(cookie.output())
+    security.set_cookie_for_current_request(cookie)
     page_object.set_content(html_body_string)
     print(page_object.get_html())
     __logger.info(html_body_string)

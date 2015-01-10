@@ -140,6 +140,13 @@ def get_logout_cookie():
     cookie[CREDENTIALS_PASSPHRASE]['expires'] = 0
     return cookie
 #---------------------------------------------------------------------------    
+def set_cookie_for_current_request(cookie):
+    '''
+    When setting cookie, it will become active only for the next request.
+    This 'sets' the cookie already for current request
+    '''
+    os.environ["HTTP_COOKIE"] = cookie.output()
+#---------------------------------------------------------------------------    
 class Authenticator(ConfigurationObject):
     '''
     Provides several ways of checking whether a combination of 
