@@ -80,7 +80,7 @@ class PostPage:
         checkbox_html = []
         for cat in categories.get_categories().get_categories():
             checked = ''
-            if cat in _self.__categories:
+            if cat in self.__categories:
                 checked = 'checked'
             checkbox_html.extend(['<input type="checkbox" name="category.', 
                 cat, '" value="yes" formmethod="post"', checked, '/>', cat, 
