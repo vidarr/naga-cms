@@ -15,9 +15,11 @@ import security
 import categories
 import page
 import registry
+import article
 FILENAME = 'FILENAME'
-CONTENT  = 'CONTENT'
 HEADING  = 'HEADING'
+SUMMARY  = 'SUMMARY'
+CONTENT  = 'CONTENT'
 CATEGORIES = 'CATEGORIES'
 #------------------------------------------------------------------------------ 
 class PostPage:
@@ -28,22 +30,22 @@ class PostPage:
     def __init__(self, **arguments):
         self.__logger     = logging.getLogger()
         self.__file_name  = None
-        self.__content    = ''
         self.__heading    = ''
+        self.__summary    = ''
+        self.__content    = None
         self.__categories = []
         if FILENAME in arguments:
             self.__file_name = arguments['FILENAME']
-            self.__initialize_data_vars()
-        else:
-            if CONTENT in arguments and HEADING in arguments and \
-                    CATEGORIES in arguments:
-                self.__content    = arguments['CONTENT'] 
-                self.__heading    = arguments['HEADING']
-                self.__categories = arguments['CATEGORIES']
-            elif  CONTENT in arguments or  HEADING in arguments or \
-                    CATEGORIES in arguments:
-                        raise Exception("Expected either a file name" +
-                                "or content, heading and arguments")
+            if self.__file_name != None:
+                self.__initialize_data_vars()
+        if HEADING in arguments:
+            self.__heading    = arguments[HEADING]
+        if SUMMARY in arguments:
+            self.__summary    = arguments[SUMMARY] 
+        if CONTENT in arguments:
+            self.__content    = arguments[CONTENT] 
+        if CATEGORIES in arguments:
+            self.__categories = arguments[CATEGORIES]
     #-------------------------------------------------------------------------- 
     def __initialize_data_vars(self):
         registry_object = registry.Registry()
@@ -69,7 +71,7 @@ class PostPage:
     #-------------------------------------------------------------------------- 
     def __get_content_checkbox(self):
         html = ['<input type="checkbox" name="contentexists" value="yes"']
-        if self.__file_name:
+        if self.__content != None:
             html.append('checked')
         html.append('/>Content</input> <br/>')
         return ''.join(html)
@@ -85,15 +87,19 @@ class PostPage:
                 '</input> <br/>'])
         return ''.join(checkbox_html)
     #-------------------------------------------------------------------------- 
-    def get_html(self, preview = False):
-        page_object = page.Page()
+    def to_html(self, preview = False):
         if not security.authenticate_cookie():
-            page_object.set_set_content(
-                    '<p class="error">Authentication failure</p>')
-            return page_object.get_html()
+            return '<p class="error">Authentication failure</p>'
         file_name = None
-        page_object.add_css_link(CSS_POST_PATH)
         html_body = StringIO()
+        if preview:
+            article_object = article.Article()
+            article_object.set_heading(self.__heading)
+            article_object.set_summary(self.__summary)
+            if self.__content != None:
+                article_object.set_content(self.__content)
+            article_object.set_categories(self.__categories)
+            html_body.write(article_object.to_html())
         html_body.write('''<h1>Make your post!</h1>
         <form action="''')
         html_body.write(self.__get_upload_path())
@@ -102,13 +108,17 @@ class PostPage:
             <input type="text"     id=input_heading"  name="heading" +
             value="''' + self.__heading + '''"/> <br/>
             Summary: <br/>
-            <textarea              id="input_summary" name="summary">
-            </textarea> <br/>''')
+            <textarea              id="input_summary" name="summary"> ''' +
+            self.__summary + 
+            '''</textarea> <br/>''')
         html_body.write(self.__get_content_checkbox())
+        content = self.__content
+        if content == None:
+            content = ''
         html_body.write('''
             Content: <br/>
             <textarea              id="input_content" name="content">''' +
-            self.__content +
+            content +
             '''</textarea> <br/>
             <h2>Categories</h2>
             ''')
@@ -122,6 +132,5 @@ class PostPage:
         html_body_string = html_body.getvalue()
         html_body.close()
         self.__logger.info(html_body_string)
-        page_object.set_content(html_body_string)
-        return page_object.get_html()
+        return html_body_string
 

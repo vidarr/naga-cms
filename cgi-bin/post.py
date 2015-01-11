@@ -9,6 +9,7 @@ MODULE_DIR  = 'python'
 sys.path.append(PAGE_ROOT + '/../' + MODULE_DIR);
 from naga_config import *
 import post_page
+import page
 #-------------------------------------------------------------------------------
 if __name__ == '__main__':
     cgitb.enable()
@@ -18,6 +19,11 @@ if __name__ == '__main__':
         post = post_page.PostPage(FILENAME=file_name.value)
     else:
         post = post_page.PostPage()
-    html_string = post.get_html()
-    print(html_string)
+
+    page_object = page.Page()
+    page_object.add_css_link(CSS_POST_PATH)
+    page_object.add_css_link(CSS_ARTICLE_PATH)
+    html_string = post.to_html(True)
+    page_object.set_content(html_string)
+    print(page_object.get_html())
 

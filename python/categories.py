@@ -21,14 +21,14 @@ import os.path
 import sys
 import string
 import logging
-#------------------------------------------------------------------------------    
+#-------------------------------------------------------------------------------
 ABS_PAGE_ROOT     = os.path.join(os.path.dirname(os.path.abspath(__file__)))
 MODULE_DIR  = 'python'
 sys.path.append(ABS_PAGE_ROOT + '/../' + MODULE_DIR);
 from naga_config import *
-#------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 global_categories = None
-#------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 def get_categories():
     global global_categories
     if global_categories == None:
@@ -36,7 +36,7 @@ def get_categories():
                 CATEGORIES_FILE_PATH)
         global_categories.from_file()
     return global_categories
-#------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 class Categories:
 
     def __init__(self, file_name):

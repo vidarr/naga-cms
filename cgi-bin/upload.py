@@ -14,6 +14,7 @@ import page
 import transformator
 import article
 import rss
+import post_page
 #------------------------------------------------------------------------------
 _logger        = logging.getLogger("upload")
 _transformator = transformator.make_default_transformator()
@@ -83,9 +84,7 @@ def post_entry(heading, summary, content = None, categories = None, file_name =
     if categories:
         for category in categories:
             write_rss(heading, summary, category, file_name)
-    page_object = page.Page()
-    page_object.set_content("New post accepted")
-    return page_object.get_html()
+    return "New post accepted"
 #------------------------------------------------------------------------------
 def create_file_name(heading, summary, content):
     '''
@@ -114,29 +113,42 @@ def get_file_name(form):
     None otherwise
     '''
     file_name = None
-    if 'file_name' in form.keys():
-        file_name = form['file_name'].value
+    if HTTP_ARG_FILE_NAME in form.keys():
+        file_name = form[HTTP_ARG_FILE_NAME].value
     return file_name
 #------------------------------------------------------------------------------
-if __name__ == '__main__':
-    cgitb.enable()
-    _logger.info("upload.py: Upload request received")
-    form = cgi.FieldStorage()
-    # if not security.authenticate_cgi(form):
-    if not security.authenticate_cookie():
-        print(page.wrap('<p class="error">Authentication failure</p>'))
-        sys.exit(1)
-    if 'heading' not in form or 'summary' not in form:
+def get_mandatory_field(form, field_name):
+    if field_name not in form:
         _logger.error("Error: Called without enough parameters")
         print(page.wrap('''
              <p class="error">Internal error: Called without
             enough parameters</p>'''))
         sys.exit(1)
-    heading = form['heading'].value
-    summary = form['summary'].value
-    if 'contentexists' in form:
-        print(post_entry(heading, summary, form['content'].value, 
-            get_chosen_categories(form), get_file_name(form)))
+    return form[field_name].value
+#------------------------------------------------------------------------------
+if __name__ == '__main__':
+    cgitb.enable()
+    _logger.info("upload.py: Upload request received")
+    form = cgi.FieldStorage()
+    heading = get_mandatory_field(form, 'heading')
+    summary = get_mandatory_field(form, 'summary')
+    file_name = get_file_name(form)
+    content = None 
+    if 'contentexists' in form and 'content' in form:
+        content = form['content'].value
+    html = ''
+    if 'preview' in form and form['preview'].value == 'Preview':
+        if content == None:
+            content = ''
+        post = post_page.PostPage(HEADING=heading, SUMMARY=summary, 
+                CONTENT=content, FILENAME=file_name)
+        html = post.to_html(True)
     else:
-        print(post_entry(heading, summary))
+        html = post_entry(heading, summary, content, 
+                get_chosen_categories(form), get_file_name(form))
+    page_object = page.Page()
+    page_object.add_css_link(CSS_POST_PATH)
+    page_object.add_css_link(CSS_ARTICLE_PATH)
+    page_object.set_content(html)
+    print(page_object.get_html())
 
