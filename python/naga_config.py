@@ -30,12 +30,12 @@ PATH_SEPARATOR         = '/'
 #------------------------------------------------------------------------------
 # Actual configuration
 #------------------------------------------------------------------------------
-NAGA_ROOT              = 'https://localhost/naga'
+NAGA_ROOT              = 'https://192.168.56.200'
 NAGA_ABS_ROOT          = '/var/www'
 PAGE_TITLE             = "Michael J. Beer"
 COPYRIGHT              = '&copy;2013 <a href="mailto:michael@ubeer.org">Michael J. Beer</a>'
 ENCODING               = "UTF-8"
-PAGE_ROOT              = 'naga'
+PAGE_ROOT              = ''
 LOG_DIR                = 'log'
 CONTENT_DIR            = 'content'
 FORMATTING_DIR         = 'formatting'
@@ -58,7 +58,7 @@ CATEGORIES_FILE_PATH   = join(PAGE_ROOT, ETC_DIR       , 'categories')
 USERS_FILE_PATH        = join(PAGE_ROOT, ETC_DIR       , 'users')
 CSS_PATH               = join(PATH_SEPARATOR, PAGE_ROOT, FORMATTING_DIR, 'general.css')
 CSS_ARTICLE_PATH       = join(PATH_SEPARATOR, PAGE_ROOT, FORMATTING_DIR, 'article.css')
-CSS_POST_PATH          = join(PAGE_ROOT, FORMATTING_DIR, 'post.css')
+CSS_POST_PATH          = join(NAGA_ROOT, FORMATTING_DIR, 'post.css')
 UPLOAD_PATH            = join(CGI_PATH, 'upload.py')
 UPLOAD_FILE_PATH       = join(PAGE_ROOT, CGI_DIR       , 'upload_file.py') 
 SHOW_RELATIVE_PATH     = join(CGI_DIR   , 'show.py')
