@@ -21,9 +21,9 @@ _transformator = transformator.make_default_transformator()
 #------------------------------------------------------------------------------
 def get_new_channel():
     rss_channel = rss.Channel()
-    rss_channel.set_title("Michael J. Beer")
-    rss_channel.set_description("My Test")
-    rss_channel.set_link("localhost/seite")
+    rss_channel.set_title(PAGE_TITLE)
+    rss_channel.set_description(PAGE_DESCRIPTION)
+    rss_channel.set_link(NAGA_ROOT)
     return rss_channel
 #------------------------------------------------------------------------------
 def write_rss(heading, summary, rss_feed_name, file_name=None):

@@ -49,7 +49,7 @@ def item_from_xml_tree(xml_tree):
        elif node.tag == 'link':
            item.set_link(node.text)
        elif node.tag == 'guid':
-           item.set_guid(node.text)
+           pass
        elif node.tag == 'pubDate':
            item.set_pub_date(node.text)
        else:
@@ -158,7 +158,6 @@ class Item:
         self.description   = ""
         self.link          = ""
         self.pub_date      = None
-        self.guid          = None
         self.logger        = logging.getLogger("Item")
     #-------------------------------------------------------------------------- 
     def set_title(self, title):
@@ -179,14 +178,6 @@ class Item:
     def get_link(self):
         return self.link
     #-------------------------------------------------------------------------- 
-    def get_guid(self):
-        if self.guid:
-            return self.guid
-        return self.title + '-' + nagaUtils.get_timestamp_now()
-    #-------------------------------------------------------------------------- 
-    def set_guid(self, guid):
-        self.guid = guid
-    #-------------------------------------------------------------------------- 
     def set_pub_date(self, pub_date):
         self.pub_date = nagaUtils.to_posix_timestamp(pub_date)
     #-------------------------------------------------------------------------- 
@@ -206,8 +197,6 @@ class Item:
         desc.text       = self.get_description()
         link            = ET.SubElement(xml_tree, 'link')
         link.text       = self.get_link()
-        guid            = ET.SubElement(xml_tree, 'guid')
-        guid.text       = self.get_guid()
         pub_date        = ET.SubElement(xml_tree, 'pubDate')
         pub_date.text   = self.get_pub_date()
         return xml_tree

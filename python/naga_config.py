@@ -33,6 +33,7 @@ PATH_SEPARATOR         = '/'
 NAGA_ROOT              = 'https://192.168.56.200'
 NAGA_ABS_ROOT          = '/var/www'
 PAGE_TITLE             = "Michael J. Beer"
+PAGE_DESCRIPTION       = "Michael Beer's personal homapage"
 COPYRIGHT              = '&copy;2013 <a href="mailto:michael@ubeer.org">Michael J. Beer</a>'
 ENCODING               = "UTF-8"
 PAGE_ROOT              = ''
@@ -72,6 +73,7 @@ LOGOUT_LINK            = join(CGI_PATH  , 'logout.py')
 ADD_ARTICLE_LINK       = join(CGI_PATH  , 'post.py')
 EDIT_ARTICLE_LINK       = ADD_ARTICLE_LINK
 JAVASCRIPT_URL         = join(PATH_SEPARATOR, PAGE_ROOT, JAVASCRIPT_DIR)
+FAV_ICON_PATH          = join(NAGA_ROOT, IMAGE_DIR  , 'favicon.png')
 #------------------------------------------------------------------------------
 # CGI authentication names
 #------------------------------------------------------------------------------
