@@ -43,6 +43,7 @@ def show_error(message):
 #------------------------------------------------------------------------------
 def show_news(content):
     _logger.info("show_rss: Requested " + content)
+    html = ['<h1>', PAGE_TITLE, '</h1>\r\n', PAGE_DESCRIPTION]
     if content == 'all':
         file_name = join(NAGA_ABS_ROOT, RSS_FEED_PATH, 
             ''.join([RSS_ROLLING_FEED_NAME, '.', RSS_FILE_EXTENSION]))
@@ -54,7 +55,9 @@ def show_news(content):
     rss = Rss(file_name)
     _logger.info(rss)
     _logger.info(_page)
-    _page.set_content(rss.to_html())
+    html.append(rss.to_html())
+    html_string = ''.join(html)
+    _page.set_content(html_string)
     finish_page()
 #------------------------------------------------------------------------------
 def show_article(file_name):
@@ -90,12 +93,13 @@ def show_category(content):
     if len(articles) < 1:
         _page.set_content("<p>No articles found</p>")
     else:
-        html = ['<h1>', content, '</h1>All articles in category ', content, 
+        html = ['<h1>', content, '</h1><p>All articles in category ', content, 
                 '. <a href="', 
                 RSS_FEED_LINK, PATH_SEPARATOR, 
                 content, '.', RSS_FILE_EXTENSION, 
                 '"><img src="', RSS_ICON_PATH, 
-                '" height="18" width="18"/>Subscribe to ', content, '</a>']
+                '" height="18" width="18"/>Subscribe to ', content, 
+                '</a></p>\r\n<table class="listing">']
         article_objects = []
         for article_key in articles:
             article = article_registry.get(article_key)
@@ -106,13 +110,14 @@ def show_category(content):
         articles_sorted = sort_articles(article_objects, _sortkey)
         for article in articles_sorted:
             html.extend([ 
-                '<p><div class="alignLeft">', 
+                '<tr><td><div class="heading">', 
                 '<a href="', NAGA_ROOT, PATH_SEPARATOR, SHOW_RELATIVE_PATH, 
                 '?type=article&content=', article.get_key(), '">', 
-                article.get_heading(), '</a>', '</div><div class="', 
-                ARTICLE_HTML_SHORT_TIMESTAMP, '">', article.get_timestamp(),
+                article.get_heading(), '</a>', '</div><div class="timestamp">', 
+                article.get_timestamp(),
                 '</div><div class="', ARTICLE_HTML_SHORT_DESCRIPTION, 
-                '"></div></p>'])
+                '"></div></td></tr>\r\n'])
+        html.append("</table>\r\n")
         html_string = ''.join(html)
         _page.set_content(html_string)
     finish_page()

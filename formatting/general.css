@@ -9,65 +9,73 @@ article {
     right              : 0;
     left               : 15em;
     top                : 0;
-    bottom             : 2.5em;
+    bottom             : 0;
     padding-left       : 1em;
     padding-right      : 1em;
     padding-top        : 0em;
-    border-left-style  : solid; 
-    border-bottom-style: solid;
+    /* border-left-style  : solid; */ 
+    /* border-bottom-style: solid; */
     overflow           : auto;
+    text-align         : center;
 }
 
 nav     { 
+    padding-right      : 0;
     position           : fixed;
     top                : 0;
     bottom             : 2.5em;
     width              : 15em; 
-    background-color   : rgb(192,192,192);
+    background-color   : rgb(224,224,256);
+}
+
+nav #logo_image {
+    width              : 15em; 
 }
 
 footer  {
     position           : fixed;
     bottom             : 0;
+    width              : 15em;
     left               : 0;
-    right              : 0;
     height             : 2.5em;
     /* border-top-style   : solid; */
-    clear              : both;
+    /* clear              : righh; */
     text-align         : justify;
-    background-color   : rgb(192,192,192);
+    background-color   : rgb(224,224,256);
 }
  
+table.listing {
+    margin-top  : 2em;
+    margin-left : auto;
+    margin-right: auto;
+    width       : 70%;
+    text-align  : center;
+}
+
+table.listing tr:nth-child(odd) {
+    background-color   : rgb(224,224,256);
+}
+
+table.listing tr > td {
+    padding-top : 1em;  
+    padding-bottom : 1em;  
+}
+
+table.listing  div.heading {
+    font-style  : bold;
+}
+
+table.listing  div.timestamp {
+    font-size   : 0.8em;
+    font-family : Monospace;
+}
+
 .alignLeft {
     float : left;
 }
 
 .alignRight {
     float : right;
-}
-
-p.rss_timestamp {
-    float       : right;
-    font-size   : 0.8em;
-    font-family : Monospace;
-}
-
-p.rss_description {
-    font-style  : italic;
-    clear       : both;
-}
-
-/* For listings ... */
-
-.article_short_timestamp {
-    float       : right;
-    font-size   : 0.8em;
-    font-family : Monospace;
-}
-
-.article_short_description {
-    font-style  : italic;
-    clear       : both;
 }
 
 /* Custom formattings */
@@ -84,9 +92,5 @@ table.high_row tr {
 
 td.center_item {
     text-align  : center;
-}
-
-#logo_image {
-    width              : 15em; 
 }
 

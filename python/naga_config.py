@@ -33,7 +33,7 @@ PATH_SEPARATOR         = '/'
 NAGA_ROOT              = 'https://192.168.56.200'
 NAGA_ABS_ROOT          = '/var/www'
 PAGE_TITLE             = "Michael J. Beer"
-PAGE_DESCRIPTION       = "Michael Beer's personal homapage"
+PAGE_DESCRIPTION       = "Michael Beer's personal homepage"
 COPYRIGHT              = '&copy;2013 <a href="mailto:michael@ubeer.org">Michael J. Beer</a>'
 ENCODING               = "UTF-8"
 PAGE_ROOT              = ''
@@ -59,6 +59,7 @@ CATEGORIES_FILE_PATH   = join(PAGE_ROOT, ETC_DIR       , 'categories')
 USERS_FILE_PATH        = join(PAGE_ROOT, ETC_DIR       , 'users')
 CSS_PATH               = join(PATH_SEPARATOR, PAGE_ROOT, FORMATTING_DIR, 'general.css')
 CSS_ARTICLE_PATH       = join(PATH_SEPARATOR, PAGE_ROOT, FORMATTING_DIR, 'article.css')
+CSS_RSS_PATH       = join(PATH_SEPARATOR, PAGE_ROOT, FORMATTING_DIR, 'rss.css')
 CSS_POST_PATH          = join(NAGA_ROOT, FORMATTING_DIR, 'post.css')
 UPLOAD_PATH            = join(CGI_PATH, 'upload.py')
 UPLOAD_FILE_PATH       = join(PAGE_ROOT, CGI_DIR       , 'upload_file.py') 

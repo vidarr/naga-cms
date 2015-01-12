@@ -25,7 +25,7 @@ from   collections import deque
 import logging
 from io import BytesIO
 import email.utils
-#------------------------------------------------------------------------------    
+#------------------------------------------------------------------------------ 
 PAGE_ROOT     = os.path.join(os.path.dirname(os.path.abspath(__file__)))
 MODULE_DIR  = 'python'
 sys.path.append(PAGE_ROOT + '/../' + MODULE_DIR);
@@ -202,12 +202,12 @@ class Item:
         return xml_tree
     #-------------------------------------------------------------------------- 
     def to_html(self):
-        html = ['<div class="rss_item"><p class="alignLeft"><a href="', 
+        html = ['<tr><td><div class="heading"><a href="', 
         self.get_link(), '">', 
         self.get_title(), 
-        '</a></p><p class="rss_timestamp">', 
-        self.get_pub_date(), '</p><p class="rss_description">', 
-        self.get_description(), '</p></div>'] 
+        '</a></div><div class="timestamp">', 
+        self.get_pub_date(), '</div><div class="description">', 
+        self.get_description(), '</div></td></tr>\r\n'] 
         html_string = ''.join(html)
         return html_string
     #-------------------------------------------------------------------------- 
@@ -280,9 +280,10 @@ class Channel(Item):
                 self.remove_oldest_item()
     #-------------------------------------------------------------------------- 
     def to_html(self):
-        html = []
+        html = ['<table class="listing">']
         for item in self.items:
             html.append(item.to_html())
+        html.append('</table>')
         html_string = ''.join(html)
         return html_string
     #-------------------------------------------------------------------------- 

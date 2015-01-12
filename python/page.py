@@ -165,10 +165,10 @@ class Page:
         self.content, '''
         </article>
         <footer>
-            <p class="alignLeft">Powered by 
-            <a href="https://code.google.com/p/naga-cms/">naga</a></p>
-            <p class="alignRight">''', COPYRIGHT,'''
-            </p>
+            <div class="alignLeft">Powered by 
+            <a href="https://code.google.com/p/naga-cms/">naga</a></div>
+            <div class="alignRight">''', COPYRIGHT,'''
+            </div>
         </footer>'''])
         return wrap(html_body_string, html_head_string, self.onload_body)
     #--------------------------------------------------------------------------
