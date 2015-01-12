@@ -81,11 +81,12 @@ class Page:
     #--------------------------------------------------------------------------
     def _create_navbar(self):
         self._logger.debug('CGI_SHOW_PATH = ' + CGI_SHOW_PATH)
-        html = ['''<ul>
+        html = [self._get_logo_entry()]
+        html.extend(['''<ul>
             <li>
             <a href="''', CGI_SHOW_PATH,'''?type=news&content=latest">Home</a></li>
             <li>Articles</li>
-            <ul>'''] 
+            <ul>''']) 
         for category in self._categories:
             html.append('<li><a href="') 
             html.append(CGI_SHOW_PATH)
@@ -127,8 +128,23 @@ class Page:
         html_string = ''.join(html)
         return html_string
     #--------------------------------------------------------------------------
+    def _get_logo_entry(self):
+        logo_entry = ''
+        if FAV_ICON_PATH != '':
+            logo_entry = ''.join(['<img src="', FAV_ICON_PATH, 
+                '" id="logo_image" alt="Logo">'])
+        return logo_entry
+    #--------------------------------------------------------------------------
+    def _get_favicon_entry(self):
+        favicon_link = ''
+        if FAV_ICON_PATH != '':
+            favicon_link = ''.join(['<link rel="shortcut icon" ',
+           'type="image/x-icon" href="', FAV_ICON_PATH, '">' ])
+        return favicon_link
+    #--------------------------------------------------------------------------
     def get_html(self):
         html_head  = ['<title>', self.title, '</title>']
+        html_head.append(self._get_favicon_entry())
         for css_link in self.css_links:
             html_head.append('<link   rel="stylesheet" type="text/css" href="') 
             html_head.append(css_link)

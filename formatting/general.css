@@ -85,3 +85,8 @@ table.high_row tr {
 td.center_item {
     text-align  : center;
 }
+
+#logo_image {
+    width              : 15em; 
+}
+
