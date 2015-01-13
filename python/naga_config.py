@@ -88,7 +88,7 @@ RSS_FILE_EXTENSION     = 'rss'
 IMAGE_OPTIONS          = 'height="240" width="320"'
 IMAGE_OPTIONS          = 'width="320"'
 #------------------------------------------------------------------------------
-UPDATE_LABEL           = '<b>Update:</b> '
+UPDATE_LABEL_START     = '<b>Update:</b> '
 #------------------------------------------------------------------------------
 STORE_TYPE_FILE        = 'file'
 STORE_TYPE_IMAGE       = 'image'

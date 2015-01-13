@@ -10,13 +10,15 @@ article {
     left               : 15em;
     top                : 0;
     bottom             : 0;
-    padding-left       : 1em;
-    padding-right      : 1em;
+    padding-left       : 10%;
+    padding-right      : 10%;
     padding-top        : 0em;
+    padding-bottom     : 0em;
     /* border-left-style  : solid; */ 
     /* border-bottom-style: solid; */
     overflow           : auto;
     text-align         : center;
+    background-color   : rgb(250,251,252);
 }
 
 nav     { 
@@ -43,22 +45,36 @@ footer  {
     text-align         : justify;
     background-color   : rgb(224,224,256);
 }
- 
+
+table tr:nth-child(odd) {
+    background-color   : rgb(224,224,256);
+}
+
+table tr:nth-child(even) {
+    background-color   : rgb(233,245,247);
+}
+
 table.listing {
-    margin-top  : 2em;
-    margin-left : auto;
-    margin-right: auto;
-    width       : 70%;
-    text-align  : center;
+    margin-top    : 2em;
+    margin-left   : auto;
+    margin-right  : auto;
+    width         : 100%;
+    text-align    : center;
 }
 
 table.listing tr:nth-child(odd) {
     background-color   : rgb(224,224,256);
 }
 
+table.listing tr:nth-child(even) {
+    background-color   : rgb(236,245,256);
+}
+
 table.listing tr > td {
     padding-top : 1em;  
     padding-bottom : 1em;  
+    padding-left  : 1em;
+    padding-right : 1em;
 }
 
 table.listing  div.heading {
@@ -93,4 +109,4 @@ table.high_row tr {
 td.center_item {
     text-align  : center;
 }
-
+???

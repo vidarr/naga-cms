@@ -1,18 +1,4 @@
 article { 
-    position           : fixed;
-    margin-left        : auto;
-    margin-right       : auto;
-    width              : inherit;
-    right              : 0;
-    left               : 15em;
-    top                : 0;
-    bottom             : 2.5em;
-    padding-left       : 1em;
-    padding-right      : 1em;
-    padding-top        : 0em;
-    border-left-style  : solid; 
-    /* border-bottom-style: solid; */
-    overflow           : auto;
     text-align         : justify;
 }
 
@@ -28,19 +14,39 @@ article {
 }
 
 .article_timestamp {
-    font-size   : 0.8em;
-    font-family : Monospace;
-    text-align  : center;
+    font-size    : 0.8em;
+    font-family  : Monospace;
+    text-align   : center;
 }
 
 .article_heading {
     font-weight : bold;
     font-size   : 1.2em;
     text-align  : center;
+    width        : 70%;
+    margin-left  : auto;
+    margin-right : auto;
 }
 
 .article_summary {
-    font-style  : italic;
+    background-color   : rgb(224,224,256);
+    font-style     : italic;
+    margin-left    : auto;
+    margin-right   : auto;
+    margin-top     : 1em;
+    padding-top    : 1em;
+    padding-bottom : 1em;
+    padding-left   : 1em;
+    padding-right  : 1em;
+}
+
+.article_content {
+    background-color   : rgb(233,245,247);
+    margin-left  : auto;
+    margin-right : auto;
+    padding-top  : 1em;
+    padding-left : 1em;
+    padding-right : 1em;
 }
 
 table            {

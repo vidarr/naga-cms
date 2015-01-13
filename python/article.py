@@ -192,14 +192,14 @@ class Article:
         '''
         Return article description as html
         '''
-        html = ['<p class="article_heading">',
+        html = ['<div class="article_heading">',
                 self.get_heading(),
-                '</p><p class="article_timestamp">',
+                '</div><div class="article_timestamp">',
                 self.get_timestamp(),
-                '</p><p class="article_summary">',
+                '</div><div class="article_summary">',
                 self.get_html_summary(),
-                '</p><p class="article_content">',
-                self.get_html_content(),'</p>']
+                '</div><div class="article_content">',
+                self.get_html_content(),'</div>']
         html_string = ''.join(html)
         return html_string
     #---------------------------------------------------------------------------
