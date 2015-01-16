@@ -82,6 +82,7 @@ class Page:
     def _create_navbar(self):
         self._logger.debug('CGI_SHOW_PATH = ' + CGI_SHOW_PATH)
         html = [self._get_logo_entry()]
+        html.append(self._get_menu_image_entry())
         html.extend(['''<ul>
             <li>
             <a href="''', CGI_SHOW_PATH,'''?type=news&content=latest">Home</a></li>
@@ -134,6 +135,13 @@ class Page:
             logo_entry = ''.join(['<img src="', FAV_ICON_PATH, 
                 '" id="logo_image" alt="Logo">'])
         return logo_entry
+    #--------------------------------------------------------------------------
+    def _get_menu_image_entry(self):
+        image_entry = ""
+        if MENU_IMAGE_PATH != '':
+            image_entry = ''.join(['<img src="', MENU_IMAGE_PATH, 
+                '" id="menu_image" alt="Menu">'])
+        return image_entry
     #--------------------------------------------------------------------------
     def _get_favicon_entry(self):
         favicon_link = ''

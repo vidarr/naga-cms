@@ -7,15 +7,13 @@ article {
     position           : fixed;
     width              : inherit;
     right              : 0;
-    left               : 15em;
+    left               : 17em;
     top                : 0;
     bottom             : 0;
     padding-left       : 10%;
     padding-right      : 10%;
     padding-top        : 0em;
     padding-bottom     : 0em;
-    /* border-left-style  : solid; */ 
-    /* border-bottom-style: solid; */
     overflow           : auto;
     text-align         : center;
     background-color   : rgb(250,251,252);
@@ -26,22 +24,30 @@ nav     {
     position           : fixed;
     top                : 0;
     bottom             : 2.5em;
-    width              : 15em; 
+    width              : 17em; 
     background-color   : rgb(224,224,256);
 }
 
 nav #logo_image {
-    width              : 15em; 
+    height             : 12em; 
+    float              : left;
+    display            : inline-block;
+}
+
+nav #menu_image {
+    display            : none;
+}
+
+nav ul {
+    float              : none;
 }
 
 footer  {
     position           : fixed;
     bottom             : 0;
-    width              : 15em;
+    width              : 17em;
     left               : 0;
     height             : 2.5em;
-    /* border-top-style   : solid; */
-    /* clear              : righh; */
     text-align         : justify;
     background-color   : rgb(224,224,256);
 }
@@ -109,4 +115,48 @@ table.high_row tr {
 td.center_item {
     text-align  : center;
 }
-???
+
+/* @media only screen and (max-width : 640px) {  */
+
+    article {
+        position  : relative;
+        width     : inherit;
+        top       : auto;
+        left      : 0;
+    }
+ 
+    nav {
+        position  : relative;
+        top       : 0;
+        width     : 100%; 
+        height    : 12em;
+     }
+
+    nav ul {
+        display : none;
+    }
+
+    nav:hover {
+        height: auto;
+    }
+    
+    nav:hover ul {
+        display : inline-block;
+    }
+
+    footer {
+    position           : relative;
+    bottom             : 0;
+    width              : 100%;
+    left               : 0;
+    height             : 2.5em;
+    text-align         : justify;
+    background-color   : rgb(224,224,256);
+    }
+
+    nav #menu_image {
+        float   : right;
+        display : inline-block;
+        height  : 12em;
+    }
+    /* } */
