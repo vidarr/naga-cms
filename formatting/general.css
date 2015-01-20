@@ -38,7 +38,7 @@ nav #menu_image {
     display            : none;
 }
 
-nav ul {
+nav #div_main_menu {
     float              : none;
 }
 
@@ -116,7 +116,7 @@ td.center_item {
     text-align  : center;
 }
 
-/* @media only screen and (max-width : 640px) {  */
+@media only screen and (max-width : 640px) { 
 
     article {
         position  : relative;
@@ -130,18 +130,14 @@ td.center_item {
         top       : 0;
         width     : 100%; 
         height    : 12em;
+        bottom    : 0;
      }
 
-    nav ul {
-        display : none;
-    }
-
-    nav:hover {
-        height: auto;
-    }
-    
-    nav:hover ul {
-        display : inline-block;
+    nav #div_main_menu {
+        display    : none;
+        clear      : both;
+        text-align : center;
+        background-color   : rgb(255,255,255);
     }
 
     footer {
@@ -159,4 +155,4 @@ td.center_item {
         display : inline-block;
         height  : 12em;
     }
-    /* } */
+}

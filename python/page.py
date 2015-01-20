@@ -32,7 +32,8 @@ def wrap(content, head = "<title>naga</title>", onload_body_function = None):
         '''<!DOCTYPE HTML>
 <html>
     <head>
-        <meta   charset="utf8">''', head, '''
+        <meta   charset="utf8">
+        ''', head, '''
     </head>
     <body''']
     if onload_body_function != None:
@@ -50,12 +51,12 @@ class Page:
         self.css_links   = [CSS_PATH]
         self.content     = ""
         self.title       = PAGE_TITLE
-        self.javascript_files = []
+        self.javascript_files = [JAVASCRIPT_DEFAULT_FILE]
         self.onload_body = None
         if 'Page.TITLE' in config:
             self.title = config['Page.TITLE']
         if 'Page.CSS_LINK' in config:
-            self.css_link = config['Page.CSS_LINK']
+            self.css_links = config['Page.CSS_LINK']
         if 'Page.CONTENT' in config:
             self.content = config['Page.CONTENT']
         self._categories = categories.get_categories().get_categories()
@@ -83,9 +84,12 @@ class Page:
         self._logger.debug('CGI_SHOW_PATH = ' + CGI_SHOW_PATH)
         html = [self._get_logo_entry()]
         html.append(self._get_menu_image_entry())
-        html.extend(['''<ul>
+        html.append('<div id="div_main_menu">')
+        html.extend(['''
+        <ul>
             <li>
-            <a href="''', CGI_SHOW_PATH,'''?type=news&content=latest">Home</a></li>
+            <a href="''', CGI_SHOW_PATH,
+            '''?type=news&content=latest">Home</a></li>
             <li>Articles</li>
             <ul>''']) 
         for category in self._categories:
@@ -126,6 +130,8 @@ class Page:
             html.append(LOGOUT_LINK)
             html.append('">Log out</a> ]</li>')
             html.append('</ul>')
+        html.append('''
+        </div>''')
         html_string = ''.join(html)
         return html_string
     #--------------------------------------------------------------------------
@@ -140,7 +146,8 @@ class Page:
         image_entry = ""
         if MENU_IMAGE_PATH != '':
             image_entry = ''.join(['<img src="', MENU_IMAGE_PATH, 
-                '" id="menu_image" alt="Menu">'])
+                '" id="menu_image" alt="Menu" ',
+                'onclick="toggle_dynamic_menu()">'])
         return image_entry
     #--------------------------------------------------------------------------
     def _get_favicon_entry(self):
