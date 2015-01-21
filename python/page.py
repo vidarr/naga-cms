@@ -113,7 +113,7 @@ class Page:
         html.append('''">
                 <img src="''')
         html.append(RSS_ICON_PATH)
-        html.append('''"  height="18" width="18"/>Subscribe</a>
+        html.append('''"  id="rss_icon" />Subscribe</a>
             </li>
             </ul>
             ''')

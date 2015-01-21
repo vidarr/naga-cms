@@ -1,3 +1,5 @@
+2015-01-20
+	* Created draft mobile version using CSS media queries and javascript
 2015-01-11
 	* Adaptions in markup language translator: Bug in olist / ulist corrected,
 	  slight changes in formatting

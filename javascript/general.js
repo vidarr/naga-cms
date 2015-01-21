@@ -20,14 +20,15 @@ function show_dynamic_menu() {
 
 function hide_dynamic_menu() {
     var div_menu = document.getElementById("div_main_menu");
+    var logo_image = document.getElementById("logo_image");
     var nav = document.getElementsByTagName("nav")[0]; 
     var article = document.getElementsByTagName("article")[0]; 
     console.log(div_menu);
     console.log(div_menu.innerHTML);
     div_menu.style.display = "none";
     article.style.display = "inline-block";
-    console.log(nav.style);
-    nav.style.height = "12em";
+    /* nav.style.height = "20vh"; */
+    nav.style.height = logo_image.style.height; 
 }
     
 function toggle_dynamic_menu() {

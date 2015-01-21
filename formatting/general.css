@@ -1,6 +1,7 @@
 body    { 
-    margin:auto;                   
-    font-family : Sans;
+    margin             : auto;                   
+    font-family        : Sans;
+    font-size          : 1em;
 }
 
 article { 
@@ -19,7 +20,7 @@ article {
     background-color   : rgb(250,251,252);
 }
 
-nav     { 
+nav { 
     padding-right      : 0;
     position           : fixed;
     top                : 0;
@@ -41,6 +42,13 @@ nav #menu_image {
 nav #div_main_menu {
     float              : none;
 }
+nav #rss_icon {
+    width              : 1em;
+}
+
+nav li {
+    list-style       : none;
+}
 
 footer  {
     position           : fixed;
@@ -60,6 +68,10 @@ table tr:nth-child(even) {
     background-color   : rgb(233,245,247);
 }
 
+h1 {
+    font-size          : 2em;
+}
+
 table.listing {
     margin-top    : 2em;
     margin-left   : auto;
@@ -77,19 +89,20 @@ table.listing tr:nth-child(even) {
 }
 
 table.listing tr > td {
-    padding-top : 1em;  
-    padding-bottom : 1em;  
-    padding-left  : 1em;
-    padding-right : 1em;
+    padding-top        : 1em;  
+    padding-bottom     : 1em;  
+    padding-left       : 1em;
+    padding-right      : 1em;
 }
 
 table.listing  div.heading {
-    font-style  : bold;
+    font-weight        : bold;
+    font-size          : 1.2em;
 }
 
 table.listing  div.timestamp {
-    font-size   : 0.8em;
-    font-family : Monospace;
+    font-size          : 0.8em;
+    font-family        : Monospace;
 }
 
 .alignLeft {
@@ -119,40 +132,60 @@ td.center_item {
 @media only screen and (max-device-width : 640px) { 
 
     article {
-        position  : relative;
-        width     : inherit;
-        top       : auto;
-        left      : 0;
+        position         : relative;
+        width            : inherit;
+        top              : auto;
+        left             : 0;
     }
  
     nav {
-        position  : relative;
-        top       : 0;
-        width     : 100%; 
-        height    : 12em;
-        bottom    : 0;
+        position         : relative;
+        top              : 0;
+        width            : 100%; 
+        height           : 12em; 
+        height           : 20vh;
+        bottom           : 0;
      }
 
-    nav #div_main_menu {
-        display    : none;
-        clear      : both;
-        text-align : center;
-        background-color   : rgb(255,255,255);
-    }
-
-    footer {
-    position           : relative;
-    bottom             : 0;
-    width              : 100%;
-    left               : 0;
-    height             : 2.5em;
-    text-align         : justify;
-    background-color   : rgb(224,224,256);
-    }
-
     nav #menu_image {
-        float   : right;
-        display : inline-block;
-        height  : 12em;
+        float            : right;
+        display          : inline-block;
+        height           : 12em;
+        height           : 20vh;
     }
-}
+
+    nav #logo_image {
+        height           : 12em; 
+        height           : 20vh;
+    }
+
+    nav #div_main_menu {
+        display          : none;
+        clear            : both;
+        text-align       : left;
+        background-color : rgb(255,255,255);
+    }
+
+    nav #rss_icon {
+        width            : 1em;
+        width            : 5vw;
+        height           : 1em;
+        height           : 5vw; 
+    }
+
+    nav li {
+        font-size        : 500%;
+        font-size        : 5vw;
+    }
+
+   footer {
+       position         : relative;
+       bottom           : 0;
+       width            : 100%;
+       left             : 0;
+       height           : 2.5em;
+       text-align       : justify;
+       background-color : rgb(224,224,256);
+   }
+
+}  /* @media */
