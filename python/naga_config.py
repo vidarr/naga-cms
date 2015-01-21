@@ -142,9 +142,6 @@ __logger.debug("EDIT_ARTICLE_LINK=" + EDIT_ARTICLE_LINK)
 #------------------------------------------------------------------------------
 # Internal Constants
 #------------------------------------------------------------------------------
-# ARTICLE_HTML_SHORT_HEADING   = 'article_short_heading'
-ARTICLE_HTML_SHORT_TIMESTAMP   = 'article_short_timestamp'
-ARTICLE_HTML_SHORT_DESCRIPTION = 'article_short_description'
 SORT_KEY_HEADING               = 'heading'
 SORT_KEY_TIMESTAMP             = 'timestamp'
 #------------------------------------------------------------------------------

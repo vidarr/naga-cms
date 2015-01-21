@@ -115,8 +115,7 @@ def show_category(content):
                 '?type=article&content=', article.get_key(), '">', 
                 article.get_heading(), '</a>', '</div><div class="timestamp">', 
                 article.get_timestamp(),
-                '</div><div class="', ARTICLE_HTML_SHORT_DESCRIPTION, 
-                '"></div></td></tr>\r\n'])
+                '</div><div class="description"></div></td></tr>\r\n'])
         html.append("</table>\r\n")
         html_string = ''.join(html)
         _page.set_content(html_string)
