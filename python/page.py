@@ -139,14 +139,14 @@ class Page:
         logo_entry = ''
         if FAV_ICON_PATH != '':
             logo_entry = ''.join(['<img src="', FAV_ICON_PATH, 
-                '" id="logo_image" alt="Logo">'])
+                '" id="logo_image" class="navBarElement" alt="Logo">'])
         return logo_entry
     #--------------------------------------------------------------------------
     def _get_menu_image_entry(self):
         image_entry = ""
         if MENU_IMAGE_PATH != '':
             image_entry = ''.join(['<img src="', MENU_IMAGE_PATH, 
-                '" id="menu_image" alt="Menu" ',
+                '" id="menu_image" class="navBarElement" alt="Menu" ',
                 'onclick="toggle_dynamic_menu()">'])
         return image_entry
     #--------------------------------------------------------------------------

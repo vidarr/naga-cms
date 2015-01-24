@@ -20,7 +20,12 @@ article {
     background-color   : rgb(250,251,252);
 }
 
+.navBarElement {
+    height             : 12em; 
+}
+
 nav { 
+    height             : 100%;
     padding-right      : 0;
     position           : fixed;
     top                : 0;
@@ -30,7 +35,6 @@ nav {
 }
 
 nav #logo_image {
-    height             : 12em; 
     float              : left;
     display            : inline-block;
 }
@@ -137,26 +141,27 @@ td.center_item {
         top              : auto;
         left             : 0;
     }
+
+    .navBarElement {
+        height           : 5em;
+        height           : 10vh;
+    }
  
     nav {
+        height           : 5em;
+        height           : 10vh;
         position         : relative;
         top              : 0;
         width            : 100%; 
-        height           : 12em; 
-        height           : 20vh;
         bottom           : 0;
      }
 
     nav #menu_image {
         float            : right;
         display          : inline-block;
-        height           : 12em;
-        height           : 20vh;
     }
 
     nav #logo_image {
-        height           : 12em; 
-        height           : 20vh;
     }
 
     nav #div_main_menu {
