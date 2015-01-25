@@ -20,20 +20,19 @@ def application(environ, start_response):
     page_object = page.Page() 
     user = security.get_user(form)
     passphrase = security.get_passphrase(form)
-    if not security.authenticate(user, passphrase):
-        page_object.set_content('<p class="error">Authentication failure</p>')
-        print(page_object.get_html())
-        sys.exit(1)
-    html_body_string = '<p>Authenticated</p>'
     if not user or not passphrase:
         html_body_string = "Error occured during authentication"
         __logger.error(
                 "Could not extract user or passphrase from cgi variables")
         naga_wsgi.wsgi_start_response(start_response)
+    if not security.authenticate(user, passphrase):
+        page_object.set_content('<p class="error">Authentication failure</p>')
+        print(page_object.get_html())
+        sys.exit(1)
     else:
+        html_body_string = '<p>Authenticated</p>'
         cookie = security.get_credential_cookies(user, passphrase)
         naga_wsgi.wsgi_start_response(start_response, cookie=cookie)
-        # 'Set' cookie for this run already ...
         security.set_cookie_for_current_request(environ, cookie)
         page_object.set_environment(environ)
     __logger.info(html_body_string)

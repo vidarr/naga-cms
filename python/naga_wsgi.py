@@ -16,11 +16,8 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-def serialize_cookies(cookies):
-    cookie_header = []
-    for cookie in cookies:
-        cookie_header.append(cookie.output(header='', sep=''))
-    return '; '.join(cookie_header)
+def serialize_cookies(cookie):
+    return cookie.output(header='', sep='; ')
 
 def wsgi_start_response(start_response_callback, **options):
     '''
@@ -31,7 +28,8 @@ def wsgi_start_response(start_response_callback, **options):
     if 'additional_headers' in options:
         response_headers.extend(options['additional_headers'])
     if 'cookie' in options:
-        for cookie in options['cookie']:
-            response_headers.append(('Set-Cookie', cookie.output(header='')))
+        cookie = options['cookie']
+        response_headers.append(('Set-Cookie', 
+            cookie.output(header='', sep='; ')))
     start_response_callback(status, response_headers)
     

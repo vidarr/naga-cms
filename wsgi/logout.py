@@ -27,4 +27,3 @@ def application(environ, start_response):
     naga_wsgi.wsgi_start_response(start_response, cookie=cookie)
     return [page_object.get_html()]
 
-

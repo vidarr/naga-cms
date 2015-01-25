@@ -103,25 +103,23 @@ def get_credential_cookies(user, passphrase):
     Returns a cookie to be sent back to the client to automatically 
     authenticate with user,passphrase
     '''
-    u_cookie  = cookies.SimpleCookie()
-    u_cookie[CREDENTIALS_USER]           = user
-    u_cookie[CREDENTIALS_USER]['secure'] = True
-    p_cookie  = cookies.SimpleCookie()
-    p_cookie[CREDENTIALS_PASSPHRASE]     = passphrase
-    p_cookie[CREDENTIALS_PASSPHRASE]['secure'] = True
-    return [p_cookie, u_cookie]
+    cookie  = cookies.SimpleCookie()
+    cookie[CREDENTIALS_USER]           = user
+    cookie[CREDENTIALS_USER]['secure'] = True
+    cookie[CREDENTIALS_PASSPHRASE]     = passphrase
+    cookie[CREDENTIALS_PASSPHRASE]['secure'] = True
+    return cookie
 #---------------------------------------------------------------------------    
 def get_logout_cookie():
     '''
     Returns a cookie with invalid username and password
     '''
-    u_cookie  = cookies.SimpleCookie()
-    u_cookie[CREDENTIALS_USER]       = ''
-    u_cookie[CREDENTIALS_USER]['expires']       = 0
-    p_cookie  = cookies.SimpleCookie()
-    p_cookie[CREDENTIALS_PASSPHRASE] = ''
-    p_cookie[CREDENTIALS_PASSPHRASE]['expires'] = 0
-    return [u_cookie, p_cookie]
+    cookie  = cookies.SimpleCookie()
+    cookie[CREDENTIALS_USER]       = ''
+    cookie[CREDENTIALS_USER]['expires']       = 0
+    cookie[CREDENTIALS_PASSPHRASE] = ''
+    cookie[CREDENTIALS_PASSPHRASE]['expires'] = 0
+    return cookie
 #---------------------------------------------------------------------------    
 def set_cookie_for_current_request(environ, cookie):
     '''
