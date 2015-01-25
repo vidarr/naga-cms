@@ -19,12 +19,13 @@ import statics
 import naga_wsgi
 #------------------------------------------------------------------------------
 _logger            = logging.getLogger('show.py')
-_page              = Page()
+_page              = None
 _sortkey           = SORT_KEY_TIMESTAMP
+_environment       = None
 #------------------------------------------------------------------------------
 # Content Handlers
 #------------------------------------------------------------------------------
-def show_error(message):
+def show_error(env, message):
     _logger.error(message)
     _page.set_content('''
 <h1>Error occured</h1>
@@ -33,7 +34,7 @@ def show_error(message):
 </p>''')
     return _page.get_html()
 #------------------------------------------------------------------------------
-def show_news(content):
+def show_news(env, content):
     _logger.info("show_rss: Requested " + content)
     html = ['<h1>', PAGE_TITLE, '</h1>\r\n', PAGE_DESCRIPTION]
     if content == 'all':
@@ -52,14 +53,14 @@ def show_news(content):
     _page.set_content(html_string)
     return _page.get_html()
 #------------------------------------------------------------------------------
-def show_article(file_name):
+def show_article(env, file_name):
     _logger.info('show_article: Requested ' + file_name)
     article_registry = registry.Registry()
     if not file_name in article_registry.get_article_keys():
         show_error(file_name + " not found")
     article_object = article_registry.get(file_name)
     edit_links = ''
-    if authenticate_cookie():
+    if authenticate_cookie(env):
         edit_links = get_edit_links_html(file_name)
     _page.add_css_link(CSS_ARTICLE_PATH)
     _page.set_content(edit_links + article_object.to_html())
@@ -75,7 +76,7 @@ def sort_articles(articles, sort_key = SORT_KEY_HEADING):
         return None
     return sorted(articles, key = sort_function)
 #------------------------------------------------------------------------------
-def show_category(content):
+def show_category(env, content):
     if not content:
         show_error("No category to show given")
     _logger.info('show_category: Requested ' + content)
@@ -113,7 +114,7 @@ def show_category(content):
         _page.set_content(html_string)
     return _page.get_html()
 #------------------------------------------------------------------------------
-def show_url(content):
+def show_url(env, content):
     if not content:
         show_error("No content given")
     remote_file = urllib.request.urlopen(content)
@@ -126,7 +127,7 @@ def show_url(content):
         remote_data)))
     return _page.get_html()
 #------------------------------------------------------------------------------
-def show_static(content):
+def show_static(env, content):
     if not content:
         show_error("show_static: No static key given")
     static_object = statics.Statics()
@@ -147,6 +148,8 @@ _content_types = {
 def application( environ, start_response):
     _logger.info("Python " + str(sys.version_info))
     _logger.info("Called show.py")
+    global _page 
+    _page = Page({'Page.ENVIRONMENT' : environ})
     form = parse_qs(environ['QUERY_STRING'])
     if not 'type' in form:
         show_error('Invalid argument given to show.py')
@@ -165,6 +168,6 @@ def application( environ, start_response):
         _sortkey = form['sortkey'][0]
         _sortkey = escape(_sortkey)
         _logger.info("using sortkey " + _sortkey)
-    response_body = content_handler(content)
+    response_body = content_handler(environ, content)
     naga_wsgi.wsgi_start_response(start_response)
     return [response_body]

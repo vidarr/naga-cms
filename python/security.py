@@ -28,6 +28,7 @@ import re
 import string
 import random
 import hashlib
+from cgi import escape
 from http import cookies
 #---------------------------------------------------------------------------    
 PAGE_ROOT     = os.path.join(os.path.dirname(os.path.abspath(__file__)))
@@ -58,58 +59,36 @@ def authenticate(user, passphrase):
     '''
     return Authenticator().authenticate(user, passphrase)
 #---------------------------------------------------------------------------    
-def get_user(cgi_variables):
+def get_user(variables):
     '''
-    Take the HTTP GET variables as cgi.FieldStorage, look for user and 
+    Take the HTTP GET variables as cgi.parse_qs look for user and 
     return the associated value
     '''
-    if not CREDENTIALS_USER in cgi_variables:
+    if not CREDENTIALS_USER in variables:
         __logger__.error("No user found")
         return None
-    return cgi_variables[CREDENTIALS_USER].value
+    return escape(variables[CREDENTIALS_USER][0])
 #---------------------------------------------------------------------------    
-def get_passphrase(cgi_variables):
+def get_passphrase(variables):
     '''
-    Take the HTTP GET variables as cgi.FieldStorage, look for passphrase and 
+    Take the HTTP GET variables as cgi.parse_qs, look for passphrase and 
     return the associated value
     '''
-    if not CREDENTIALS_PASSPHRASE in cgi_variables:
+    if not CREDENTIALS_PASSPHRASE in variables:
         __logger__.error("No passphrase found")
         return None
-    return cgi_variables[CREDENTIALS_PASSPHRASE].value
+    return variables[CREDENTIALS_PASSPHRASE][0]
 #---------------------------------------------------------------------------    
-def authenticate_cgi(cgi_variables):
-    '''
-    Take the HTTP GET variables as a cgi.FieldStorage, look for one 'USER' and 
-    one 'PASSPHRASE' and check whether their values are valid.
-    '''
-    user       = get_user(cgi_variables)
-    passphrase = get_passphrase(cgi_variables)
-    if not user or not passphrase:
-        return None
-    return authenticate(user, passphrase)
-#---------------------------------------------------------------------------    
-def forward_credentials(cgi_variables):
-    '''
-    Take the HTTP GET variables as cgi.FieldStorage, look for user and 
-    passphrase and create HTTP GET string to forward credentials to another CGI
-    script
-    '''
-    user_value       = get_user(cgi_variables)
-    passphrase_value = get_passphrase(cgi_variables)
-    if not user_value or passphrase_value:
-        __logger__.error("No credentials found")
-        return None
-    return ''.join([CREDENTIALS_USER, "=", user_value,
-        "&", CREDENTIALS_PASSPHRASE, "=", passphrase_value])
-#---------------------------------------------------------------------------    
-def authenticate_cookie():
+def authenticate_cookie(environ):
     '''
     Looks for cookies 'user' and 'passphrase' and checks whether their 
     values are valid credentials
     '''
+    if not environ:
+        __logger__.info("environ not given")
+        return None
     try:
-        cookie     = cookies.SimpleCookie(os.environ["HTTP_COOKIE"])
+        cookie     = cookies.SimpleCookie(environ["HTTP_COOKIE"])
         user       = cookie[CREDENTIALS_USER].value
         passphrase = cookie[CREDENTIALS_PASSPHRASE].value
     except (cookies.CookieError, KeyError):
@@ -123,9 +102,9 @@ def get_credential_cookie(user, passphrase):
     authenticate with user,passphrase
     '''
     cookie  = cookies.SimpleCookie()
-    cookie[CREDENTIALS_USER]       = user
-    cookie[CREDENTIALS_PASSPHRASE] = passphrase
-    cookie[CREDENTIALS_USER]['secure']       = True
+    cookie[CREDENTIALS_USER]           = user
+    cookie[CREDENTIALS_USER]['secure'] = True
+    cookie[CREDENTIALS_PASSPHRASE]     = passphrase
     cookie[CREDENTIALS_PASSPHRASE]['secure'] = True
     return cookie
 #---------------------------------------------------------------------------    

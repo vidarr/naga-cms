@@ -52,6 +52,9 @@ class Page:
         self.content     = ""
         self.title       = PAGE_TITLE
         self.javascript_files = [JAVASCRIPT_DEFAULT_FILE]
+        self._environment = None
+        if 'Page.ENVIRONMENT' in config:
+            self._environment = config['Page.ENVIRONMENT']
         self.onload_body = None
         if 'Page.TITLE' in config:
             self.title = config['Page.TITLE']
@@ -117,7 +120,7 @@ class Page:
             </li>
             </ul>
             ''')
-        if authenticate_cookie():
+        if authenticate_cookie(self._environment):
             self._logger.debug("Authenticated via cookie")
             html.append('<ul>')
             html.append('<li>[ <a href="')

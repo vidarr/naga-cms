@@ -16,10 +16,16 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-def wsgi_start_response(start_response_callback, status = '200 OK'):
+def wsgi_start_response(start_response_callback, **options):
     '''
     Create appropriate HTTP header
     '''
+    status = '200 OK'
     response_headers = [('Content-Type', 'text/html')]
+    if 'additional_headers' in options:
+        response_headers.extend(options['additional_headers'])
+    if 'cookie' in options:
+       response_headers.append(('Set-Cookie', 
+           options['cookie'].output(header='', sep='')))
     start_response_callback(status, response_headers)
     

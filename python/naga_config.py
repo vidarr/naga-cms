@@ -80,6 +80,7 @@ MENU_IMAGE_PATH        = join(NAGA_ROOT, IMAGE_DIR, 'menu.png')
 #------------------------------------------------------------------------------
 # authentication keys
 #------------------------------------------------------------------------------
+CREDENTIALS_COOKIE      = 'credentials'
 CREDENTIALS_USER       = 'user'
 CREDENTIALS_PASSPHRASE = 'passphrase'
 #------------------------------------------------------------------------------
