@@ -81,20 +81,20 @@ class Page:
         self.title = title
     #--------------------------------------------------------------------------
     def _create_navbar(self):
-        self._logger.debug('CGI_SHOW_PATH = ' + CGI_SHOW_PATH)
+        self._logger.debug('SCRIPT_SHOW_PATH = ' + SCRIPT_SHOW_PATH)
         html = [self._get_logo_entry()]
         html.append(self._get_menu_image_entry())
         html.append('<div id="div_main_menu">')
         html.extend(['''
         <ul>
             <li>
-            <a href="''', CGI_SHOW_PATH,
+            <a href="''', SCRIPT_SHOW_PATH,
             '''?type=news&content=latest">Home</a></li>
             <li>Articles</li>
             <ul>''']) 
         for category in self._categories:
             html.append('<li><a href="') 
-            html.append(CGI_SHOW_PATH)
+            html.append(SCRIPT_SHOW_PATH)
             html.append('?type=category&content=')
             html.append(category)
             html.append('">')
@@ -103,7 +103,7 @@ class Page:
         html.append('</ul>')
         statics_object = statics.Statics()
         for static_entry in statics_object.get_statics():
-            html.append(''.join(['<li><a href="', CGI_SHOW_PATH,
+            html.append(''.join(['<li><a href="', SCRIPT_SHOW_PATH,
                                '?type=static&content=',
                                static_entry, '">',
                                static_entry, '</a></li>']))

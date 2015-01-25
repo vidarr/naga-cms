@@ -16,6 +16,7 @@ from article     import get_edit_links_html
 import nagaUtils
 import registry
 import statics
+import naga_wsgi
 #------------------------------------------------------------------------------
 _logger            = logging.getLogger('show.py')
 _page              = Page()
@@ -165,7 +166,5 @@ def application( environ, start_response):
         _sortkey = escape(_sortkey)
         _logger.info("using sortkey " + _sortkey)
     response_body = content_handler(content)
-    status = '200 OK'
-    response_headers = [('Content-Type', 'text/html')]
-    start_response(status, response_headers)
+    naga_wsgi.wsgi_start_response(start_response)
     return [response_body]
