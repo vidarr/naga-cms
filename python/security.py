@@ -1,4 +1,3 @@
-#!/usr/bin/python3
 #
 # Part of the CMS naga, See <https://ubeer.org>
 #
@@ -36,7 +35,7 @@ MODULE_DIR  = 'python'
 sys.path.append(PAGE_ROOT + '/../' + MODULE_DIR)
 from naga_config import *
 from configuration import ConfigurationObject
-from naga_wsgi import serialize_cookies
+from naga_wsgi import serialize_cookie, wsgi_get_get_variables
 #---------------------------------------------------------------------------    
 __logger__ = logging.getLogger("security")
 #---------------------------------------------------------------------------    
@@ -60,25 +59,27 @@ def authenticate(user, passphrase):
     '''
     return Authenticator().authenticate(user, passphrase)
 #---------------------------------------------------------------------------    
-def get_user(variables):
+def get_user(environment):
     '''
-    Take the HTTP GET variables as cgi.parse_qs look for user and 
-    return the associated value
+    Takes an environment, and tries to extract the user name from the 
+    GET request string contained within, return the associated value
     '''
-    if not CREDENTIALS_USER in variables:
+    user = wsgi_get_get_variables(environment, CREDENTIALS_USER)[0]
+    if not user:
         __logger__.error("No user found")
-        return None
-    return escape(variables[CREDENTIALS_USER][0])
+    else:
+        __logger__.info("Got user from GET variables:" + user)
+    return user
 #---------------------------------------------------------------------------    
-def get_passphrase(variables):
+def get_passphrase(environment):
     '''
-    Take the HTTP GET variables as cgi.parse_qs, look for passphrase and 
-    return the associated value
+    Takes an environment, and tries to extract the password from the 
+    GET request string contained within, return the associated value
     '''
-    if not CREDENTIALS_PASSPHRASE in variables:
+    passphrase = wsgi_get_get_variables(environment, CREDENTIALS_PASSPHRASE)[0]
+    if not passphrase:
         __logger__.error("No passphrase found")
-        return None
-    return variables[CREDENTIALS_PASSPHRASE][0]
+    return passphrase
 #---------------------------------------------------------------------------    
 def authenticate_cookie(environ):
     '''
@@ -126,7 +127,7 @@ def set_cookie_for_current_request(environ, cookie):
     When setting cookie, it will become active only for the next request.
     This 'sets' the cookie already for current request
     '''
-    environ["HTTP_COOKIE"] = serialize_cookies(cookie)
+    environ["HTTP_COOKIE"] = serialize_cookie(cookie)
 #---------------------------------------------------------------------------    
 class Authenticator(ConfigurationObject):
     '''
@@ -144,6 +145,9 @@ class Authenticator(ConfigurationObject):
         Returns rights matrix of user if user,passphrase are valid 
         credentials
         '''
+        if not user or not passphrase:
+            self.__logger__.error("Too few arguments given")
+            return False
         pass_infos = self.get(user)
         if not pass_infos:
             self.__logger__.error("User " + user + " not registered")

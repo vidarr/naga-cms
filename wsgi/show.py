@@ -150,24 +150,21 @@ def application( environ, start_response):
     _logger.info("Called show.py")
     global _page 
     _page = Page({'Page.ENVIRONMENT' : environ})
-    form = parse_qs(environ['QUERY_STRING'])
-    if not 'type' in form:
-        show_error('Invalid argument given to show.py')
-    content_type = form['type'][0]
-    content_type = escape(content_type)
-    _logger.info(content_type)
-    if not content_type in _content_types:
-        show_error("Invalid content type requested")
-    content_handler = _content_types[content_type]
-    if not 'content' in form:
-        show_error('Invalid argument given to show.py')
-    content = form['content'][0]
-    content = escape(content)
-    _logger.info(content)
-    if 'sortkey' in form:
-        _sortkey = form['sortkey'][0]
-        _sortkey = escape(_sortkey)
+    (content_type, content, sortkey) = naga_wsgi.wsgi_get_get_variables(environ,
+            'type', 'content', 'sortkey')
+    if sortkey:
+        _sortkey = sortkey
         _logger.info("using sortkey " + _sortkey)
+    if not content_type:
+        response_body = show_error('Invalid argument given to show.py')
+    else:
+        _logger.info(content_type)
+        if not content_type in _content_types:
+            response_body = show_error("Invalid content type requested")
+        content_handler = _content_types[content_type]
+        if not content:
+            show_error('Invalid argument given to show.py')
+        else:
+            _logger.info(content)
     response_body = content_handler(environ, content)
-    naga_wsgi.wsgi_start_response(start_response)
-    return [response_body]
+    return naga_wsgi.wsgi_create_response(start_response, response_body)
