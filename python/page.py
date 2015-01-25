@@ -84,6 +84,9 @@ class Page:
     def set_title(self, title):
         self.title = title
     #--------------------------------------------------------------------------
+    def set_environment(self, environment):
+        self._environment = environment
+    #--------------------------------------------------------------------------
     def _create_navbar(self):
         self._logger.debug('SCRIPT_SHOW_PATH = ' + SCRIPT_SHOW_PATH)
         html = [self._get_logo_entry()]

@@ -115,19 +115,20 @@ def get_logout_cookie():
     '''
     Returns a cookie with invalid username and password
     '''
-    cookie  = cookies.SimpleCookie()
-    cookie[CREDENTIALS_USER]       = ''
-    cookie[CREDENTIALS_PASSPHRASE] = ''
-    cookie[CREDENTIALS_USER]['expires']       = 0
-    cookie[CREDENTIALS_PASSPHRASE]['expires'] = 0
-    return cookie
+    u_cookie  = cookies.SimpleCookie()
+    u_cookie[CREDENTIALS_USER]       = ''
+    u_cookie[CREDENTIALS_USER]['expires']       = 0
+    p_cookie  = cookies.SimpleCookie()
+    p_cookie[CREDENTIALS_PASSPHRASE] = ''
+    p_cookie[CREDENTIALS_PASSPHRASE]['expires'] = 0
+    return [u_cookie, p_cookie]
 #---------------------------------------------------------------------------    
-def set_cookie_for_current_request(cookie):
+def set_cookie_for_current_request(environ, cookie):
     '''
     When setting cookie, it will become active only for the next request.
     This 'sets' the cookie already for current request
     '''
-    os.environ["HTTP_COOKIE"] = serialize_cookies(cookie)
+    environ["HTTP_COOKIE"] = serialize_cookies(cookie)
 #---------------------------------------------------------------------------    
 class Authenticator(ConfigurationObject):
     '''

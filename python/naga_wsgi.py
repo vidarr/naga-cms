@@ -19,8 +19,8 @@
 def serialize_cookies(cookies):
     cookie_header = []
     for cookie in cookies:
-        cookie_header.append(cookie.output(header=''))
-    return ''.join(cookie_header)
+        cookie_header.append(cookie.output(header='', sep=''))
+    return '; '.join(cookie_header)
 
 def wsgi_start_response(start_response_callback, **options):
     '''
