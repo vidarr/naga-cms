@@ -36,6 +36,7 @@ MODULE_DIR  = 'python'
 sys.path.append(PAGE_ROOT + '/../' + MODULE_DIR)
 from naga_config import *
 from configuration import ConfigurationObject
+from naga_wsgi import serialize_cookies
 #---------------------------------------------------------------------------    
 __logger__ = logging.getLogger("security")
 #---------------------------------------------------------------------------    
@@ -89,6 +90,7 @@ def authenticate_cookie(environ):
         return None
     try:
         cookie     = cookies.SimpleCookie(environ["HTTP_COOKIE"])
+        __logger__.info("Cookie is " + environ['HTTP_COOKIE'])
         user       = cookie[CREDENTIALS_USER].value
         passphrase = cookie[CREDENTIALS_PASSPHRASE].value
     except (cookies.CookieError, KeyError):
@@ -96,17 +98,18 @@ def authenticate_cookie(environ):
         return None
     return authenticate(user, passphrase)
 #---------------------------------------------------------------------------    
-def get_credential_cookie(user, passphrase):
+def get_credential_cookies(user, passphrase):
     '''
     Returns a cookie to be sent back to the client to automatically 
     authenticate with user,passphrase
     '''
-    cookie  = cookies.SimpleCookie()
-    cookie[CREDENTIALS_USER]           = user
-    cookie[CREDENTIALS_USER]['secure'] = True
-    cookie[CREDENTIALS_PASSPHRASE]     = passphrase
-    cookie[CREDENTIALS_PASSPHRASE]['secure'] = True
-    return cookie
+    u_cookie  = cookies.SimpleCookie()
+    u_cookie[CREDENTIALS_USER]           = user
+    u_cookie[CREDENTIALS_USER]['secure'] = True
+    p_cookie  = cookies.SimpleCookie()
+    p_cookie[CREDENTIALS_PASSPHRASE]     = passphrase
+    p_cookie[CREDENTIALS_PASSPHRASE]['secure'] = True
+    return [p_cookie, u_cookie]
 #---------------------------------------------------------------------------    
 def get_logout_cookie():
     '''
@@ -124,7 +127,7 @@ def set_cookie_for_current_request(cookie):
     When setting cookie, it will become active only for the next request.
     This 'sets' the cookie already for current request
     '''
-    os.environ["HTTP_COOKIE"] = cookie.output()
+    os.environ["HTTP_COOKIE"] = serialize_cookies(cookie)
 #---------------------------------------------------------------------------    
 class Authenticator(ConfigurationObject):
     '''

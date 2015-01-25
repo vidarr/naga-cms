@@ -55,6 +55,7 @@ class Page:
         self._environment = None
         if 'Page.ENVIRONMENT' in config:
             self._environment = config['Page.ENVIRONMENT']
+            self._logger.info("Setting environment")
         self.onload_body = None
         if 'Page.TITLE' in config:
             self.title = config['Page.TITLE']
