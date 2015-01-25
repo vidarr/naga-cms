@@ -33,23 +33,23 @@ __logger = logging.getLogger()
 #------------------------------------------------------------------------------
 def application(environ, start_response):
     page_object = page.Page()
+    cookie = None
     user = security.get_user(environ)
     passphrase = security.get_passphrase(environ)
     if not user or not passphrase:
         html_body_string = "Error occured during authentication"
         __logger.error(
                 "Could not extract user or passphrase from cgi variables")
-        naga_wsgi.wsgi_start_response(start_response)
-    if not security.authenticate(user, passphrase):
-        page_object.set_content('<p class="error">Authentication failure</p>')
+    elif not security.authenticate(user, passphrase):
+        html_body_string = '<p class="error">Authentication failure</p>'
     else:
         html_body_string = '<p>Authenticated</p>'
         cookie = security.get_credential_cookies(user, passphrase)
-        naga_wsgi.wsgi_start_response(start_response, cookie=cookie)
         security.set_cookie_for_current_request(environ, cookie)
-        page_object.set_environment(environ)
     __logger.info(html_body_string)
+    page_object.set_environment(environ)
     page_object.set_content(html_body_string)
     response_body = page_object.get_html()
-    return [response_body]
+    return naga_wsgi.wsgi_create_response(start_response, response_body, 
+            cookie=cookie)
 
