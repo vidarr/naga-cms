@@ -42,8 +42,10 @@ def is_post_request(environ):
 #------------------------------------------------------------------------------
 def wsgi_get_get_variables(environ, *field_names):
     '''
-    Tries to extract all GET variables whose names are given in field_names
-    and return their content as a list
+    Tries to extract all POST variables and return their content as a list. 
+    If field_names are given, only looks for these. 
+    if for a field_name, there is no field, the corresponding entry in 
+    the returned list of values is None.
     '''
     def get_variable_value(variable_hash, variable_name):
         value = variable_hash.get(variable_name, None)
@@ -61,11 +63,7 @@ def wsgi_get_get_variables(environ, *field_names):
         _logger.debug(environ['QUERY_STRING'])
         get_variables = parse_qs(environ['QUERY_STRING'])
         if not field_names:
-            escaped_get_variables = {}
-            for variable_key in get_variables:
-                value = get_variable_value(get_variables, variable_key)
-                escaped_get_variables[variable_key] = value
-            return escaped_get_variables
+            field_names = get_variables.keys()
         for field_name in field_names:
             field_value = get_variable_value(get_variables, field_name)
             values.append(field_value)
@@ -73,8 +71,10 @@ def wsgi_get_get_variables(environ, *field_names):
 #------------------------------------------------------------------------------
 def wsgi_get_post_variables(environ, *field_names):
     '''
-    Tries to extract all GET variables whose names are given in field_names
-    and return their content as a list. 
+    Tries to extract all POST variables and return their content as a list. 
+    If field_names are given, only looks for these. 
+    if for a field_name, there is no field, the corresponding entry in 
+    the returned list of values is None.
     BEWARE: The returned values are FieldStorage objects since unlike with
     GET requests, their value might not necessarily be a string but could 
     be a file object or else.
@@ -90,14 +90,15 @@ def wsgi_get_post_variables(environ, *field_names):
         try:
             length= int(environ.get('CONTENT_LENGTH', '0'))
         except ValueError:
-            length= 0
-        if length!=0:
+            length = 0
+        if length != 0:
             env_copy = environ.copy()
             env_copy['QUERY_STRING'] = ''
             input = environ['wsgi.input']
-            post_form = FieldStorage(fp=input,
-                    environ=env_copy,
+            post_form = FieldStorage(fp=input, environ=env_copy,
                     keep_blank_values=1)
+        if not field_names:
+            field_names = get_variables.keys()
         for field_name in field_names:
             field_value = None
             if field_name in post_form:
