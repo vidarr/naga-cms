@@ -16,10 +16,16 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+import os.path
+import sys
 import logging
 from cgi import parse_qs, escape, FieldStorage
 #------------------------------------------------------------------------------
 _logger = logging.getLogger("wsgi_naga")
+#---------------------------------------------------------------------------    
+PAGE_ROOT     = os.path.join(os.path.dirname(os.path.abspath(__file__)))
+MODULE_DIR  = 'python'
+sys.path.append(PAGE_ROOT + '/../' + MODULE_DIR)
 #------------------------------------------------------------------------------
 def serialize_cookie(cookie):
     return cookie.output(header='', sep=';  ')
@@ -39,6 +45,13 @@ def wsgi_get_get_variables(environ, *field_names):
     Tries to extract all GET variables whose names are given in field_names
     and return their content as a list
     '''
+    def get_variable_value(variable_hash, variable_name):
+        value = variable_hash.get(variable_name, None)
+        if value:
+            value = escape(value[0])
+        return value
+
+
     values = []
     if not 'QUERY_STRING' in environ:
         _logger.error("QUERY_STRING not found in environment")
@@ -47,10 +60,14 @@ def wsgi_get_get_variables(environ, *field_names):
         _logger.debug("QUERY_STRING is")
         _logger.debug(environ['QUERY_STRING'])
         get_variables = parse_qs(environ['QUERY_STRING'])
+        if not field_names:
+            escaped_get_variables = {}
+            for variable_key in get_variables:
+                value = get_variable_value(get_variables, variable_key)
+                escaped_get_variables[variable_key] = value
+            return escaped_get_variables
         for field_name in field_names:
-            field_value = get_variables.get(field_name, None)
-            if field_value:
-                field_value = escape(field_value[0])
+            field_value = get_variable_value(get_variables, field_name)
             values.append(field_value)
     return values
 #------------------------------------------------------------------------------
@@ -105,4 +122,3 @@ def wsgi_create_response(start_response_callback, response_body, **options):
             response_headers.append(('Set-Cookie', c))
     start_response_callback(status, response_headers)
     return [response_body]
-

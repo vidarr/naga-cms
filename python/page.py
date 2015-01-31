@@ -46,13 +46,13 @@ def wrap(content, head = "<title>naga</title>", onload_body_function = None):
     return result_string
 #------------------------------------------------------------------------------
 class Page:
-    def __init__(self, config = {}):
+    def __init__(self, environ, config = {}):
         self._logger     = logging.getLogger("page.py")
         self.css_links   = [CSS_PATH]
         self.content     = ""
         self.title       = PAGE_TITLE
         self.javascript_files = [JAVASCRIPT_DEFAULT_FILE]
-        self._environment = None
+        self._environment = environ
         if 'Page.ENVIRONMENT' in config:
             self._environment = config['Page.ENVIRONMENT']
             self._logger.info("Setting environment")

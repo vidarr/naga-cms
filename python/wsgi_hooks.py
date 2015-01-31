@@ -1,8 +1,7 @@
 #
 # Part of the CMS naga, See <https://ubeer.org>
 #
-#    Copyright (C) 2013, 2014, 2015 
-#                  Michael J. Beer <michael.josef.beer@googlemail.com>
+#    Copyright (C) 2013, 2014 Michael J. Beer <michael.josef.beer@googlemail.com>
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -17,6 +16,7 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+import io
 import os
 import sys
 import logging
@@ -25,35 +25,28 @@ PAGE_ROOT     = os.path.join(os.path.dirname(os.path.abspath(__file__)))
 MODULE_DIR  = 'python'
 sys.path.append(PAGE_ROOT + '/../' + MODULE_DIR);
 from naga_config import *
+from security import authenticate_cookie
+from naga_wsgi import wsgi_create_response 
 import page
-import naga_wsgi
 #------------------------------------------------------------------------------
-__logger = logging.getLogger("login.py")
+class EnsureAuthenticatedHook:
+    '''
+    Checks wether a user is logged in and outputs an 'access denied' if not
+    '''
+    def __init__(self, chained_hook):
+        self.__chained_hook = chained_hook
+    #-----------------------------------------------------------------------    
+    def __call__(self, environ, start_response):
+        response = None
+        if not authenticate_cookie(environ):
+            page_object = page.Page(environ) 
+            page_object.set_content('''<h1>Authentication failure</h1>
+                    You must be logged in to access this part''')
+            response = wsgi_create_response(start_response, \
+                    page_object.get_html())
+        else:
+            response = self.__chained_hook(environ, start_response)
+        return response
 #------------------------------------------------------------------------------
-def application(environ, start_response):
-    __logger.info("Login request")
-    html_body = ''.join(['''<h1>Please authenticate</h1>
-    <form action=''', AUTHENTICATE_LINK, '''>
-        <table>
-        <tr><td>
-        User:
-        </td><td>
-        <input type="text"     id="input_user"  name="''', CREDENTIALS_USER,
-        '''" formmethod="post"/>
-        </td></tr><tr><td>
-        Passphrase:
-        </td><td>
-        <input type="password"     id="input_passphrase" name="''',
-        CREDENTIALS_PASSPHRASE, '''" formmethod="post"/>
-        </td></tr>
-        </table>
-        <input type="submit" value="Submit"/><br/>
-    </form>
-    '''])
-    page_object = page.Page(environ)
-    page_object.set_content(html_body)
-    __logger.info(page_object.get_html())
-    response_body = page_object.get_html()
-    return naga_wsgi.wsgi_create_response(start_response, response_body)
-
-
+def __call__(chained_hook):
+    return EnsureAuthenticatedHook(chained_hook)

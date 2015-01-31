@@ -19,41 +19,35 @@
 #
 import os
 import sys
-import logging
-#------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 PAGE_ROOT     = os.path.join(os.path.dirname(os.path.abspath(__file__)))
 MODULE_DIR  = 'python'
 sys.path.append(PAGE_ROOT + '/../' + MODULE_DIR);
 from naga_config import *
+import post_page
 import page
 import naga_wsgi
+from wsgi_hooks import EnsureAuthenticatedHook
 #------------------------------------------------------------------------------
-__logger = logging.getLogger("login.py")
+__logger = logging.getLogger("post.py")
 #------------------------------------------------------------------------------
-def application(environ, start_response):
-    __logger.info("Login request")
-    html_body = ''.join(['''<h1>Please authenticate</h1>
-    <form action=''', AUTHENTICATE_LINK, '''>
-        <table>
-        <tr><td>
-        User:
-        </td><td>
-        <input type="text"     id="input_user"  name="''', CREDENTIALS_USER,
-        '''" formmethod="post"/>
-        </td></tr><tr><td>
-        Passphrase:
-        </td><td>
-        <input type="password"     id="input_passphrase" name="''',
-        CREDENTIALS_PASSPHRASE, '''" formmethod="post"/>
-        </td></tr>
-        </table>
-        <input type="submit" value="Submit"/><br/>
-    </form>
-    '''])
+def post(environ, start_response):
+    __logger.info("Editing")
+    (file_name) = naga_wsgi.wsgi_get_get_variables(environ, HTTP_ARG_FILE_NAME)
+    if file_name is not None and file_name[0] is not None:
+        __logger.info("Going to edit " + file_name[0])
+        post = post_page.PostPage(environ, FILENAME=file_name[0])
+    else:
+        post = post_page.PostPage(environ)
     page_object = page.Page(environ)
-    page_object.set_content(html_body)
-    __logger.info(page_object.get_html())
+    page_object.set_environment(environ)
+    page_object.add_css_link(CSS_POST_PATH)
+    page_object.add_css_link(CSS_ARTICLE_PATH)
+    html_string = post.to_html(True)
+    page_object.set_content(html_string)
     response_body = page_object.get_html()
     return naga_wsgi.wsgi_create_response(start_response, response_body)
-
-
+#------------------------------------------------------------------------------
+def application(environ, start_response):
+    ensureAuthenticatedHook = EnsureAuthenticatedHook(post)
+    return  ensureAuthenticatedHook(environ, start_response)

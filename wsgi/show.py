@@ -168,7 +168,7 @@ def application( environ, start_response):
     _logger.info("Python " + str(sys.version_info))
     _logger.info("Called show.py")
     global _page 
-    _page = Page({'Page.ENVIRONMENT' : environ})
+    _page = Page(environ)
     (content_type, content, sortkey) = naga_wsgi.wsgi_get_get_variables(environ,
             'type', 'content', 'sortkey')
     if sortkey:

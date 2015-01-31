@@ -16,6 +16,7 @@ import categories
 import page
 import registry
 import article
+ENVIRONMENT  = 'ENVIRONMENT'
 FILENAME = 'FILENAME'
 HEADING  = 'HEADING'
 SUMMARY  = 'SUMMARY'
@@ -27,15 +28,18 @@ class PostPage:
     Provides page to post/edit an entry
     '''
     #-------------------------------------------------------------------------- 
-    def __init__(self, **arguments):
+    def __init__(self, environ, **arguments):
         self.__logger     = logging.getLogger()
+        self.__environ    = environ
         self.__file_name  = None
         self.__heading    = ''
         self.__summary    = ''
         self.__content    = None
         self.__categories = []
+        if ENVIRONMENT in arguments:
+            self.__environ = arguments[ENVIRONMENT]
         if FILENAME in arguments:
-            self.__file_name = arguments['FILENAME']
+            self.__file_name = arguments[FILENAME]
             if self.__file_name != None:
                 self.__initialize_data_vars()
         if HEADING in arguments:
@@ -88,8 +92,8 @@ class PostPage:
         return ''.join(checkbox_html)
     #-------------------------------------------------------------------------- 
     def to_html(self, preview = False):
-        if not security.authenticate_cookie():
-            return '<p class="error">Authentication failure</p>'
+        if not security.authenticate_cookie(self.__environ):
+                return '<p class="error">Authentication failure</p>'
         file_name = None
         html_body = StringIO()
         if preview:

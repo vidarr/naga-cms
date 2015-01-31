@@ -33,7 +33,7 @@ import naga_wsgi
 __logger = logging.getLogger()
 #------------------------------------------------------------------------------
 def application(environ, start_response):
-    page_object = page.Page()
+    page_object = page.Page(environ)
     cookie = security.get_logout_cookie()
     security.set_cookie_for_current_request(environ, cookie)
     page_object.set_environment(environ)

@@ -35,7 +35,7 @@ MODULE_DIR  = 'python'
 sys.path.append(PAGE_ROOT + '/../' + MODULE_DIR)
 from naga_config import *
 from configuration import ConfigurationObject
-from naga_wsgi import serialize_cookie, wsgi_get_get_variables
+from naga_wsgi import serialize_cookie, wsgi_get_get_variables 
 #---------------------------------------------------------------------------    
 __logger__ = logging.getLogger("security")
 #---------------------------------------------------------------------------    
@@ -180,4 +180,3 @@ class Authenticator(ConfigurationObject):
         to_hash = salt + passphrase
         digester.update(to_hash.encode("utf-8"))
         return digester.hexdigest()
-
