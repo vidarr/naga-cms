@@ -22,7 +22,7 @@ from cgi import parse_qs, escape, FieldStorage
 _logger = logging.getLogger("wsgi_naga")
 #------------------------------------------------------------------------------
 def serialize_cookie(cookie):
-    return cookie.output(header='', sep='; ')
+    return cookie.output(header='', sep=';  ')
 #------------------------------------------------------------------------------
 def is_post_request(environ):
     if environ['REQUEST_METHOD'].upper() != 'POST':
@@ -99,8 +99,10 @@ def wsgi_create_response(start_response_callback, response_body, **options):
         response_headers.extend(options['additional_headers'])
     if 'cookie' in options:
         cookie = options['cookie']
-        if cookie:
-            response_headers.append(('Set-Cookie', serialize_cookie(cookie)))
+        cookie = serialize_cookie(cookie)
+        cookies = cookie.split(';  ')
+        for c in cookies:
+            response_headers.append(('Set-Cookie', c))
     start_response_callback(status, response_headers)
     return [response_body]
 

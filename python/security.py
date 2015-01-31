@@ -129,6 +129,12 @@ def set_cookie_for_current_request(environ, cookie):
     '''
     environ["HTTP_COOKIE"] = serialize_cookie(cookie)
 #---------------------------------------------------------------------------    
+def unset_cookies(environ):
+    '''
+    Unsets any cookies 
+    '''
+    environ['HTTP_COOKIE'] = ''
+#---------------------------------------------------------------------------    
 class Authenticator(ConfigurationObject):
     '''
     Provides several ways of checking whether a combination of 

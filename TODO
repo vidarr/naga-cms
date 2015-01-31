@@ -1,1 +1,2 @@
+* authenticate.py :   user, passphrase transmitted as GET vars, auth cookie set by foot, NOT 'secure'
 * Auto create navbar

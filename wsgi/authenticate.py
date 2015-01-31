@@ -50,6 +50,7 @@ def application(environ, start_response):
     page_object.set_environment(environ)
     page_object.set_content(html_body_string)
     response_body = page_object.get_html()
+    security.unset_cookies(environ)
     return naga_wsgi.wsgi_create_response(start_response, response_body, 
             cookie=cookie)
 
