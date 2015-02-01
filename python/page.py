@@ -46,16 +46,13 @@ def wrap(content, head = "<title>naga</title>", onload_body_function = None):
     return result_string
 #------------------------------------------------------------------------------
 class Page:
-    def __init__(self, environ, config = {}):
+    def __init__(self, wsgi_request, config = {}):
         self._logger     = logging.getLogger("page.py")
         self.css_links   = [CSS_PATH]
         self.content     = ""
         self.title       = PAGE_TITLE
         self.javascript_files = [JAVASCRIPT_DEFAULT_FILE]
-        self._environment = environ
-        if 'Page.ENVIRONMENT' in config:
-            self._environment = config['Page.ENVIRONMENT']
-            self._logger.info("Setting environment")
+        self._request = wsgi_request
         self.onload_body = None
         if 'Page.TITLE' in config:
             self.title = config['Page.TITLE']
@@ -84,8 +81,11 @@ class Page:
     def set_title(self, title):
         self.title = title
     #--------------------------------------------------------------------------
-    def set_environment(self, environment):
-        self._environment = environment
+    def set_request(self, request):
+        if request is None or type(request) != naga_wsgi.Wsgi.__name__:
+            self._logger.error("set_request: requset is no Wsgi request")
+        else:
+            self._request = request
     #--------------------------------------------------------------------------
     def _create_navbar(self):
         self._logger.debug('SCRIPT_SHOW_PATH = ' + SCRIPT_SHOW_PATH)
@@ -124,7 +124,7 @@ class Page:
             </li>
             </ul>
             ''')
-        if authenticate_cookie(self._environment):
+        if authenticate_cookie(self._request):
             self._logger.debug("Authenticated via cookie")
             html.append('<ul>')
             html.append('<li>[ <a href="')

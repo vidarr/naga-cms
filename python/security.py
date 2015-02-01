@@ -35,7 +35,7 @@ MODULE_DIR  = 'python'
 sys.path.append(PAGE_ROOT + '/../' + MODULE_DIR)
 from naga_config import *
 from configuration import ConfigurationObject
-from naga_wsgi import serialize_cookie, wsgi_get_get_variables 
+from naga_wsgi import serialize_cookie
 #---------------------------------------------------------------------------    
 __logger__ = logging.getLogger("security")
 #---------------------------------------------------------------------------    
@@ -59,45 +59,49 @@ def authenticate(user, passphrase):
     '''
     return Authenticator().authenticate(user, passphrase)
 #---------------------------------------------------------------------------    
-def get_user(environment):
+def get_user(wsgi_request):
     '''
-    Takes an environment, and tries to extract the user name from the 
-    GET request string contained within, return the associated value
+    Takes an an wsgi_request, and tries to get the passprase from the 
+    GET variables. 
+    Returns its value.
     '''
-    user = wsgi_get_get_variables(environment, CREDENTIALS_USER)[0]
+    if not wsgi_request or type(wsgi_request) != 'wsgi_request':
+        __logger__.error("get_user: wsgi_request not given")
+        return None
+    user = wsgi_request.get_get_variables(CREDENTIALS_USER)[0]
     if not user:
         __logger__.error("No user found")
     else:
         __logger__.info("Got user from GET variables:" + user)
     return user
 #---------------------------------------------------------------------------    
-def get_passphrase(environment):
+def get_passphrase(wsgi_request):
     '''
-    Takes an environment, and tries to extract the password from the 
-    GET request string contained within, return the associated value
+    Takes an an wsgi_request, and tries to get the passprase from the 
+    GET variables. 
+    Returns its value.
     '''
-    passphrase = wsgi_get_get_variables(environment, CREDENTIALS_PASSPHRASE)[0]
+    if not wsgi_request or type(wsgi_request) != 'wsgi_request':
+        __logger__.error("get_passphrase: wsgi_request not given")
+        return None
+    passphrase = wsgi_request.get_variables(CREDENTIALS_PASSPHRASE)[0]
     if not passphrase:
         __logger__.error("No passphrase found")
     return passphrase
 #---------------------------------------------------------------------------    
-def authenticate_cookie(environ):
+def authenticate_cookie(wsgi_request):
     '''
     Looks for cookies 'user' and 'passphrase' and checks whether their 
     values are valid credentials
     '''
-    if not environ:
-        __logger__.info("environ not given")
+    if not wsgi_request or type(wsgi_request) != 'Wsgi':
+        __logger__.error("authenticate_cookie: wsgi_request not given")
         return None
-    try:
-        cookie     = cookies.SimpleCookie(environ["HTTP_COOKIE"])
-        __logger__.info("Cookie is " + environ['HTTP_COOKIE'])
-        user       = cookie[CREDENTIALS_USER].value
-        passphrase = cookie[CREDENTIALS_PASSPHRASE].value
-    except (cookies.CookieError, KeyError):
-        __logger__.info("session cookie not set!")
+    user     = wsgi_request.get_cookie(CREDENTIALS_USER)
+    passphrase = wsgi_request.get_cookie(CREDENTIALS_USER)
+    if user is None or passphrase is None:
         return None
-    return authenticate(user, passphrase)
+    return authenticate(user.value, passphrase.value)
 #---------------------------------------------------------------------------    
 def get_credential_cookies(user, passphrase):
     '''

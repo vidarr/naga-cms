@@ -28,16 +28,15 @@ class PostPage:
     Provides page to post/edit an entry
     '''
     #-------------------------------------------------------------------------- 
-    def __init__(self, environ, **arguments):
+    def __init__(self, wsgi_request, **arguments):
         self.__logger     = logging.getLogger()
-        self.__environ    = environ
+        self.__request    = None
+        self.set_request(wsgi_request)
         self.__file_name  = None
         self.__heading    = ''
         self.__summary    = ''
         self.__content    = None
         self.__categories = []
-        if ENVIRONMENT in arguments:
-            self.__environ = arguments[ENVIRONMENT]
         if FILENAME in arguments:
             self.__file_name = arguments[FILENAME]
             if self.__file_name != None:
@@ -63,6 +62,12 @@ class PostPage:
         self.__logger.info("Loaded " + self.__file_name + 
                 ' with heading = ' + self.__heading)
         return True
+    #-------------------------------------------------------------------------- 
+    def set_request(self, request):
+        if request is None or type(request) != naga_wsgi.Wsgi.__name__:
+            self.__logger.error("set_request: request is not WsgiRequest")
+        else:
+            self.__request = request
     #-------------------------------------------------------------------------- 
     def __get_upload_path(self):
         upload_path = [UPLOAD_PATH]
@@ -92,7 +97,7 @@ class PostPage:
         return ''.join(checkbox_html)
     #-------------------------------------------------------------------------- 
     def to_html(self, preview = False):
-        if not security.authenticate_cookie(self.__environ):
+        if not security.authenticate_cookie(self.__request):
                 return '<p class="error">Authentication failure</p>'
         file_name = None
         html_body = StringIO()

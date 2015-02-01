@@ -168,9 +168,10 @@ def application( environ, start_response):
     _logger.info("Python " + str(sys.version_info))
     _logger.info("Called show.py")
     global _page 
-    _page = Page(environ)
-    (content_type, content, sortkey) = naga_wsgi.wsgi_get_get_variables(environ,
-            'type', 'content', 'sortkey')
+    request = naga_wsgi.Wsgi(environ)
+    _page = Page(request)
+    (content_type, content, sortkey) = request.get_get_variables('type', 
+            'content', 'sortkey')
     if sortkey:
         _sortkey = sortkey
         _logger.info("using sortkey " + _sortkey)
@@ -186,4 +187,4 @@ def application( environ, start_response):
         else:
             _logger.info(content)
     response_body = content_handler(environ, content)
-    return naga_wsgi.wsgi_create_response(start_response, response_body)
+    return naga_wsgi.create_response(start_response, response_body)

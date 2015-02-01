@@ -54,6 +54,6 @@ def application(environ, start_response):
     page_object.set_content(html_body)
     __logger.info(page_object.get_html())
     response_body = page_object.get_html()
-    return naga_wsgi.wsgi_create_response(start_response, response_body)
+    return naga_wsgi.create_response(start_response, response_body)
 
 

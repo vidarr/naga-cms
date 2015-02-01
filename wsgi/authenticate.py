@@ -34,8 +34,9 @@ __logger = logging.getLogger()
 def application(environ, start_response):
     page_object = page.Page(environ)
     cookie = None
-    user = security.get_user(environ)
-    passphrase = security.get_passphrase(environ)
+    wsgi_request = naga_wsgi.Wsgi(environ)
+    user = security.get_user(wsgi_request)
+    passphrase = security.get_passphrase(wsgi_request)
     if not user or not passphrase:
         html_body_string = "Error occured during authentication"
         __logger.error(
@@ -51,6 +52,6 @@ def application(environ, start_response):
     page_object.set_content(html_body_string)
     response_body = page_object.get_html()
     security.unset_cookies(environ)
-    return naga_wsgi.wsgi_create_response(start_response, response_body, 
+    return naga_wsgi.create_response(start_response, response_body, 
             cookie=cookie)
 
