@@ -40,9 +40,22 @@ def is_post_request(environ):
     return (content_type.startswith('application/x-www-form-urlencoded')
             or content_type.startswith('multipart/form-data'))
 #------------------------------------------------------------------------------
+def wsgi_get_get_variable_dictionary(environ):
+    get_variables = None
+    if not 'QUERY_STRING' in environ:
+        _logger.error("QUERY_STRING not found in environment")
+    else:
+        env_copy = environ.copy()
+        _logger.debug("QUERY_STRING is")
+        _logger.debug(env_copy['QUERY_STRING'])
+        get_variables = parse_qs(env_copy['QUERY_STRING'])
+        _logger.debug("wsgi_get_get_variables_dictionary: " +
+                "Found " + ';'.join(get_variables.keys()))
+    return get_variables
+#------------------------------------------------------------------------------
 def wsgi_get_get_variables(environ, *field_names):
     '''
-    Tries to extract all POST variables and return their content as a list. 
+    Tries to extract POST variables and return their content as a list. 
     If field_names are given, only looks for these. 
     if for a field_name, there is no field, the corresponding entry in 
     the returned list of values is None.
@@ -52,38 +65,22 @@ def wsgi_get_get_variables(environ, *field_names):
         if value:
             value = escape(value[0])
         return value
-
-
+    #--------------------------------------------------------------------------
     values = []
-    if not 'QUERY_STRING' in environ:
-        _logger.error("QUERY_STRING not found in environment")
+    get_variables = wsgi_get_get_variable_dictionary(environ)
+    if not get_variables:
         values = [None for i in field_names]
     else:
-        _logger.debug("QUERY_STRING is")
-        _logger.debug(environ['QUERY_STRING'])
-        get_variables = parse_qs(environ['QUERY_STRING'])
-        if not field_names:
-            field_names = get_variables.keys()
         for field_name in field_names:
             field_value = get_variable_value(get_variables, field_name)
             values.append(field_value)
     return values
 #------------------------------------------------------------------------------
-def wsgi_get_post_variables(environ, *field_names):
-    '''
-    Tries to extract all POST variables and return their content as a list. 
-    If field_names are given, only looks for these. 
-    if for a field_name, there is no field, the corresponding entry in 
-    the returned list of values is None.
-    BEWARE: The returned values are FieldStorage objects since unlike with
-    GET requests, their value might not necessarily be a string but could 
-    be a file object or else.
-    '''
+def wsgi_get_post_variables_dictionary(environ):
     assert is_post_request(environ)
-    values = []
+    post_form = None
     if not 'wsgi.input' in environ:
         _logger.error("'wsgi.input' not found in environment")
-        values = [None for i in field_names]
     else:
         _logger.debug("wsgi.input is")
         _logger.debug(environ['wsgi.input'])
@@ -94,15 +91,33 @@ def wsgi_get_post_variables(environ, *field_names):
         if length != 0:
             env_copy = environ.copy()
             env_copy['QUERY_STRING'] = ''
-            input = environ['wsgi.input']
+            input = env_copy['wsgi.input']
             post_form = FieldStorage(fp=input, environ=env_copy,
                     keep_blank_values=1)
-        if not field_names:
-            field_names = get_variables.keys()
+            _logger.debug("wsgi_get_post_variables_dictionary: " +
+                    "Found " + ';'.join(post_form.keys()))
+        else:
+            _logger.debug("wsgi_get_post_variables_dictionary: " +
+            "No post variables found")
+    return post_form
+#------------------------------------------------------------------------------
+def wsgi_get_post_variables(environ, *field_names):
+    '''
+    Tries to extract POST variables and return their content as a list. 
+    If field_names are given, only looks for these. 
+    if for a field_name, there is no field, the corresponding entry in 
+    the returned list of values is None.
+    BEWARE: The returned values are FieldStorage objects since unlike with
+    GET requests, their value might not necessarily be a string but could 
+    be a file object or else.
+    '''
+    post_variables = wsgi_get_post_variables_dictionary(environ)
+    values = []
+    if post_variables is not None:
         for field_name in field_names:
             field_value = None
-            if field_name in post_form:
-                field_value = post_form[field_name]
+            if field_name in post_variables:
+                field_value = post_variables[field_name]
             values.append(field_value)
     return values
 #------------------------------------------------------------------------------

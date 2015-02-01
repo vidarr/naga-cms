@@ -100,7 +100,9 @@ STORE_IMAGE_PATH       = IMAGE_DIR
 #------------------------------------------------------------------------------
 # Logger configuration
 #------------------------------------------------------------------------------
-logging.basicConfig(filename=join(NAGA_ABS_ROOT, LOG_FILE_PATH),level=logging.DEBUG)
+logging.basicConfig(filename=join(NAGA_ABS_ROOT, LOG_FILE_PATH), \
+        format='%(asctime)s - %(levelname)s - %(message)s', \
+        level=logging.DEBUG)
 #------------------------------------------------------------------------------
 __logger.debug("NAGA_ROOT=" + NAGA_ROOT)
 __logger.debug("NAGA_ABS_ROOT=" + NAGA_ABS_ROOT)
