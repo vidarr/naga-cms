@@ -151,7 +151,7 @@ def show_static(request, content):
         show_error("show_static: No static key given")
     static_object = statics.Statics()
     url           = static_object.get(content)
-    show_url(url)
+    return show_url(request, url)
 #------------------------------------------------------------------------------
 _content_types = {
         'error'    : show_error,

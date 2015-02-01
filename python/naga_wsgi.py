@@ -43,10 +43,11 @@ def create_response(start_response_callback, response_body, **options):
         response_headers.extend(options['additional_headers'])
     if 'cookie' in options:
         cookie = options['cookie']
-        cookie = serialize_cookie(cookie)
-        cookies = cookie.split(';  ')
-        for c in cookies:
-            response_headers.append(('Set-Cookie', c))
+        if cookie is not None:
+            cookie = serialize_cookie(cookie)
+            cookies = cookie.split(';  ')
+            for c in cookies:
+                response_headers.append(('Set-Cookie', c))
     start_response_callback(status, response_headers)
     return [response_body]
 #------------------------------------------------------------------------------

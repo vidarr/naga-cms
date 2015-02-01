@@ -101,7 +101,7 @@ def authenticate_cookie(wsgi_request):
         __logger__.error("authenticate_cookie: wsgi_request not given")
         return None
     user     = wsgi_request.get_cookie(CREDENTIALS_USER)
-    passphrase = wsgi_request.get_cookie(CREDENTIALS_USER)
+    passphrase = wsgi_request.get_cookie(CREDENTIALS_PASSPHRASE)
     if user is None or passphrase is None:
         return None
     return authenticate(user.value, passphrase.value)
