@@ -57,14 +57,16 @@ class ErrorCatchingHook:
     '''
     def __init__(self, chained_hook):
         self.__chained_hook = chained_hook
+        self.__logger = logging.getLogger('ErrorCatchingHook')
     #-----------------------------------------------------------------------    
     def __call__(self, request, start_response):
         response = None
         try:
             response = self.__chained_hook(request, start_response)
         except Exception as exception:
+            self.__logger.exception(exception)
             page_object = page.Page(request) 
-            page_object.set_content('''<h1>Inernal Error</h1>
+            page_object.set_content('''<h1>Internal Error</h1>
 Something went wrong:''' + str(exception))
             response = naga_wsgi.create_response(start_response, \
                     page_object.get_html())

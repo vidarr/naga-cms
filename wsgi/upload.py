@@ -112,16 +112,17 @@ def get_chosen_categories(request):
 #------------------------------------------------------------------------------
 def upload(request, start_response):
     _logger.info("upload.py: Upload request received")
-    (heading, summary, file_name, contentexists, content, preview) =  \
+    (heading, summary, contentexists, content, preview) =  \
     request.get_post_variables('heading', 'summary', \
-            HTTP_ARG_FILE_NAME, 'contentexists', 'content', 'preview')
+            'contentexists', 'content', 'preview')
+    file_name = request.get_get_variables(HTTP_ARG_FILE_NAME)
     heading = heading.value
     summary = summary.value
     categories = get_chosen_categories(request)
     if content is not None:
         content = content.value
     if file_name is not None:
-        file_name = file_name.value
+        file_name = file_name[0]
     if preview is not None:
         if content == None:
             content = ''
