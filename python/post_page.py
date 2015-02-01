@@ -64,7 +64,7 @@ class PostPage:
         return True
     #-------------------------------------------------------------------------- 
     def set_request(self, request):
-        if request is None or type(request) != naga_wsgi.Wsgi.__name__:
+        if request is None:
             self.__logger.error("set_request: request is not WsgiRequest")
         else:
             self.__request = request

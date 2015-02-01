@@ -28,15 +28,15 @@ from naga_config import *
 import security
 import page
 import naga_wsgi
+from wsgi_hooks import ErrorCatchingHook
 #------------------------------------------------------------------------------
 __logger = logging.getLogger()
 #------------------------------------------------------------------------------
-def application(environ, start_response):
-    page_object = page.Page(environ)
+def authenticate(request, start_response):
     cookie = None
-    wsgi_request = naga_wsgi.Wsgi(environ)
-    user = security.get_user(wsgi_request)
-    passphrase = security.get_passphrase(wsgi_request)
+    page_object = page.Page(request)
+    user = security.get_user(request)
+    passphrase = security.get_passphrase(request)
     if not user or not passphrase:
         html_body_string = "Error occured during authentication"
         __logger.error(
@@ -46,12 +46,14 @@ def application(environ, start_response):
     else:
         html_body_string = '<p>Authenticated</p>'
         cookie = security.get_credential_cookies(user, passphrase)
-        security.set_cookie_for_current_request(environ, cookie)
+        request.set_cookie(cookie)
     __logger.info(html_body_string)
-    page_object.set_environment(environ)
     page_object.set_content(html_body_string)
     response_body = page_object.get_html()
-    security.unset_cookies(environ)
     return naga_wsgi.create_response(start_response, response_body, 
             cookie=cookie)
-
+#------------------------------------------------------------------------------
+def application(environ, start_response):
+    request = naga_wsgi.Wsgi(environ)
+    errorCatchingHook = ErrorCatchingHook(authenticate)
+    return  errorCatchingHook(request, start_response)

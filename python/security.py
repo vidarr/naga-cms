@@ -65,7 +65,7 @@ def get_user(wsgi_request):
     GET variables. 
     Returns its value.
     '''
-    if not wsgi_request or type(wsgi_request) != 'wsgi_request':
+    if not wsgi_request:
         __logger__.error("get_user: wsgi_request not given")
         return None
     user = wsgi_request.get_get_variables(CREDENTIALS_USER)[0]
@@ -81,12 +81,15 @@ def get_passphrase(wsgi_request):
     GET variables. 
     Returns its value.
     '''
-    if not wsgi_request or type(wsgi_request) != 'wsgi_request':
+    if not wsgi_request:
         __logger__.error("get_passphrase: wsgi_request not given")
         return None
-    passphrase = wsgi_request.get_variables(CREDENTIALS_PASSPHRASE)[0]
+    passphrase = wsgi_request.get_get_variables(CREDENTIALS_PASSPHRASE)[0]
     if not passphrase:
         __logger__.error("No passphrase found")
+    else:
+        __logger__.info("get_passphrase: Got a passphrase of type " + 
+                str(type(passphrase)))  
     return passphrase
 #---------------------------------------------------------------------------    
 def authenticate_cookie(wsgi_request):
@@ -94,7 +97,7 @@ def authenticate_cookie(wsgi_request):
     Looks for cookies 'user' and 'passphrase' and checks whether their 
     values are valid credentials
     '''
-    if not wsgi_request or type(wsgi_request) != 'Wsgi':
+    if not wsgi_request:
         __logger__.error("authenticate_cookie: wsgi_request not given")
         return None
     user     = wsgi_request.get_cookie(CREDENTIALS_USER)
@@ -132,12 +135,6 @@ def set_cookie_for_current_request(environ, cookie):
     This 'sets' the cookie already for current request
     '''
     environ["HTTP_COOKIE"] = serialize_cookie(cookie)
-#---------------------------------------------------------------------------    
-def unset_cookies(environ):
-    '''
-    Unsets any cookies 
-    '''
-    environ['HTTP_COOKIE'] = ''
 #---------------------------------------------------------------------------    
 class Authenticator(ConfigurationObject):
     '''

@@ -27,10 +27,11 @@ sys.path.append(PAGE_ROOT + '/../' + MODULE_DIR);
 from naga_config import *
 import page
 import naga_wsgi
+from wsgi_hooks import ErrorCatchingHook
 #------------------------------------------------------------------------------
 __logger = logging.getLogger("login.py")
 #------------------------------------------------------------------------------
-def application(environ, start_response):
+def call(request, start_response):
     __logger.info("Login request")
     html_body = ''.join(['''<h1>Please authenticate</h1>
     <form action=''', AUTHENTICATE_LINK, '''>
@@ -50,10 +51,13 @@ def application(environ, start_response):
         <input type="submit" value="Submit"/><br/>
     </form>
     '''])
-    page_object = page.Page(environ)
+    page_object = page.Page(request)
     page_object.set_content(html_body)
     __logger.info(page_object.get_html())
     response_body = page_object.get_html()
     return naga_wsgi.create_response(start_response, response_body)
-
-
+#------------------------------------------------------------------------------
+def application(environ, start_response):
+    request = naga_wsgi.Wsgi(environ)
+    errorCatchingHook = ErrorCatchingHook(call)
+    return  errorCatchingHook(request, start_response)

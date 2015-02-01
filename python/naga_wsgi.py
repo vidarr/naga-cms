@@ -19,7 +19,9 @@
 import os.path
 import sys
 import logging
-from cgi import parse_qs, escape, FieldStorage
+from urllib.parse import parse_qs
+from cgi import escape, FieldStorage
+from http import cookies
 #------------------------------------------------------------------------------
 _logger = logging.getLogger("wsgi_naga")
 #---------------------------------------------------------------------------    
@@ -74,10 +76,10 @@ class Wsgi:
             _logger.error("QUERY_STRING not found in environment")
         else:
             env_copy = environ.copy()
-            _logger.debug("QUERY_STRING is")
-            _logger.debug(env_copy['QUERY_STRING'])
-            get_variables = parse_qs(env_copy['QUERY_STRING'])
-            _logger.debug("wsgi_get_get_variables_dictionary: " +
+            query = env_copy['QUERY_STRING']
+            _logger.debug("QUERY_STRING is" + str(query))
+            get_variables = parse_qs(query)
+            _logger.debug("__get_get_variables: " +
                     "Found " + ';'.join(get_variables.keys()))
         return get_variables
     #--------------------------------------------------------------------------
@@ -122,10 +124,10 @@ class Wsgi:
                 input = env_copy['wsgi.input']
                 post_form = FieldStorage(fp=input, environ=env_copy,
                         keep_blank_values=1)
-                _logger.debug("wsgi_get_post_variables_dictionary: " +
+                _logger.debug("__get_post_variables: " +
                         "Found " + ';'.join(post_form.keys()))
             else:
-                _logger.debug("wsgi_get_post_variables_dictionary: " +
+                _logger.debug("__get_post_variables: " +
                 "No post variables found")
         return post_form
     #--------------------------------------------------------------------------
@@ -164,3 +166,7 @@ class Wsgi:
         except(cookies.CookieError, KeyError):
             value = None
         return value
+    #--------------------------------------------------------------------------
+    def set_cookie(self, cookie):
+        if cookie is not None:
+            self.__cookie = cookie

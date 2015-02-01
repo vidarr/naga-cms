@@ -26,7 +26,7 @@ MODULE_DIR  = 'python'
 sys.path.append(PAGE_ROOT + '/../' + MODULE_DIR);
 from naga_config import *
 from security import authenticate_cookie
-from naga_wsgi import wsgi_create_response 
+import naga_wsgi
 import page
 #------------------------------------------------------------------------------
 class EnsureAuthenticatedHook:
@@ -36,17 +36,39 @@ class EnsureAuthenticatedHook:
     def __init__(self, chained_hook):
         self.__chained_hook = chained_hook
     #-----------------------------------------------------------------------    
-    def __call__(self, environ, start_response):
+    def __call__(self, request, start_response):
         response = None
-        if not authenticate_cookie(environ):
-            page_object = page.Page(environ) 
+        if not authenticate_cookie(request):
+            page_object = page.Page(request) 
             page_object.set_content('''<h1>Authentication failure</h1>
                     You must be logged in to access this part''')
-            response = wsgi_create_response(start_response, \
+            response = naga_wsgi.create_response(start_response, \
                     page_object.get_html())
         else:
-            response = self.__chained_hook(environ, start_response)
+            response = self.__chained_hook(request, start_response)
         return response
 #------------------------------------------------------------------------------
 def __call__(chained_hook):
     return EnsureAuthenticatedHook(chained_hook)
+#------------------------------------------------------------------------------
+class ErrorCatchingHook:
+    '''
+    Catches Exceptions raised during web page creation
+    '''
+    def __init__(self, chained_hook):
+        self.__chained_hook = chained_hook
+    #-----------------------------------------------------------------------    
+    def __call__(self, request, start_response):
+        response = None
+        try:
+            response = self.__chained_hook(request, start_response)
+        except Exception as exception:
+            page_object = page.Page(request) 
+            page_object.set_content('''<h1>Inernal Error</h1>
+Something went wrong:''' + str(exception))
+            response = naga_wsgi.create_response(start_response, \
+                    page_object.get_html())
+        return response
+#------------------------------------------------------------------------------
+def __call__(chained_hook):
+    return ErrorCatchingHook(chained_hook)

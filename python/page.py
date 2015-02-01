@@ -82,7 +82,7 @@ class Page:
         self.title = title
     #--------------------------------------------------------------------------
     def set_request(self, request):
-        if request is None or type(request) != naga_wsgi.Wsgi.__name__:
+        if request is None:
             self._logger.error("set_request: requset is no Wsgi request")
         else:
             self._request = request

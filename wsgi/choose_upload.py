@@ -27,14 +27,14 @@ sys.path.append(join(PAGE_ROOT, '..', MODULE_DIR))
 from naga_config import *
 import page
 import security
-from wsgi_hooks import EnsureAuthenticatedHook
-from naga_wsgi import wsgi_create_response 
+import naga_wsgi
+from wsgi_hooks import EnsureAuthenticatedHook, ErrorCatchingHook
 #------------------------------------------------------------------------------
 _logger = logging.getLogger("choose_upload.py")
 #------------------------------------------------------------------------------
-def choose_upload(environ, start_response):
-    upload_page = page.Page(environ)
-    if not security.authenticate_cookie(environ):
+def choose_upload(request, start_response):
+    upload_page = page.Page(request)
+    if not security.authenticate_cookie(request):
         upload_page.set_content('<p class="error">Authentication failure</p>')
         print(upload_page.get_html())
         sys.exit(1)
@@ -72,11 +72,12 @@ def choose_upload(environ, start_response):
     </form>
     </div>
     '''])
-    upload_page.set_environment(environ)
     upload_page.set_content(html_body)
-    return wsgi_create_response(start_response, upload_page.get_html())
+    return naga_wsgi.create_response(start_response, upload_page.get_html())
 #------------------------------------------------------------------------------
 def application(environ, start_response):
-    ensureAuthenticatedHook = EnsureAuthenticatedHook(choose_upload)
-    return  ensureAuthenticatedHook(environ, start_response)
+    request = naga_wsgi.Wsgi(environ)
+    errorCatchingHook = ErrorCatchingHook(choose_upload)
+    ensureAuthenticatedHook = EnsureAuthenticatedHook(errorCatchingHook)
+    return  ensureAuthenticatedHook(request, start_response)
 

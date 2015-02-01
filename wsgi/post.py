@@ -27,27 +27,28 @@ from naga_config import *
 import post_page
 import page
 import naga_wsgi
-from wsgi_hooks import EnsureAuthenticatedHook
+from wsgi_hooks import EnsureAuthenticatedHook, ErrorCatchingHook
 #------------------------------------------------------------------------------
 __logger = logging.getLogger("post.py")
 #------------------------------------------------------------------------------
-def post(environ, start_response):
+def post(request, start_response):
     __logger.info("Editing")
-    (file_name) = naga_wsgi.wsgi_get_get_variables(environ, HTTP_ARG_FILE_NAME)
+    (file_name) = request.get_get_variables(HTTP_ARG_FILE_NAME)
     if file_name is not None and file_name[0] is not None:
         __logger.info("Going to edit " + file_name[0])
-        post = post_page.PostPage(environ, FILENAME=file_name[0])
+        post = post_page.PostPage(request, FILENAME=file_name[0])
     else:
-        post = post_page.PostPage(environ)
-    page_object = page.Page(environ)
-    page_object.set_environment(environ)
+        post = post_page.PostPage(request)
+    page_object = page.Page(request)
     page_object.add_css_link(CSS_POST_PATH)
     page_object.add_css_link(CSS_ARTICLE_PATH)
     html_string = post.to_html(True)
     page_object.set_content(html_string)
     response_body = page_object.get_html()
-    return naga_wsgi.wsgi_create_response(start_response, response_body)
+    return naga_wsgi.create_response(start_response, response_body)
 #------------------------------------------------------------------------------
 def application(environ, start_response):
-    ensureAuthenticatedHook = EnsureAuthenticatedHook(post)
-    return  ensureAuthenticatedHook(environ, start_response)
+    request = naga_wsgi.Wsgi(environ)
+    errorCatchingHook = ErrorCatchingHook(post)
+    ensureAuthenticatedHook = EnsureAuthenticatedHook(errorCatchingHook)
+    return  ensureAuthenticatedHook(request, start_response)

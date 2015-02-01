@@ -36,15 +36,15 @@ import nagaUtils
 import registry
 import statics
 import naga_wsgi
+from wsgi_hooks import ErrorCatchingHook
 #------------------------------------------------------------------------------
 _logger            = logging.getLogger('show.py')
 _page              = None
 _sortkey           = SORT_KEY_TIMESTAMP
-_environment       = None
 #------------------------------------------------------------------------------
 # Content Handlers
 #------------------------------------------------------------------------------
-def show_error(env, message):
+def show_error(request, message):
     _logger.error(message)
     _page.set_content('''
 <h1>Error occured</h1>
@@ -53,7 +53,7 @@ def show_error(env, message):
 </p>''')
     return _page.get_html()
 #------------------------------------------------------------------------------
-def show_news(env, content):
+def show_news(request, content):
     _logger.info("show_rss: Requested " + content)
     html = ['<h1>', PAGE_TITLE, '</h1>\r\n', PAGE_DESCRIPTION]
     if content == 'all':
@@ -72,14 +72,14 @@ def show_news(env, content):
     _page.set_content(html_string)
     return _page.get_html()
 #------------------------------------------------------------------------------
-def show_article(env, file_name):
+def show_article(request, file_name):
     _logger.info('show_article: Requested ' + file_name)
     article_registry = registry.Registry()
     if not file_name in article_registry.get_article_keys():
         show_error(file_name + " not found")
     article_object = article_registry.get(file_name)
     edit_links = ''
-    if authenticate_cookie(env):
+    if authenticate_cookie(request):
         edit_links = get_edit_links_html(file_name)
     _page.add_css_link(CSS_ARTICLE_PATH)
     _page.set_content(edit_links + article_object.to_html())
@@ -95,7 +95,7 @@ def sort_articles(articles, sort_key = SORT_KEY_HEADING):
         return None
     return sorted(articles, key = sort_function)
 #------------------------------------------------------------------------------
-def show_category(env, content):
+def show_category(request, content):
     if not content:
         show_error("No category to show given")
     _logger.info('show_category: Requested ' + content)
@@ -133,7 +133,7 @@ def show_category(env, content):
         _page.set_content(html_string)
     return _page.get_html()
 #------------------------------------------------------------------------------
-def show_url(env, content):
+def show_url(request, content):
     if not content:
         show_error("No content given")
     remote_file = urllib.request.urlopen(content)
@@ -146,7 +146,7 @@ def show_url(env, content):
         remote_data)))
     return _page.get_html()
 #------------------------------------------------------------------------------
-def show_static(env, content):
+def show_static(request, content):
     if not content:
         show_error("show_static: No static key given")
     static_object = statics.Statics()
@@ -164,11 +164,10 @@ _content_types = {
 #------------------------------------------------------------------------------
 # MAIN
 #------------------------------------------------------------------------------
-def application( environ, start_response):
+def show( request, start_response):
     _logger.info("Python " + str(sys.version_info))
     _logger.info("Called show.py")
     global _page 
-    request = naga_wsgi.Wsgi(environ)
     _page = Page(request)
     (content_type, content, sortkey) = request.get_get_variables('type', 
             'content', 'sortkey')
@@ -186,5 +185,10 @@ def application( environ, start_response):
             show_error('Invalid argument given to show.py')
         else:
             _logger.info(content)
-    response_body = content_handler(environ, content)
+    response_body = content_handler(request, content)
     return naga_wsgi.create_response(start_response, response_body)
+#------------------------------------------------------------------------------
+def application(environ, start_response):
+    request = naga_wsgi.Wsgi(environ)
+    errorCatchingHook = ErrorCatchingHook(show)
+    return  errorCatchingHook(request, start_response)

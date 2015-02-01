@@ -29,8 +29,8 @@ from naga_config import *
 import security
 import page
 import store
-from naga_wsgi import wsgi_create_response, wsgi_get_post_variables
-from wsgi_hooks import EnsureAuthenticatedHook
+import naga_wsgi
+from wsgi_hooks import EnsureAuthenticatedHook, ErrorCatchingHook
 #------------------------------------------------------------------------------
 _logger        = logging.getLogger("upload_file")
 #------------------------------------------------------------------------------
@@ -42,20 +42,20 @@ def post_file(upload_type, file_name, content = None):
     store_object.put(file_name, content)
     return True
 #------------------------------------------------------------------------------
-def upload_file(environ, start_response):
+def upload_file(request, start_response):
     _logger.info("upload_file.py: Upload request received")
-    page_object = page.Page(environ)
-    (file_to_upload, file_type) = wsgi_get_post_variables(environ, 
-            'file_to_upload', 'type')
-    _logger.debug("file_type :")
-    _logger.debug(str(file_type))
-    _logger.debug(str(file_to_upload))
+    page_object = page.Page(request)
+    (file_to_upload, file_type) = request.get_post_variables('file_to_upload', 
+            'type')
     if file_to_upload is None or file_type is None:
         _logger.error("Error: Called without enough parameters")
         page_object.set_content('''
              <p class="error">Internal error: Called without 
             enough parameters.</p>''')
     else:
+        _logger.debug("file_type :")
+        _logger.debug(str(file_type))
+        _logger.debug(str(file_to_upload))
         file_type = escape(file_type.value)
         file_name = basename(file_to_upload.filename)
         file_content = file_to_upload.file.read()
@@ -63,8 +63,10 @@ def upload_file(environ, start_response):
             page_object.set_content('''Upload successful''')
         else:
             page_object.set_content('''Error occured''')
-    return wsgi_create_response(start_response, page_object.get_html())
+    return naga_wsgi.create_response(start_response, page_object.get_html())
 #------------------------------------------------------------------------------
 def application(environ, start_response):
-    ensureAuthenticatedHook = EnsureAuthenticatedHook(upload_file)
-    return  ensureAuthenticatedHook(environ, start_response)
+    request = naga_wsgi.Wsgi(environ)
+    errorCatchingHook = ErrorCatchingHook(upload_file)
+    ensureAuthenticatedHook = EnsureAuthenticatedHook(errorCatchingHook)
+    return  ensureAuthenticatedHook(request, start_response)

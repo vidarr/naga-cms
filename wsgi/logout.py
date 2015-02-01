@@ -29,17 +29,22 @@ from naga_config import *
 import security
 import page
 import naga_wsgi
+from wsgi_hooks import ErrorCatchingHook
 #------------------------------------------------------------------------------
 __logger = logging.getLogger()
 #------------------------------------------------------------------------------
-def application(environ, start_response):
-    page_object = page.Page(environ)
+def call(request, start_response):
+    page_object = page.Page(request)
     cookie = security.get_logout_cookie()
-    security.set_cookie_for_current_request(environ, cookie)
-    page_object.set_environment(environ)
+    request.set_cookie(cookie)
     html_body_string = '<p>Logged out</p>'
     page_object.set_content(html_body_string)
     __logger.info(html_body_string)
-    return naga_wsgi.wsgi_create_response(start_response, 
+    return naga_wsgi.create_response(start_response, 
             page_object.get_html(), cookie=cookie)
+#------------------------------------------------------------------------------
+def application(environ, start_response):
+    request = naga_wsgi.Wsgi(environ)
+    errorCatchingHook = ErrorCatchingHook(call)
+    return  errorCatchingHook(request, start_response)
 
