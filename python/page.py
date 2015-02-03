@@ -28,9 +28,7 @@ import categories
 import statics
 #------------------------------------------------------------------------------
 def wrap(content, head = "<title>naga</title>", onload_body_function = None):
-    result = ["Content-Type: text/html\n\n",
-        '''<!DOCTYPE HTML>
-<html>
+    result = [ '''<html>
     <head>
         <meta   charset="utf8">
         ''', head, '''
