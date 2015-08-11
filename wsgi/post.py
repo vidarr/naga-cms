@@ -1,3 +1,4 @@
+# -*- coding: UTF-8 -*-
 #
 # Part of the CMS naga, See <https://ubeer.org>
 #
@@ -21,7 +22,7 @@ import os
 import sys
 #-------------------------------------------------------------------------------
 PAGE_ROOT     = os.path.join(os.path.dirname(os.path.abspath(__file__)))
-MODULE_DIR  = 'python'
+MODULE_DIR    = 'python'
 sys.path.append(PAGE_ROOT + '/../' + MODULE_DIR);
 from naga_config import *
 import post_page

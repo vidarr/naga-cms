@@ -1,7 +1,8 @@
+# -*- coding: UTF-8 -*-
 #
 # Part of the CMS naga, See <https://ubeer.org>
 #
-#    Copyright (C) 2013, 2014, 2015 
+#    Copyright (C) 2013, 2014, 2015
 #                  Michael J. Beer <michael.josef.beer@googlemail.com>
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -34,18 +35,18 @@ __logger = logging.getLogger("login.py")
 def call(request, start_response):
     __logger.info("Login request")
     html_body = ''.join(['''<h1>Please authenticate</h1>
-    <form action=''', AUTHENTICATE_LINK, '''>
+    <form action=''', AUTHENTICATE_LINK, ''' method="post">
         <table>
         <tr><td>
         User:
         </td><td>
         <input type="text"     id="input_user"  name="''', CREDENTIALS_USER,
-        '''" formmethod="post"/>
+        '''" />
         </td></tr><tr><td>
         Passphrase:
         </td><td>
         <input type="password"     id="input_passphrase" name="''',
-        CREDENTIALS_PASSPHRASE, '''" formmethod="post"/>
+        CREDENTIALS_PASSPHRASE, '''" />
         </td></tr>
         </table>
         <input type="submit" value="Submit"/><br/>

@@ -1,3 +1,4 @@
+# -*- coding: UTF-8 -*-
 #
 # Part of the CMS naga, See <https://ubeer.org>
 #
@@ -37,7 +38,7 @@ def create_response(start_response_callback, response_body, **options):
     Create appropriate HTTP header
     '''
     status = '200 OK'
-    response_headers = [('Content-Type', 'text/html'),
+    response_headers = [('Content-Type', 'text/html; charset=utf-8'),
             ('Content-Length', str(len(response_body)))]
     if 'additional_headers' in options:
         response_headers.extend(options['additional_headers'])
@@ -49,7 +50,7 @@ def create_response(start_response_callback, response_body, **options):
             for c in cookies:
                 response_headers.append(('Set-Cookie', c))
     start_response_callback(status, response_headers)
-    return [response_body]
+    return [response_body.encode("utf-8")]
 #------------------------------------------------------------------------------
 class Wsgi:
     '''

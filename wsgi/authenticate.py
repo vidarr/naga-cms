@@ -1,3 +1,4 @@
+# -*- coding: UTF-8 -*-
 #
 # Part of the CMS naga, See <https://ubeer.org>
 #
@@ -50,7 +51,7 @@ def authenticate(request, start_response):
     __logger.info(html_body_string)
     page_object.set_content(html_body_string)
     response_body = page_object.get_html()
-    return naga_wsgi.create_response(start_response, response_body, 
+    return naga_wsgi.create_response(start_response, response_body,
             cookie=cookie)
 #------------------------------------------------------------------------------
 def application(environ, start_response):

@@ -62,29 +62,30 @@ def authenticate(user, passphrase):
 def get_user(wsgi_request):
     '''
     Takes an an wsgi_request, and tries to get the passprase from the 
-    GET variables. 
+    POST variables. 
     Returns its value.
     '''
     if not wsgi_request:
         __logger__.error("get_user: wsgi_request not given")
         return None
-    user = wsgi_request.get_get_variables(CREDENTIALS_USER)[0]
+    user = wsgi_request.get_post_variables(CREDENTIALS_USER)[0].value
+    __logger__.debug("Got user " + str(user))
     if not user:
         __logger__.error("No user found")
     else:
-        __logger__.info("Got user from GET variables:" + user)
+        __logger__.info("Got user from POST variables:" + user)
     return user
 #---------------------------------------------------------------------------    
 def get_passphrase(wsgi_request):
     '''
     Takes an an wsgi_request, and tries to get the passprase from the 
-    GET variables. 
+    POST variables. 
     Returns its value.
     '''
     if not wsgi_request:
         __logger__.error("get_passphrase: wsgi_request not given")
         return None
-    passphrase = wsgi_request.get_get_variables(CREDENTIALS_PASSPHRASE)[0]
+    passphrase = wsgi_request.get_post_variables(CREDENTIALS_PASSPHRASE)[0].value
     if not passphrase:
         __logger__.error("No passphrase found")
     else:

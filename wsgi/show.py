@@ -1,3 +1,4 @@
+# -*- coding: UTF-8 -*-
 #
 # Part of the CMS naga, See <https://ubeer.org>
 #
