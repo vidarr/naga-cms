@@ -17,6 +17,7 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+from naga_config import *
 import os.path
 import sys
 import logging
@@ -38,7 +39,8 @@ def create_response(start_response_callback, response_body, **options):
     Create appropriate HTTP header
     '''
     status = '200 OK'
-    response_headers = [('Content-Type', 'text/html; charset=utf-8'),
+    response_headers = [('Content-Type',
+        'text/html; charset="' + ENCODING + '"'),
             ('Content-Length', str(len(response_body)))]
     if 'additional_headers' in options:
         response_headers.extend(options['additional_headers'])
