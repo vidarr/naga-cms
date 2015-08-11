@@ -51,7 +51,7 @@ class Registry:
         if file_name != None:
             self.file_name = file_name
         self.articles = {}
-        file_object  = open(self.file_name, 'r')
+        file_object  = open(self.file_name, 'r', encoding="utf-8")
         for line in file_object:
             self.logger.info("Registry.from_file: " + line)
             line = line.rstrip()
@@ -168,7 +168,7 @@ class Registry:
     #--------------------------------------------------------------------------
     def _load_file(self, key):
         article_path = self.directory_path + PATH_SEPARATOR + key
-        file_object  = open(article_path, 'r')
+        file_object  = open(article_path, 'r', encoding="utf-8")
         article_data = file_object.read()
         file_object.close()
         self.logger.debug("Registry._load_file: Loaded " + article_path)
