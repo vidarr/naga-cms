@@ -31,7 +31,10 @@ def wrap(content, head = "<title>naga</title>", onload_body_function = None):
     result = [ '''<html>
     <head>
         <meta   charset="utf8">
+        <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1" />
         ''', head, '''
+        <meta name="viewport"
+        content="width=device-width,initial-scale=1,maximal-scale=1"/>
     </head>
     <body''']
     if onload_body_function != None:

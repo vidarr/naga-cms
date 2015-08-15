@@ -30,7 +30,7 @@ PATH_SEPARATOR         = '/'
 #------------------------------------------------------------------------------
 # Actual configuration
 #------------------------------------------------------------------------------
-NAGA_ROOT              = 'https://192.168.56.200'
+NAGA_ROOT              = 'https://192.168.10.100'
 NAGA_ABS_ROOT          = '/var/www'
 PAGE_TITLE             = "Michael J. Beer"
 PAGE_DESCRIPTION       = "Michael Beer's personal homepage"
