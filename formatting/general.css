@@ -1,10 +1,10 @@
-body    { 
-    margin             : auto;                   
+body    {
+    margin             : auto;
     font-family        : Sans;
     font-size          : 1em;
 }
 
-article { 
+article {
     position           : fixed;
     width              : inherit;
     right              : 0;
@@ -21,16 +21,16 @@ article {
 }
 
 .navBarElement {
-    height             : 12em; 
+    height             : 12em;
 }
 
-nav { 
+nav {
     height             : 100%;
     padding-right      : 0;
     position           : fixed;
     top                : 0;
     bottom             : 2.5em;
-    width              : 17em; 
+    width              : 17em;
     background-color   : rgb(224,224,256);
 }
 
@@ -93,8 +93,8 @@ table.listing tr:nth-child(even) {
 }
 
 table.listing tr > td {
-    padding-top        : 1em;  
-    padding-bottom     : 1em;  
+    padding-top        : 1em;
+    padding-bottom     : 1em;
     padding-left       : 1em;
     padding-right      : 1em;
 }
@@ -133,7 +133,7 @@ td.center_item {
     text-align  : center;
 }
 
-@media only screen and (max-device-width : 640px) { 
+@media only screen and (max-device-width : 640px) {
 
     article {
         position         : relative;
@@ -146,13 +146,13 @@ td.center_item {
         height           : 5em;
         height           : 10vh;
     }
- 
+
     nav {
         height           : 5em;
         height           : 10vh;
         position         : relative;
         top              : 0;
-        width            : 100%; 
+        width            : 100%;
         bottom           : 0;
      }
 
@@ -175,7 +175,7 @@ td.center_item {
         width            : 1em;
         width            : 5vw;
         height           : 1em;
-        height           : 5vw; 
+        height           : 5vw;
     }
 
     nav li {
@@ -190,7 +190,7 @@ td.center_item {
        left             : 0;
        height           : 2.5em;
        text-align       : justify;
-       background-color : rgb(224,224,256);
+       background-color : rgb(224,224,255);
    }
 
 }  /* @media */
