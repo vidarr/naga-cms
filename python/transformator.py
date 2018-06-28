@@ -58,9 +58,7 @@ def listing(call, arg):
     if len(elements) < 1:
         _logger.warn("wont build empty list from " + arg)
         return ''
-    print(arg)
     result = ['<', sur_tag, '>']
-    print(":::".join(elements))
     for item in elements[1:]:
         result.append('<li>')
         result.append(item)
@@ -94,7 +92,7 @@ def code(call, arg):
     Callback: Format code.
     '''
     del call # Just to get rid of 'Unused arg' warning
-    return ''.join(['<code>', arg, '</code>'])
+    return ''.join(['<code>', arg, '</code>']).replace("\r", "<br>").replace("\n", "<br>")
 #------------------------------------------------------------------------------
 def make_link(separator, internal_link_prefix='', internal_link_postfix=''):
     '''
@@ -256,15 +254,15 @@ class Transformator(object):
         if 'separator' in params:
             self.separator = params['separator']
         self.lookup = {
-                'heading' : heading,
-                'olist'   : listing,
-                'ulist'   : listing,
-                'br'      : line_break,
-                'b'       : bold,
-                'i'       : italic,
-                'c'       : code,
-                'link'    : make_link(self.separator),
-                _DEFAULT : make_do_nothing(self.separator)
+                'heading' : (heading, True),
+                'olist'   : (listing, True),
+                'ulist'   : (listing, True),
+                'br'      : (line_break, True),
+                'b'       : (bold, True),
+                'i'       : (italic, True),
+                'c'       : (code, False),
+                'link'    : (make_link(self.separator), True),
+                _DEFAULT :  (make_do_nothing(self.separator), True)
                 }
         if 'handlers' in params:
             self.lookup = params['handlers']
@@ -277,13 +275,13 @@ class Transformator(object):
         '''
         Register the callback to handle unknown format strings.
         '''
-        self.lookup[_DEFAULT] = callback
+        self.lookup[_DEFAULT] = (callback, True)
     #---------------------------------------------------------------------------
-    def register_callback(self, identifier, callback):
+    def register_callback(self, identifier, callback, transform_arguments=True):
         '''
         Register callback with a format string.
         '''
-        self.lookup[identifier] = callback
+        self.lookup[identifier] = (callback, transform_arguments)
     #---------------------------------------------------------------------------
     def __replace_chars(self, input):
         return re.sub('[\r\n ]+', ' ', input)
@@ -365,13 +363,18 @@ class Transformator(object):
         if call_parts[0] == '':
             self.__logger.error("error when trying to split " + inner_part)
             return None
-        arguments = self.__transform(call_parts[2])
+
         if call_parts[0] in self.lookup:
-            transformed_parts.append(self.lookup[call_parts[0]](call_parts[0],
-                arguments))
+            (handler, transform_arguments) = self.lookup[call_parts[0]]
         else:
-            transformed_parts.append(self.lookup[_DEFAULT](call_parts[0],
-                arguments))
+            (handler, transform_arguments) = self.lookup[_DEFAULT]
+
+        arguments = call_parts[2]
+        if transform_arguments:
+            arguments = self.__transform(arguments)
+
+        transformed_parts.append(handler(call_parts[0], arguments))
+
         return rest
     #---------------------------------------------------------------------------
     def __transform(self, origin_string):
@@ -390,9 +393,9 @@ class Transformator(object):
             if position < 0:
                 # Not found
                 self.__logger.debug("transform: No start marker found in " + origin_string[start_position:])
-                modified_string = self.__replace_chars(origin_string)
-                transformed_string.append(modified_string)
-                return self.__collapse_string(transformed_string)
+                transformed_string.append(origin_string)
+                modified_string = self.__collapse_string(transformed_string)
+                return self.__replace_chars(modified_string)
             if self.escaped(origin_string, position):
                 start_position = position + 1
                 self.__logger.debug("transform: Escaped " +
@@ -401,14 +404,15 @@ class Transformator(object):
             else:
                 # Got format call
                 self.__logger.debug("transform: Got call " + origin_string[position:])
-                modified_string = self.__replace_chars(origin_string[:position])
-                transformed_string.append(modified_string)
+                partial_string = origin_string[:position]
+                # modified_string = self.__replace_chars(origin_string[:position])
+                transformed_string.append(partial_string)
                 remainder = origin_string[position + 1:]
                 if remainder == '':
-                    return self.__collapse_string(transformed_string)
+                    return self.__replace_chars(self.__collapse_string(transformed_string))
                 origin_string = self.treat_format_call(remainder, transformed_string)
                 start_position = 0
-        return self.__collapse_string(transformed_string)
+        return self.__replace_chars(self.__collapse_string(transformed_string))
     #---------------------------------------------------------------------------
     def transform(self, origin_string):
         '''
