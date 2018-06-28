@@ -54,17 +54,19 @@ def listing(call, arg):
     sur_tag = 'ol'
     if call == 'ulist':
         sur_tag = 'ul'
-    elements = arg.split('*')
-    if len(elements) < 2:
+    elements = re.split('[^*]\*[^*]', arg)
+    if len(elements) < 1:
         _logger.warn("wont build empty list from " + arg)
         return ''
+    print(arg)
     result = ['<', sur_tag, '>']
+    print(":::".join(elements))
     for item in elements[1:]:
         result.append('<li>')
         result.append(item)
         result.append('</li>')
     result.extend(['</', sur_tag, '>'])
-    return ''.join(result)
+    return ''.join(result).replace('**', '*')
 #------------------------------------------------------------------------------
 def bold(call, arg):
     '''
