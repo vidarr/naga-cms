@@ -59,7 +59,7 @@ def listing(call, arg):
         _logger.warn("wont build empty list from " + arg)
         return ''
     result = ['<', sur_tag, '>']
-    for item in elements[1:]:
+    for item in elements:
         result.append('<li>')
         result.append(item)
         result.append('</li>')
