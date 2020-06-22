@@ -21,7 +21,7 @@ import sys
 import string
 import logging
 from os.path import join, dirname, abspath, basename
-from cgi import escape
+from html import escape
 #------------------------------------------------------------------------------
 PAGE_ROOT   = join(dirname(abspath(__file__)))
 MODULE_DIR  = 'python'

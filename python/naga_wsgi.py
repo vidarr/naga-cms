@@ -22,7 +22,8 @@ import os.path
 import sys
 import logging
 from urllib.parse import parse_qs
-from cgi import escape, FieldStorage
+from cgi import FieldStorage
+from html import escape
 from http import cookies
 #------------------------------------------------------------------------------
 _logger = logging.getLogger("wsgi_naga")

@@ -27,7 +27,7 @@ import re
 import string
 import random
 import hashlib
-from cgi import escape
+from html import escape
 from http import cookies
 #---------------------------------------------------------------------------    
 PAGE_ROOT     = os.path.join(os.path.dirname(os.path.abspath(__file__)))
